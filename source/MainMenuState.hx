@@ -15,7 +15,7 @@ import options.OptionsState;
 import mobile.MobilePad;
 #end
 
-class MadnessMenuState extends MusicBeatState
+class MainMenuState extends MusicBeatState
 {
     public static var curSelected:Int = 0;
 
