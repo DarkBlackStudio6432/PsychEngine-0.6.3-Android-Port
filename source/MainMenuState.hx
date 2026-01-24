@@ -3,17 +3,18 @@ package;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
-import flixel.group.FlxTypedGroup;
-import flixel.tweens.FlxTween;
+import flixel.group.FlxGroup;
 import flixel.util.FlxColor;
+import flixel.effects.FlxFlicker;
 
 import options.OptionsState;
 
 class MainMenuState extends MusicBeatState
 {
+	public static var psychEngineVersion:String = '0.6.3';
 	public static var curSelected:Int = 0;
 
-	var menuItems:FlxTypedGroup<FlxSprite>;
+	var menuItems:FlxGroup;
 	var camFollow:FlxObject;
 	var selected:Bool = false;
 
@@ -28,16 +29,15 @@ class MainMenuState extends MusicBeatState
 	{
 		super.create();
 
-		// Fundo
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuBG'));
 		bg.screenCenter();
-		bg.antialiasing = ClientPrefs.data.antialiasing;
+		bg.antialiasing = ClientPrefs.antialiasing;
 		add(bg);
 
 		camFollow = new FlxObject(0, 0, 1, 1);
 		add(camFollow);
 
-		menuItems = new FlxTypedGroup<FlxSprite>();
+		menuItems = new FlxGroup();
 		add(menuItems);
 
 		for (i in 0...optionShit.length)
@@ -47,16 +47,15 @@ class MainMenuState extends MusicBeatState
 			item.animation.addByPrefix('idle', optionShit[i] + " basic", 24);
 			item.animation.addByPrefix('selected', optionShit[i] + " white", 24);
 			item.animation.play('idle');
-			item.antialiasing = ClientPrefs.data.antialiasing;
+			item.antialiasing = ClientPrefs.antialiasing;
 			item.screenCenter(X);
 			menuItems.add(item);
 		}
 
 		changeItem();
-
 		FlxG.camera.follow(camFollow, null, 9);
 
-		// 🔽 ÚNICA COISA DE MOBILE (como você pediu)
+		// ✅ ÚNICA COISA DE MOBILE (exatamente como você pediu)
 		#if mobile
 		if (mobilePad != null)
 			mobilePad.visible = true;
@@ -90,7 +89,7 @@ class MainMenuState extends MusicBeatState
 	{
 		FlxG.sound.play(Paths.sound('scrollMenu'));
 
-		menuItems.members[curSelected].animation.play('idle');
+		cast(menuItems.members[curSelected], FlxSprite).animation.play('idle');
 
 		curSelected += change;
 
@@ -99,9 +98,8 @@ class MainMenuState extends MusicBeatState
 		if (curSelected >= menuItems.length)
 			curSelected = 0;
 
-		var item = menuItems.members[curSelected];
+		var item:FlxSprite = cast(menuItems.members[curSelected], FlxSprite);
 		item.animation.play('selected');
-		item.centerOffsets();
 		item.screenCenter(X);
 
 		camFollow.setPosition(
@@ -115,9 +113,9 @@ class MainMenuState extends MusicBeatState
 		selected = true;
 		FlxG.sound.play(Paths.sound('confirmMenu'));
 
-		var item = menuItems.members[curSelected];
+		var item:FlxSprite = cast(menuItems.members[curSelected], FlxSprite);
 
-		FlxTween.flicker(item, 1, 0.06, false, false, function(_)
+		FlxFlicker.flicker(item, 1, 0.06, false, false, function(_)
 		{
 			switch (optionShit[curSelected])
 			{
