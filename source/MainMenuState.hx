@@ -47,11 +47,6 @@ class MainMenuState extends MusicBeatState
 
 	override function create()
 	{
-		#if MODS_ALLOWED
-Mods.pushGlobalMods();
-#end
-Mods.loadTopMod();
-
 		#if desktop
 		DiscordClient.changePresence("In the Menus", null);
 		#end
