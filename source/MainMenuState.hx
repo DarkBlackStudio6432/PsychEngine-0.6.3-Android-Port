@@ -1,4 +1,4 @@
-package states;
+package;
 
 #if desktop
 import Discord.DiscordClient;
@@ -17,9 +17,8 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import lime.app.Application;
-import states.editors.MasterEditorMenu;
+import editors.MasterEditorMenu;
 import options.OptionsState;
-import backend.WeekData;
 import flixel.input.keyboard.FlxKey;
 
 class MainMenuState extends MusicBeatState
@@ -49,9 +48,9 @@ class MainMenuState extends MusicBeatState
 	override function create()
 	{
 		#if MODS_ALLOWED
-		Paths.pushGlobalMods();
-		#end
-		WeekData.loadTheFirstEnabledMod();
+Mods.pushGlobalMods();
+#end
+Mods.loadTopMod();
 
 		#if desktop
 		DiscordClient.changePresence("In the Menus", null);
