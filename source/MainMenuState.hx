@@ -1,13 +1,19 @@
 package;
 
+#if desktop
+import Discord.DiscordClient;
+#end
+
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
-import flixel.group.FlxTypedGroup;
+import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.tweens.FlxTween;
-import flixel.tweens.FlxEase;
+import flixel.effects.FlxFlicker;
+
+import lime.app.Application;
 
 import options.OptionsState;
 
@@ -15,21 +21,24 @@ import options.OptionsState;
 import mobile.MobilePad;
 #end
 
+using StringTools;
+
 class MainMenuState extends MusicBeatState
 {
+    // OBRIGATÓRIO NA 0.6.3
+    public static var psychEngineVersion:String = "0.6.3";
     public static var curSelected:Int = 0;
 
     var menuItems:FlxTypedGroup<FlxSprite>;
     var camFollow:FlxObject;
+    var selectedSomethin:Bool = false;
 
-    var options:Array<String> = [
+    var optionShit:Array<String> = [
         'story_mode',
         'freeplay',
         'credits',
         'options'
     ];
-
-    var selected:Bool = false;
 
     #if mobile
     var mobilePad:MobilePad;
@@ -37,9 +46,13 @@ class MainMenuState extends MusicBeatState
 
     override function create()
     {
-        super.create();
+        #if desktop
+        DiscordClient.changePresence("In the Menus", null);
+        #end
 
-        // Fundo
+        persistentUpdate = persistentDraw = true;
+
+        // FUNDO
         var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuBG'));
         bg.screenCenter();
         bg.antialiasing = ClientPrefs.data.antialiasing;
@@ -51,32 +64,42 @@ class MainMenuState extends MusicBeatState
         menuItems = new FlxTypedGroup<FlxSprite>();
         add(menuItems);
 
-        for (i in 0...options.length)
+        for (i in 0...optionShit.length)
         {
-            var item:FlxSprite = new FlxSprite(0, 200 + i * 140);
-            item.frames = Paths.getSparrowAtlas('mainmenu/menu_' + options[i]);
-            item.animation.addByPrefix('idle', options[i] + " basic", 24);
-            item.animation.addByPrefix('selected', options[i] + " white", 24);
-            item.animation.play('idle');
-            item.antialiasing = ClientPrefs.data.antialiasing;
-            item.screenCenter(X);
-            menuItems.add(item);
+            var offset:Float = 200;
+            var menuItem:FlxSprite = new FlxSprite(0, offset + (i * 140));
+            menuItem.frames = Paths.getSparrowAtlas('mainmenu/menu_' + optionShit[i]);
+            menuItem.animation.addByPrefix('idle', optionShit[i] + " basic", 24);
+            menuItem.animation.addByPrefix('selected', optionShit[i] + " white", 24);
+            menuItem.animation.play('idle');
+            menuItem.ID = i;
+            menuItem.antialiasing = ClientPrefs.data.antialiasing;
+            menuItem.screenCenter(X);
+            menuItems.add(menuItem);
         }
 
         changeItem();
 
         FlxG.camera.follow(camFollow, null, 9);
 
+        // VERSÃO NO CANTO
+        var verText:FlxText = new FlxText(12, FlxG.height - 24, 0,
+            "Psych Engine v" + psychEngineVersion, 16);
+        verText.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, OUTLINE, FlxColor.BLACK);
+        add(verText);
+
         #if mobile
-        mobilePad = new MobilePad(FULL, A_B);
+        mobilePad = new MobilePad(UP_DOWN, A_B);
         add(mobilePad);
         controls.setVirtualPad(mobilePad);
         #end
+
+        super.create();
     }
 
     override function update(elapsed:Float)
     {
-        if (!selected)
+        if (!selectedSomethin)
         {
             if (controls.UI_UP_P)
                 changeItem(-1);
@@ -84,26 +107,26 @@ class MainMenuState extends MusicBeatState
             if (controls.UI_DOWN_P)
                 changeItem(1);
 
-            if (controls.ACCEPT)
-                selectItem();
-
             if (controls.BACK)
             {
-                FlxG.sound.play(Paths.sound('cancelMenu'));
+                selectedSomethin = true;
                 MusicBeatState.switchState(new TitleState());
             }
+
+            if (controls.ACCEPT)
+                selectItem();
         }
 
         super.update(elapsed);
     }
 
-    function changeItem(change:Int = 0)
+    function changeItem(huh:Int = 0)
     {
         FlxG.sound.play(Paths.sound('scrollMenu'));
 
         menuItems.members[curSelected].animation.play('idle');
 
-        curSelected += change;
+        curSelected += huh;
 
         if (curSelected < 0)
             curSelected = menuItems.length - 1;
@@ -123,14 +146,14 @@ class MainMenuState extends MusicBeatState
 
     function selectItem()
     {
-        selected = true;
+        selectedSomethin = true;
         FlxG.sound.play(Paths.sound('confirmMenu'));
 
         var item = menuItems.members[curSelected];
 
-        FlxTween.flicker(item, 1, 0.06, false, false, function(_)
+        FlxFlicker.flicker(item, 1, 0.06, false, false, function(_)
         {
-            switch (options[curSelected])
+            switch (optionShit[curSelected])
             {
                 case 'story_mode':
                     MusicBeatState.switchState(new StoryMenuState());
