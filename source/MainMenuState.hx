@@ -21,7 +21,7 @@ import editors.MasterEditorMenu;
 import options.OptionsState;
 import flixel.input.keyboard.FlxKey;
 
-class MainMenuState extends MusicBeatState
+class MainMenuState extends MadnessMenu
 {
         public static var psychEngineVersion:String = '0.6.3';
         public static var curSelected:Int = 0;
