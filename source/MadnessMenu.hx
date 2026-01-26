@@ -15,8 +15,8 @@ import flixel.addons.display.FlxBackdrop;
 import flixel.addons.display.FlxTiledSprite;
 import openfl.display.BitmapData;
 
-import StorySubMenu;
-import MadnessCredits;
+//import StorySubMenu;
+//import MadnessCredits;
 
 #if desktop
 import flixel.input.mouse.FlxMouseEvent;
