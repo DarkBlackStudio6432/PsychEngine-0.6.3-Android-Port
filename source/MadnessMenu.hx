@@ -3,7 +3,6 @@ package;
 import MusicBeatState;
 import StoryMenuState;
 import CreditsState;
-import OptionsState;
 import ClientPrefs;
 import Paths;
 
@@ -13,32 +12,24 @@ import flixel.group.FlxSpriteGroup;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
 import flixel.addons.display.FlxBackdrop;
-import flixel.util.FlxAxes;
-
-#if desktop
-import openfl.display.BitmapData;
-#end
 
 enum Hovering
 {
-	OPTIONS;
 	ANYTHINGELSE;
 }
 
 class MadnessMenu extends MusicBeatState
 {
-	var hoverMode:Hovering = ANYTHINGELSE;
 	var uniScale:Float = 1;
 	var currentSel:Int = 0;
 
 	var baseButtons:FlxTypedGroup<FlxSprite>;
-	var optionsButton:FlxSprite;
 	var circles:FlxSpriteGroup;
 	var storyButton:FlxSprite;
 
 	override function create()
 	{
-		FlxG.camera.antialiasing = ClientPrefs.data.antialiasing;
+		FlxG.camera.antialiasing = ClientPrefs.antialiasing;
 		persistentUpdate = true;
 
 		var back = new FlxSprite(Paths.image('madnessmenu/back'));
@@ -52,7 +43,7 @@ class MadnessMenu extends MusicBeatState
 
 		var silh = new FlxBackdrop(
 			Paths.image('madnessmenu/siloets'),
-			FlxAxes.X,
+			0,
 			20
 		);
 		silh.scale.set(uniScale, uniScale);
@@ -74,13 +65,6 @@ class MadnessMenu extends MusicBeatState
 			storyButton.y
 		);
 		baseButtons.add(freeplayButton);
-
-		optionsButton = makeButton('options');
-		optionsButton.setPosition(
-			storyButton.x + storyButton.width + 10,
-			760 * uniScale
-		);
-		add(optionsButton);
 
 		circles = new FlxSpriteGroup();
 		add(circles);
@@ -104,17 +88,8 @@ class MadnessMenu extends MusicBeatState
 	{
 		FlxG.sound.play(Paths.sound('madness/select'));
 
-		var button = hoverMode == OPTIONS
-			? optionsButton
-			: baseButtons.members[currentSel];
-
+		var button = baseButtons.members[currentSel];
 		button.animation.play('confirm');
-
-		if (hoverMode == OPTIONS)
-		{
-			MusicBeatState.switchState(new OptionsState());
-			return;
-		}
 
 		switch (currentSel)
 		{
@@ -129,7 +104,7 @@ class MadnessMenu extends MusicBeatState
 	{
 		FlxG.sound.play(Paths.sound('madness/beep'));
 
-		for (i in baseButtons.members.concat([optionsButton]))
+		for (i in baseButtons.members)
 			i.animation.play('i');
 
 		currentSel = FlxMath.wrap(
@@ -138,11 +113,7 @@ class MadnessMenu extends MusicBeatState
 			baseButtons.length - 1
 		);
 
-		var obj = hoverMode == OPTIONS
-			? optionsButton
-			: baseButtons.members[currentSel];
-
-		obj.animation.play('select');
+		baseButtons.members[currentSel].animation.play('select');
 	}
 
 	function makeButton(path:String):FlxSprite
