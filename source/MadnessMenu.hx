@@ -12,118 +12,120 @@ import flixel.group.FlxSpriteGroup;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
 import flixel.addons.display.FlxBackdrop;
-
-enum Hovering
-{
-        ANYTHINGELSE;
-}
+import flixel.util.FlxAxes;
 
 class MadnessMenu extends MusicBeatState
 {
-        var uniScale:Float = 1;
-        var currentSel:Int = 0;
+    var uniScale:Float = 1;
+    var currentSel:Int = 0;
 
-        var baseButtons:FlxTypedGroup<FlxSprite>;
-        var circles:FlxSpriteGroup;
-        var storyButton:FlxSprite;
+    var baseButtons:FlxTypedGroup<FlxSprite>;
+    var circles:FlxSpriteGroup;
+    var storyButton:FlxSprite;
 
-        override function create()
-        {       
-                persistentUpdate = true;
+    override function create()
+    {
+        super.create(); // 🔥 TEM QUE SER PRIMEIRO
 
-                var back = new FlxSprite(Paths.image('madnessmenu/back'));
-                back.setGraphicSize(FlxG.width);
-                back.updateHitbox();
-                back.screenCenter(Y);
-                back.y += 100;
-                add(back);
+        persistentUpdate = true;
 
-                uniScale = back.scale.x;
+        // BACKGROUND
+        var back = new FlxSprite().loadGraphic(
+            Paths.image('madnessmenu/back')
+        );
+        back.setGraphicSize(FlxG.width);
+        back.updateHitbox();
+        back.screenCenter(FlxAxes.Y);
+        back.y += 100;
+        add(back);
 
-                var silh = new FlxBackdrop(
-                        Paths.image('madnessmenu/siloets'),
-                        0,
-                        20
-                );
-                silh.scale.set(uniScale, uniScale);
-                silh.y = 300;
-                silh.velocity.x = -50;
-                silh.alpha = 0.3;
-                add(silh);
+        uniScale = back.scale.x;
 
-                baseButtons = new FlxTypedGroup<FlxSprite>();
-                add(baseButtons);
+        // SILHUETAS
+        //var silh = new FlxBackdrop(
+           // Paths.image('madnessmenu/siloets'),
+          //  0,
+           // 20
+       // );
+       // silh.scale.set(uniScale, uniScale);
+        //silh.y = 300;
+        //silh.velocity.x = -50;
+        //silh.alpha = 0.3;
+        //add(silh);
 
-                storyButton = makeButton('storymode');
-                storyButton.setPosition(1169 * uniScale, 405 * uniScale);
-                baseButtons.add(storyButton);
+        // BOTÕES
+        baseButtons = new FlxTypedGroup<FlxSprite>();
+        add(baseButtons);
 
-                var freeplayButton = makeButton('freeplay');
-                freeplayButton.setPosition(
-                        storyButton.x + storyButton.width + 10,
-                        storyButton.y
-                );
-                baseButtons.add(freeplayButton);
+        storyButton = makeButton('storymode');
+        storyButton.setPosition(1169 * uniScale, 405 * uniScale);
+        baseButtons.add(storyButton);
 
-                circles = new FlxSpriteGroup();
-                add(circles);
+        var freeplayButton = makeButton('freeplay');
+        freeplayButton.setPosition(
+            storyButton.x + storyButton.width + 10,
+            storyButton.y
+        );
+        baseButtons.add(freeplayButton);
 
-                super.create();
-                changeSel();
-        }
+        circles = new FlxSpriteGroup();
+        add(circles);
 
-        override function update(elapsed:Float)
+        changeSel();
+    }
+
+    override function update(elapsed:Float)
+    {
+        super.update(elapsed);
+
+        if (controls.UI_LEFT_P || controls.UI_RIGHT_P)
+            changeSel(controls.UI_LEFT_P ? -1 : 1);
+
+        if (controls.ACCEPT)
+            confirmSel();
+    }
+
+    function confirmSel()
+    {
+        FlxG.sound.play(Paths.sound('madness/select'));
+
+        var button = baseButtons.members[currentSel];
+        button.animation.play('confirm');
+
+        switch (currentSel)
         {
-                super.update(elapsed);
-
-                if (controls.UI_LEFT_P || controls.UI_RIGHT_P)
-                        changeSel(controls.UI_LEFT_P ? -1 : 1);
-
-                if (controls.ACCEPT)
-                        confirmSel();
+            case 0:
+                MusicBeatState.switchState(new StoryMenuState());
+            case 1:
+                MusicBeatState.switchState(new CreditsState());
         }
+    }
 
-        function confirmSel()
-        {
-                FlxG.sound.play(Paths.sound('madness/select'));
+    function changeSel(v:Int = 0)
+    {
+        FlxG.sound.play(Paths.sound('madness/beep'));
 
-                var button = baseButtons.members[currentSel];
-                button.animation.play('confirm');
+        for (i in baseButtons.members)
+            i.animation.play('i');
 
-                switch (currentSel)
-                {
-                        case 0:
-                                MusicBeatState.switchState(new StoryMenuState());
-                        case 1:
-                                MusicBeatState.switchState(new CreditsState());
-                }
-        }
+        currentSel = FlxMath.wrap(
+            currentSel + v,
+            0,
+            baseButtons.length - 1
+        );
 
-        function changeSel(v:Int = 0)
-        {
-                FlxG.sound.play(Paths.sound('madness/beep'));
+        baseButtons.members[currentSel].animation.play('select');
+    }
 
-                for (i in baseButtons.members)
-                        i.animation.play('i');
-
-                currentSel = FlxMath.wrap(
-                        currentSel + v,
-                        0,
-                        baseButtons.length - 1
-                );
-
-                baseButtons.members[currentSel].animation.play('select');
-        }
-
-        function makeButton(path:String):FlxSprite
-        {
-                var spr = new FlxSprite();
-                spr.frames = Paths.getSparrowAtlas('madnessmenu/' + path);
-                spr.animation.addByPrefix('i', path + '0');
-                spr.animation.addByPrefix('confirm', path + ' confirm');
-                spr.animation.addByPrefix('select', path + ' select');
-                spr.animation.play('i');
-                spr.scale.set(uniScale + 0.2, uniScale + 0.2);
-                return spr;
-        }
+    function makeButton(path:String):FlxSprite
+    {
+        var spr = new FlxSprite();
+        spr.frames = Paths.getSparrowAtlas('madnessmenu/' + path);
+        spr.animation.addByPrefix('i', path + '0');
+        spr.animation.addByPrefix('confirm', path + ' confirm');
+        spr.animation.addByPrefix('select', path + ' select');
+        spr.animation.play('i');
+        spr.scale.set(uniScale + 0.2, uniScale + 0.2);
+        return spr;
+    }
 }
