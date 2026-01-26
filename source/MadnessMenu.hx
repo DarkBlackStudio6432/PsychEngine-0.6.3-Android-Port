@@ -28,6 +28,7 @@ class MadnessMenu extends MusicBeatState
         super.create(); // 🔥 TEM QUE SER PRIMEIRO
 
 trace("MADNESS MENU ABERTO");
+FlxG.camera.bgColor = FlxColor.RED;
 
 		var bg:FlxSprite = new FlxSprite()
 			.makeGraphic(FlxG.width, FlxG.height, FlxColor.RED);
