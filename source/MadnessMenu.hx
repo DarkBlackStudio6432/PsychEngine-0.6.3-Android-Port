@@ -3,9 +3,7 @@ package;
 import states.MusicBeatState;
 import backend.ClientPrefs;
 import Paths;
-
 import options.OptionsState;
-
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
