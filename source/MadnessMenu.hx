@@ -54,10 +54,6 @@ class MadnessMenu extends MusicBeatState
         FlxG.mouse.load(mouseGraphic, 0.5);
         #end
 
-#if mobile
-addVirtualPad(LEFT_RIGHT, A_B);
-#end
-
         FlxG.camera.antialiasing = ClientPrefs.data.antialiasing;
         persistentUpdate = true;
 
@@ -101,6 +97,11 @@ addVirtualPad(LEFT_RIGHT, A_B);
         add(circles);
 
         super.create();
+
+#if mobile
+addVirtualPad(LEFT_RIGHT, A_B);
+#end
+
         changeSel();
     }
 
