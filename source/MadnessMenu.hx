@@ -21,6 +21,11 @@ import flixel.FlxSprite;
 import flixel.input.mouse.FlxMouseEvent;
 #end
 
+enum Hovering {
+    OPTIONS;
+    ANYTHINGELSE;
+}
+
 //import Hovering;
 
 class MadnessMenu extends MusicBeatState
