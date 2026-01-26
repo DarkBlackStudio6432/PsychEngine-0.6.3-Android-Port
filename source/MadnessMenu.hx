@@ -1,10 +1,10 @@
 package;
 
-import states.MusicBeatState;
-import states.StoryMenuState;
-import states.CreditsState;
-import backend.ClientPrefs;
-import options.OptionsState;
+import MusicBeatState;
+import StoryMenuState;
+import CreditsState;
+import ClientPrefs;
+import OptionsState;
 import Paths;
 
 import flixel.FlxG;
