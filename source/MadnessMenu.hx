@@ -1,4 +1,4 @@
-package states;
+package;
 
 
 import backend.Highscore;
