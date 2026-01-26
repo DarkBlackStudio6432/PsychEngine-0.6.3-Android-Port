@@ -25,6 +25,12 @@ class MadnessMenu extends MusicBeatState
 
     override function create()
     {
+trace("MADNESS MENU ABERTO");
+
+		var bg:FlxSprite = new FlxSprite()
+			.makeGraphic(FlxG.width, FlxG.height, FlxColor.RED);
+		add(bg);
+
         super.create(); // 🔥 TEM QUE SER PRIMEIRO
 
         persistentUpdate = true;
