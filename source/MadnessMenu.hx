@@ -1,6 +1,6 @@
 package;
 
-import Highscore;
+//import Highscore;
 import flixel.addons.display.FlxTiledSprite;
 import options.OptionsState;
 import flixel.math.FlxRect;
