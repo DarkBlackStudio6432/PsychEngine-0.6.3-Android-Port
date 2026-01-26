@@ -3,195 +3,119 @@ package;
 import MusicBeatState;
 import StoryMenuState;
 import CreditsState;
-import ClientPrefs;
 import OptionsState;
+import ClientPrefs;
 import Paths;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.group.FlxSpriteGroup;
-import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.math.FlxMath;
+import flixel.group.FlxTypedGroup;
 import flixel.addons.display.FlxBackdrop;
-import openfl.display.BitmapData;
-
-#if desktop
-import flixel.input.mouse.FlxMouseEvent;
-#end
-
-enum Hovering
-{
-	OPTIONS;
-	ANYTHINGELSE;
-}
+import flixel.util.FlxAxes;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import flixel.math.FlxMath;
 
 class MadnessMenu extends MusicBeatState
 {
-	var hoverMode:Hovering = ANYTHINGELSE;
+	var menuItems:FlxTypedGroup<FlxSprite>;
+	var curSelected:Int = 0;
 
-	#if desktop
-	public static var mouseGraphic:BitmapData =
-		BitmapData.fromFile('assets/shared/images/madnessmenu/mouse.png');
-	#end
+	var options:Array<String> = [
+		'story_mode',
+		'freeplay',
+		'credits',
+		'options'
+	];
 
-	var uniScale:Float = 1;
-	var currentSel:Int = 0;
-
-	var baseButtons:FlxTypedGroup<FlxSprite>;
-	var optionsButton:FlxSprite;
-	var circles:FlxSpriteGroup;
-	var storyButton:FlxSprite;
-
-	override function create()
+	override public function create()
 	{
-		#if desktop
-		FlxG.mouse.visible = true;
-		FlxG.mouse.load(mouseGraphic, 0.5);
-		#end
-
-		FlxG.camera.antialiasing = ClientPrefs.data.antialiasing;
-		persistentUpdate = true;
-
-		var back = new FlxSprite(Paths.image('madnessmenu/back'));
-		back.setGraphicSize(FlxG.width);
-		back.updateHitbox();
-		back.screenCenter(Y);
-		back.y += 100;
-		add(back);
-
-		uniScale = back.scale.x;
-
-		var silh = new FlxBackdrop(Paths.image('madnessmenu/siloets'), X, 20);
-		silh.setScale(uniScale);
-		silh.y = 300;
-		silh.velocity.x = -50;
-		silh.alpha = 0.3;
-		add(silh);
-
-		baseButtons = new FlxTypedGroup<FlxSprite>();
-		add(baseButtons);
-
-		storyButton = makeButton('storymode');
-		storyButton.setPosition(1169 * uniScale, 405 * uniScale);
-		baseButtons.add(storyButton);
-
-		var freeplayButton = makeButton('freeplay');
-		freeplayButton.setPosition(
-			storyButton.x + storyButton.width + 10,
-			storyButton.y
-		);
-		baseButtons.add(freeplayButton);
-
-		optionsButton = makeButton('options');
-		optionsButton.setPosition(
-			storyButton.x + storyButton.width + 10,
-			760 * uniScale
-		);
-		add(optionsButton);
-
-		circles = new FlxSpriteGroup();
-		add(circles);
-
 		super.create();
 
-		#if mobile
-		addVirtualPad(LEFT_RIGHT, A_B);
-		#end
+		// Background
+		var bg:FlxBackdrop = new FlxBackdrop(
+			Paths.image('madnessmenu/bg'),
+			FlxAxes.X,
+			20
+		);
+		bg.antialiasing = ClientPrefs.antialiasing;
+		add(bg);
 
-		changeSel();
+		// Menu items
+		menuItems = new FlxTypedGroup<FlxSprite>();
+		add(menuItems);
+
+		for (i in 0...options.length)
+		{
+			var item:FlxSprite = new FlxSprite(0, 200 + (i * 120));
+			item.loadGraphic(Paths.image('madnessmenu/' + options[i]));
+			item.antialiasing = ClientPrefs.antialiasing;
+			item.scale.set(0.9, 0.9);
+			item.updateHitbox();
+			item.screenCenter(X);
+
+			menuItems.add(item);
+		}
+
+		changeSelection();
 	}
 
-	override function update(elapsed:Float)
+	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
 
-		if ((controls.UI_LEFT_P || controls.UI_RIGHT_P) && hoverMode != OPTIONS)
-			changeSel(controls.UI_LEFT_P ? -1 : 1);
+		if (controls.UI_UP_P)
+			changeSelection(-1);
+
+		if (controls.UI_DOWN_P)
+			changeSelection(1);
 
 		if (controls.ACCEPT)
-			confirmSel();
+			selectItem();
+	}
 
-		#if desktop
-		for (i in baseButtons)
+	function changeSelection(change:Int = 0)
+	{
+		curSelected = FlxMath.wrap(curSelected + change, 0, options.length - 1);
+
+		for (i in 0...menuItems.length)
 		{
-			var id = baseButtons.members.indexOf(i);
-			if (FlxG.mouse.overlaps(i))
+			var item = menuItems.members[i];
+			if (item == null) continue;
+
+			if (i == curSelected)
 			{
-				if (currentSel != id)
-					changeSel(id - currentSel);
-
-				if (FlxG.mouse.justPressed)
-					confirmSel();
+				FlxTween.tween(item.scale, { x: 1.1, y: 1.1 }, 0.15, {
+					ease: FlxEase.quadOut
+				});
 			}
-		}
+			else
+			{
+				FlxTween.tween(item.scale, { x: 0.9, y: 0.9 }, 0.15, {
+					ease: FlxEase.quadOut
+				});
+			}
 
-		if (FlxG.mouse.overlaps(optionsButton))
-		{
-			hoverMode = OPTIONS;
-			changeSel(0, true);
-
-			if (FlxG.mouse.justPressed)
-				confirmSel();
-		}
-		#end
-	}
-
-	function confirmSel()
-	{
-		FlxG.sound.play(Paths.sound('madness/select'));
-
-		var button = hoverMode == OPTIONS
-			? optionsButton
-			: baseButtons.members[currentSel];
-
-		button.animation.play('confirm');
-
-		if (hoverMode == OPTIONS)
-		{
-			MusicBeatState.switchState(new OptionsState());
-			OptionsState.onPlayState = false;
-			return;
-		}
-
-		switch (currentSel)
-		{
-			case 0:
-				MusicBeatState.switchState(new StoryMenuState());
-			case 1:
-				MusicBeatState.switchState(new CreditsState());
+			item.updateHitbox();
+			item.screenCenter(X);
 		}
 	}
 
-	function changeSel(v:Int = 0, forceSound:Bool = false)
+	function selectItem()
 	{
-		if (!forceSound)
-			FlxG.sound.play(Paths.sound('madness/beep'));
+		switch (options[curSelected])
+		{
+			case 'story_mode':
+				FlxG.switchState(new StoryMenuState());
 
-		for (i in baseButtons.members.concat([optionsButton]))
-			i.animation.play('i');
+			case 'freeplay':
+				FlxG.switchState(new FreeplayState());
 
-		currentSel = FlxMath.wrap(
-			currentSel + v,
-			0,
-			baseButtons.length - 1
-		);
+			case 'credits':
+				FlxG.switchState(new CreditsState());
 
-		var obj = hoverMode == OPTIONS
-			? optionsButton
-			: baseButtons.members[currentSel];
-
-		obj.animation.play('select');
-	}
-
-	function makeButton(path:String):FlxSprite
-	{
-		var spr = new FlxSprite();
-		spr.frames = Paths.getSparrowAtlas('madnessmenu/' + path);
-		spr.animation.addByPrefix('i', path + '0');
-		spr.animation.addByPrefix('confirm', path + ' confirm');
-		spr.animation.addByPrefix('select', path + ' select');
-		spr.animation.play('i');
-		spr.setScale(uniScale + 0.2);
-		return spr;
+			case 'options':
+				FlxG.switchState(new OptionsState());
+		}
 	}
 }
