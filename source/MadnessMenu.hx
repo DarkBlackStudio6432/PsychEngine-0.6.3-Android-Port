@@ -1,22 +1,19 @@
 package;
 
 import states.MusicBeatState;
+import states.StoryMenuState;
+import states.CreditsState;
 import backend.ClientPrefs;
-import Paths;
 import options.OptionsState;
+import Paths;
+
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
-import flixel.tweens.FlxTween;
-import flixel.tweens.FlxEase;
 import flixel.addons.display.FlxBackdrop;
-import flixel.addons.display.FlxTiledSprite;
 import openfl.display.BitmapData;
-
-//import StorySubMenu;
-//import MadnessCredits;
 
 #if desktop
 import flixel.input.mouse.FlxMouseEvent;
@@ -44,7 +41,6 @@ class MadnessMenu extends MusicBeatState
 	var optionsButton:FlxSprite;
 	var circles:FlxSpriteGroup;
 	var storyButton:FlxSprite;
-	var storyDropDown:StorySubMenu;
 
 	override function create()
 	{
@@ -72,9 +68,6 @@ class MadnessMenu extends MusicBeatState
 		silh.alpha = 0.3;
 		add(silh);
 
-		storyDropDown = new StorySubMenu();
-		add(storyDropDown);
-
 		baseButtons = new FlxTypedGroup<FlxSprite>();
 		add(baseButtons);
 
@@ -82,14 +75,18 @@ class MadnessMenu extends MusicBeatState
 		storyButton.setPosition(1169 * uniScale, 405 * uniScale);
 		baseButtons.add(storyButton);
 
-		storyDropDown.setPosition(storyButton.x + 40, storyButton.y - 320);
-
 		var freeplayButton = makeButton('freeplay');
-		freeplayButton.setPosition(storyButton.x + storyButton.width + 10, storyButton.y);
+		freeplayButton.setPosition(
+			storyButton.x + storyButton.width + 10,
+			storyButton.y
+		);
 		baseButtons.add(freeplayButton);
 
 		optionsButton = makeButton('options');
-		optionsButton.setPosition(storyButton.x + storyButton.width + 10, 760 * uniScale);
+		optionsButton.setPosition(
+			storyButton.x + storyButton.width + 10,
+			760 * uniScale
+		);
 		add(optionsButton);
 
 		circles = new FlxSpriteGroup();
@@ -112,15 +109,7 @@ class MadnessMenu extends MusicBeatState
 			changeSel(controls.UI_LEFT_P ? -1 : 1);
 
 		if (controls.ACCEPT)
-		{
-			if (storyDropDown.open)
-				storyDropDown.confirm();
-			else
-				confirmSel();
-		}
-
-		if (controls.BACK && storyDropDown.open)
-			closeStoryDropdown();
+			confirmSel();
 
 		#if desktop
 		for (i in baseButtons)
@@ -128,7 +117,7 @@ class MadnessMenu extends MusicBeatState
 			var id = baseButtons.members.indexOf(i);
 			if (FlxG.mouse.overlaps(i))
 			{
-				if (currentSel != id && !storyDropDown.open)
+				if (currentSel != id)
 					changeSel(id - currentSel);
 
 				if (FlxG.mouse.justPressed)
@@ -136,7 +125,7 @@ class MadnessMenu extends MusicBeatState
 			}
 		}
 
-		if (FlxG.mouse.overlaps(optionsButton) && !storyDropDown.open)
+		if (FlxG.mouse.overlaps(optionsButton))
 		{
 			hoverMode = OPTIONS;
 			changeSel(0, true);
@@ -151,53 +140,26 @@ class MadnessMenu extends MusicBeatState
 	{
 		FlxG.sound.play(Paths.sound('madness/select'));
 
-		var button = hoverMode == OPTIONS ? optionsButton : baseButtons.members[currentSel];
+		var button = hoverMode == OPTIONS
+			? optionsButton
+			: baseButtons.members[currentSel];
+
 		button.animation.play('confirm');
 
 		if (hoverMode == OPTIONS)
 		{
 			MusicBeatState.switchState(new OptionsState());
 			OptionsState.onPlayState = false;
+			return;
 		}
-		else
+
+		switch (currentSel)
 		{
-			switch (currentSel)
-			{
-				case 0:
-					openStoryDropdown();
-				case 1:
-					MusicBeatState.switchState(new MadnessCredits());
-			}
+			case 0:
+				MusicBeatState.switchState(new StoryMenuState());
+			case 1:
+				MusicBeatState.switchState(new CreditsState());
 		}
-	}
-
-	function openStoryDropdown()
-	{
-		storyButton.animation.play('confirm');
-		storyDropDown.open = true;
-
-		FlxTween.tween(
-			storyDropDown,
-			{ y: storyButton.y },
-			0.4,
-			{ ease: FlxEase.cubeOut }
-		);
-	}
-
-	function closeStoryDropdown()
-	{
-		storyButton.animation.play('select');
-		FlxTween.tween(
-			storyDropDown,
-			{ y: storyButton.y - 320 },
-			0.4,
-			{
-				ease: FlxEase.cubeOut,
-				onComplete: function(_) {
-					storyDropDown.open = false;
-				}
-			}
-		);
 	}
 
 	function changeSel(v:Int = 0, forceSound:Bool = false)
@@ -208,9 +170,16 @@ class MadnessMenu extends MusicBeatState
 		for (i in baseButtons.members.concat([optionsButton]))
 			i.animation.play('i');
 
-		currentSel = FlxMath.wrap(currentSel + v, 0, baseButtons.length - 1);
+		currentSel = FlxMath.wrap(
+			currentSel + v,
+			0,
+			baseButtons.length - 1
+		);
 
-		var obj = hoverMode == OPTIONS ? optionsButton : baseButtons.members[currentSel];
+		var obj = hoverMode == OPTIONS
+			? optionsButton
+			: baseButtons.members[currentSel];
+
 		obj.animation.play('select');
 	}
 
