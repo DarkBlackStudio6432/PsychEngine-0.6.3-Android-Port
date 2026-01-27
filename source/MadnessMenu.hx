@@ -77,12 +77,18 @@ topBar.antialiasing = true;
 add(topBar);
 
 // BOTTOM BAR
-bottomBar = new FlxSprite();
-bottomBar.loadGraphic(Paths.image('madnessmenu/bottom bar'));
-bottomBar.setGraphicSize(FlxG.width);
-bottomBar.updateHitbox();
-bottomBar.x = 0;
-bottomBar.y = FlxG.height - bottomBar.height;
+//bottomBar = new FlxSprite();
+//bottomBar.loadGraphic(Paths.image('madnessmenu/bottom bar'));
+//bottomBar.setGraphicSize(FlxG.width);
+//bottomBar.updateHitbox();
+//bottomBar.x = 0;
+//bottomBar.y = FlxG.height - bottomBar.height;
+//bottomBar.scrollFactor.set(0, 0);
+//add(bottomBar);
+
+bottomBar = new FlxSprite(Paths.image('madnessmenu/bottom bar'));
+bottomBar.setScale(uniScale);
+bottomBar.y = FlxG.height - bottomBar.height + (100 * uniScale);
 bottomBar.scrollFactor.set(0, 0);
 add(bottomBar);
 
