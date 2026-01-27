@@ -60,7 +60,6 @@ sil.scrollFactor.set();
 add(sil);
 
 sil = new FlxBackdrop(Paths.image('madnessmenu/siloets'));
-sil.updateHitbox();
 sil.y = 300;
 sil.velocity.x = -50;
 sil.alpha = 0.3;
