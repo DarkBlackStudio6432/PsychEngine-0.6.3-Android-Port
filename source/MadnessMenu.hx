@@ -50,7 +50,13 @@ class MadnessMenu extends MusicBeatState
  bg.y += 100;
 	add(bg);
         
+bg.scrollFactor.set();
+add(bg);
+
         uniScale = bg.scale.x;
+
+sil.scrollFactor.set();
+add(sil);
 
 var sil = new FlxBackdrop(
         Paths.image('madnessmenu/siloets'),
