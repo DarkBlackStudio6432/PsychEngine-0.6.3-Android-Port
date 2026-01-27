@@ -86,15 +86,16 @@ bottomBar.y = FlxG.height - bottomBar.height;
 bottomBar.scrollFactor.set(0, 0);
 add(bottomBar);
 
-// LOGO TEMP
-var logo = new FlxSprite();
+// LOGO TEMP (TAMANHO ORIGINAL CORRETO)
+var logo = new FlxSprite(0, 86 * uniScale);
 logo.loadGraphic(Paths.image('madnessmenu/logo temp'));
-logo.setGraphicSize(Std.int(logo.width * uniScale));
+
+// tamanho REAL do MadnessMenu
+logo.setGraphicSize(Std.int(820 * uniScale));
 logo.updateHitbox();
 
-// posição (ajusta fino depois)
-logo.x = 40 * uniScale;
-logo.y = 20 * uniScale;
+// centraliza igual ao original
+logo.screenCenter(FlxAxes.X);
 
 logo.scrollFactor.set(0, 0);
 logo.antialiasing = true;
