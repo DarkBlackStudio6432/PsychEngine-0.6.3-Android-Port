@@ -51,7 +51,7 @@ class MadnessMenu extends MusicBeatState
         back.updateHitbox();
         back.screenCenter(FlxAxes.Y);
         back.y += 100;
-        add(back);
+        add(bg);
 
         uniScale = back.scale.x;
 
