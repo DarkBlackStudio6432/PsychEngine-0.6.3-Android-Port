@@ -46,14 +46,22 @@ class MadnessMenu extends MusicBeatState
 	bg.loadGraphic(Paths.image("madnessmenu/back"));
 	bg.setGraphicSize(FlxG.width, FlxG.height);
 	bg.updateHitbox();
+ bg.screenCenter(FlxAxes.Y);
+ bg.y += 100;
 	add(bg);
-        bg.setGraphicSize(FlxG.width, FlxG.height);
-        bg.updateHitbox();
-        bg.screenCenter(FlxAxes.Y);
-        bg.y += 100;
-        add(bg);
-
+        
         uniScale = bg.scale.x;
+
+var sil = new FlxBackdrop(
+        Paths.image('madnessmenu/siloets'),
+        FlxAxes.X,
+        20
+    );
+    sil.setScale(uniScale);
+    sil.y = 300;
+    sil.velocity.x = -50;
+    sil.alpha = 0.3;
+    add(sil);
 
         // ===============================
         // BOTÕES
