@@ -15,7 +15,6 @@ import flixel.math.FlxMath;
 import flixel.addons.display.FlxBackdrop;
 import flixel.util.FlxAxes;
 
-using flixel.util.FlxAxes;
 
 class MadnessMenu extends MusicBeatState
 {
@@ -66,10 +65,11 @@ uniScale = bg.scale.x;
 //add(sil);
 
 // SILHUETAS
+// CORRETO
 sil = new FlxBackdrop(
     Paths.image('madnessmenu/siloets'),
-    FlxAxes.X,
-    20
+    1,    // scrollX (antes era FlxAxes.X)
+    0     // scrollY
 );
 
 sil.scale.set(uniScale, uniScale);
@@ -81,6 +81,9 @@ sil.alpha = 0.3;
 
 sil.scrollFactor.set(0, 0);
 add(sil);
+
+// espaçamento do repetição horizontal
+sil.spacing.set(20, 0);
 
 // BARRA SUPERIOR
 var topBar = new FlxSprite(0, 0);
