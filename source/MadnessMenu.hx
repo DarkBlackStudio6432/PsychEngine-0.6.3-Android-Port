@@ -65,11 +65,10 @@ uniScale = bg.scale.x;
 //add(sil);
 
 // SILHUETAS
-// CORRETO
 sil = new FlxBackdrop(
     Paths.image('madnessmenu/siloets'),
-    1,    // scrollX (antes era FlxAxes.X)
-    0     // scrollY
+    1,      // scrollX
+    20      // largura do tile/repetição horizontal
 );
 
 sil.scale.set(uniScale, uniScale);
