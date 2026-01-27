@@ -69,6 +69,20 @@ var sil = new FlxBackdrop(
     sil.alpha = 0.3;
     add(sil);
 
+var bottomBar = new FlxSprite(0, 0);
+bottomBar.loadGraphic(Paths.image('madnessmenu/bottombar'));
+
+bottomBar.setGraphicSize(Std.int(FlxG.width * uniScale));
+bottomBar.updateHitbox();
+
+// cola no fundo da tela
+bottomBar.y = FlxG.height - bottomBar.height;
+
+bottomBar.scrollFactor.set();
+bottomBar.antialiasing = true;
+
+add(bottomBar);
+
         // ===============================
         // BOTÕES
         // ===============================
