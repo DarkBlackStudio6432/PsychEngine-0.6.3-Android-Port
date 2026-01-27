@@ -56,11 +56,28 @@ add(bg);
 uniScale = bg.scale.x;
 
 // SILHUETAS
-sil = new FlxBackdrop(Paths.getPreloadPath('images/madnessmenu/siloets.png'));
-sil.scrollFactor.set(0, 0);
+//sil = new FlxBackdrop(Paths.getPreloadPath('images/madnessmenu/siloets.png'));
+//sil.scrollFactor.set(0, 0);
+//sil.y = 300;
+//sil.velocity.x = -50;
+//sil.alpha = 0.3;
+//add(sil);
+
+// SILHUETAS
+sil = new FlxBackdrop(
+    Paths.image('madnessmenu/siloets'),
+    FlxAxes.X,
+    20
+);
+
+sil.scale.set(uniScale, uniScale);
+sil.updateHitbox();
+
 sil.y = 300;
 sil.velocity.x = -50;
 sil.alpha = 0.3;
+
+sil.scrollFactor.set(0, 0);
 add(sil);
 
 // BARRA SUPERIOR
