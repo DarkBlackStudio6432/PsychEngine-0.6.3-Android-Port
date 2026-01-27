@@ -17,6 +17,7 @@ import flixel.util.FlxAxes;
 
 class MadnessMenu extends MusicBeatState
 {
+    var sil:FlxBackdrop;
     var uniScale:Float = 1;
     var currentSel:Int = 0;
 
@@ -58,8 +59,8 @@ add(bg);
 sil.scrollFactor.set();
 add(sil);
 
-var sil = new FlxBackdrop(Paths.image('madnessmenu/siloets'));
-sil.setGraphicSize(FlxG.width, sil.height);
+sil = new FlxBackdrop(Paths.image('madnessmenu/siloets'));
+sil.setGraphicSize(FlxG.width, Std.int(sil.height));
 sil.updateHitbox();
 sil.y = 300;
 sil.velocity.x = -50;
