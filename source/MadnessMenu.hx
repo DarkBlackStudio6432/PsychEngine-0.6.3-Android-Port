@@ -58,16 +58,13 @@ add(bg);
 sil.scrollFactor.set();
 add(sil);
 
-var sil = new FlxBackdrop(
-        Paths.image('madnessmenu/siloets'),
-        FlxAxes.X,
-        20
-    );
-    sil.setScale(uniScale);
-    sil.y = 300;
-    sil.velocity.x = -50;
-    sil.alpha = 0.3;
-    add(sil);
+var sil = new FlxBackdrop(Paths.image('madnessmenu/siloets'));
+sil.setGraphicSize(FlxG.width, sil.height);
+sil.updateHitbox();
+sil.y = 300;
+sil.velocity.x = -50;
+sil.alpha = 0.3;
+add(sil);
 
 var bottomBar = new FlxSprite(0, 0);
 bottomBar.loadGraphic(Paths.image('madnessmenu/bottombar'));
