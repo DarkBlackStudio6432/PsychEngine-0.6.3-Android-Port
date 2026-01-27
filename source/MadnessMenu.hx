@@ -42,12 +42,11 @@ class MadnessMenu extends MusicBeatState
 
         trace("MADNESS MENU ABERTO");
 
-        // ===============================
-        // BACKGROUND
-        // ===============================
-        var back = new FlxSprite().loadGraphic(
-            Paths.image('madnessmenu/back')
-        );
+	var bg = new FlxSprite(0, 0);
+	bg.loadGraphic(Paths.image("madnessmenu/back"));
+	bg.setGraphicSize(FlxG.width, FlxG.height);
+	bg.updateHitbox();
+	add(bg);
         back.setGraphicSize(FlxG.width, FlxG.height);
         back.updateHitbox();
         back.screenCenter(FlxAxes.Y);
