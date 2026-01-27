@@ -64,7 +64,7 @@ add(sil);
 
 // BARRA INFERIOR
 var bottomBar = new FlxSprite(0, 0);
-bottomBar.loadGraphic(Paths.image('madnessmenu/bottombar'));
+bottomBar.loadGraphic(Paths.image('madnessmenu/bottom bar'));
 bottomBar.setGraphicSize(Std.int(FlxG.width * uniScale));
 bottomBar.updateHitbox();
 bottomBar.y = FlxG.height - bottomBar.height;
