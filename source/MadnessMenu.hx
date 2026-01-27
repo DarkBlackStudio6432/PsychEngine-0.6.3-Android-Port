@@ -87,7 +87,7 @@ add(topBar);
 //add(bottomBar);
 
 bottomBar = new FlxSprite(Paths.image('madnessmenu/bottom bar'));
-bottomBar.setScale(uniScale);
+bottomBar.scale.set(uniScale, uniScale);
 bottomBar.y = FlxG.height - bottomBar.height + (100 * uniScale);
 bottomBar.scrollFactor.set(0, 0);
 add(bottomBar);
