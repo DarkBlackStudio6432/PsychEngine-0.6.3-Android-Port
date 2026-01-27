@@ -47,13 +47,13 @@ class MadnessMenu extends MusicBeatState
 	bg.setGraphicSize(FlxG.width, FlxG.height);
 	bg.updateHitbox();
 	add(bg);
-        back.setGraphicSize(FlxG.width, FlxG.height);
-        back.updateHitbox();
-        back.screenCenter(FlxAxes.Y);
-        back.y += 100;
+        bg.setGraphicSize(FlxG.width, FlxG.height);
+        bg.updateHitbox();
+        bg.screenCenter(FlxAxes.Y);
+        bg.y += 100;
         add(bg);
 
-        uniScale = back.scale.x;
+        uniScale = bg.scale.x;
 
         // ===============================
         // BOTÕES
