@@ -8,6 +8,7 @@ import Paths;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.FlxCamera;
 import flixel.group.FlxSpriteGroup;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
@@ -25,24 +26,29 @@ class MadnessMenu extends MusicBeatState
 
     override function create()
     {
-     trace("MADNESS MENU ABERTO");
+        // ===============================
+        // CÂMERA (IGUAL MainMenuState)
+        // ===============================
+        var camGame = new FlxCamera();
+        FlxG.cameras.reset(camGame);
+        FlxG.cameras.setDefaultDrawTarget(camGame, true);
 
-	var bg:FlxSprite = new FlxSprite(0, 0);
-	bg.loadGraphic(Paths.image("madnessmenu/back"));
-	bg.setGraphicSize(FlxG.width, FlxG.height);
-	bg.updateHitbox();
-	bg.scrollFactor.set();
-	add(bg);
-
-        super.create(); // 🔥 TEM QUE SER PRIMEIRO
+        transIn = transOut = null;
 
         persistentUpdate = true;
+        persistentDraw = true;
 
+        super.create();
+
+        trace("MADNESS MENU ABERTO");
+
+        // ===============================
         // BACKGROUND
+        // ===============================
         var back = new FlxSprite().loadGraphic(
             Paths.image('madnessmenu/back')
         );
-        back.setGraphicSize(FlxG.width);
+        back.setGraphicSize(FlxG.width, FlxG.height);
         back.updateHitbox();
         back.screenCenter(FlxAxes.Y);
         back.y += 100;
@@ -50,19 +56,9 @@ class MadnessMenu extends MusicBeatState
 
         uniScale = back.scale.x;
 
-        // SILHUETAS
-        //var silh = new FlxBackdrop(
-           // Paths.image('madnessmenu/siloets'),
-          //  0,
-           // 20
-       // );
-       // silh.scale.set(uniScale, uniScale);
-        //silh.y = 300;
-        //silh.velocity.x = -50;
-        //silh.alpha = 0.3;
-        //add(silh);
-
+        // ===============================
         // BOTÕES
+        // ===============================
         baseButtons = new FlxTypedGroup<FlxSprite>();
         add(baseButtons);
 
