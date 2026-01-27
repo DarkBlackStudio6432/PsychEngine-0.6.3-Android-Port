@@ -75,16 +75,51 @@ topBar.scrollFactor.set(0, 0);
 topBar.antialiasing = true;
 add(topBar);
 
-// BARRA INFERIOR
-var bottomBar = new FlxSprite(0, 0);
+// BOTTOM BAR
+bottomBar = new FlxSprite();
 bottomBar.loadGraphic(Paths.image('madnessmenu/bottom bar'));
-bottomBar.setGraphicSize(Std.int(FlxG.width * uniScale));
+bottomBar.setGraphicSize(FlxG.width);
 bottomBar.updateHitbox();
 bottomBar.x = 0;
 bottomBar.y = FlxG.height - bottomBar.height;
 bottomBar.scrollFactor.set(0, 0);
-bottomBar.antialiasing = true;
 add(bottomBar);
+
+// LOGO TEMP
+var logo = new FlxSprite();
+logo.loadGraphic(Paths.image('madnessmenu/logo temp'));
+logo.setGraphicSize(Std.int(logo.width * uniScale));
+logo.updateHitbox();
+
+// posição (ajusta fino depois)
+logo.x = 40 * uniScale;
+logo.y = 20 * uniScale;
+
+logo.scrollFactor.set(0, 0);
+logo.antialiasing = true;
+add(logo);
+
+// OPTIONS
+var options = new FlxSprite();
+options.frames = Paths.getSparrowAtlas("madnessmenu/options");
+
+// SOMENTE o que existe no XML
+options.animation.addByPrefix("idle", "options idle", 24, true);
+options.animation.addByPrefix("select", "options select", 24, true);
+
+// começa idle
+options.animation.play("idle");
+
+options.setGraphicSize(Std.int(options.width * uniScale));
+options.updateHitbox();
+
+// posição (lado direito, acima do bottom bar)
+options.x = FlxG.width - options.width - (40 * uniScale);
+options.y = bottomBar.y + (bottomBar.height / 2) - (options.height / 2);
+
+options.scrollFactor.set(0, 0);
+options.antialiasing = true;
+add(options);
 
         // ===============================
         // BOTÕES
