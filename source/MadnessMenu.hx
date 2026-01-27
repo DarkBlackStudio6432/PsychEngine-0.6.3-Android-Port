@@ -15,6 +15,8 @@ import flixel.math.FlxMath;
 import flixel.addons.display.FlxBackdrop;
 import flixel.util.FlxAxes;
 
+using flixel.util.FlxAxes;
+
 class MadnessMenu extends MusicBeatState
 {
     var bottomBar:FlxSprite;
