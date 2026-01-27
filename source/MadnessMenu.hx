@@ -70,7 +70,6 @@ bottomBar.updateHitbox();
 bottomBar.y = FlxG.height - bottomBar.height;
 bottomBar.scrollFactor.set(0, 0);
 bottomBar.antialiasing = true;
-bottomBar.cameras = [camHUD];
 add(bottomBar);
 
         // ===============================
