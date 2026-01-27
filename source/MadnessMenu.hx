@@ -56,7 +56,7 @@ add(bg);
 
         uniScale = bg.scale.x;
 
-sil.scrollFactor.set();
+sil.scrollFactor.set(0, 0);
 add(sil);
 
 sil = new FlxBackdrop(Paths.getPreloadPath('images/madnessmenu/siloets.png');
