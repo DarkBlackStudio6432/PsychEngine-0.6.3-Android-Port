@@ -62,11 +62,25 @@ sil.velocity.x = -50;
 sil.alpha = 0.3;
 add(sil);
 
+// BARRA SUPERIOR
+var topBar = new FlxSprite(0, 0);
+topBar.loadGraphic(Paths.image('madnessmenu/top bar'));
+topBar.setGraphicSize(FlxG.width);
+topBar.updateHitbox();
+
+topBar.x = 0;
+topBar.y = 0;
+
+topBar.scrollFactor.set(0, 0);
+topBar.antialiasing = true;
+add(topBar);
+
 // BARRA INFERIOR
 var bottomBar = new FlxSprite(0, 0);
 bottomBar.loadGraphic(Paths.image('madnessmenu/bottom bar'));
 bottomBar.setGraphicSize(Std.int(FlxG.width * uniScale));
 bottomBar.updateHitbox();
+bottomBar.x = 0;
 bottomBar.y = FlxG.height - bottomBar.height;
 bottomBar.scrollFactor.set(0, 0);
 bottomBar.antialiasing = true;
