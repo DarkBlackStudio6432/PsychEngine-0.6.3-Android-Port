@@ -44,39 +44,32 @@ class MadnessMenu extends MusicBeatState
         trace("MADNESS MENU ABERTO");
 
 	var bg = new FlxSprite(0, 0);
-	bg.loadGraphic(Paths.image("madnessmenu/back"));
-	bg.setGraphicSize(FlxG.width, FlxG.height);
-	bg.updateHitbox();
- bg.screenCenter(FlxAxes.Y);
- bg.y += 100;
-	add(bg);
-        
-bg.scrollFactor.set();
+bg.loadGraphic(Paths.image("madnessmenu/back"));
+bg.setGraphicSize(FlxG.width, FlxG.height);
+bg.updateHitbox();
+bg.screenCenter(FlxAxes.Y);
+bg.y += 100;
+bg.scrollFactor.set(0, 0);
 add(bg);
 
-        uniScale = bg.scale.x;
+uniScale = bg.scale.x;
 
+// SILHUETAS
+sil = new FlxBackdrop(Paths.getPreloadPath('images/madnessmenu/siloets.png'));
 sil.scrollFactor.set(0, 0);
-add(sil);
-
-sil = new FlxBackdrop(Paths.getPreloadPath('images/madnessmenu/siloets.png');
 sil.y = 300;
 sil.velocity.x = -50;
 sil.alpha = 0.3;
 add(sil);
 
+// BARRA INFERIOR
 var bottomBar = new FlxSprite(0, 0);
 bottomBar.loadGraphic(Paths.image('madnessmenu/bottombar'));
-
 bottomBar.setGraphicSize(Std.int(FlxG.width * uniScale));
 bottomBar.updateHitbox();
-
-// cola no fundo da tela
 bottomBar.y = FlxG.height - bottomBar.height;
-
-bottomBar.scrollFactor.set();
+bottomBar.scrollFactor.set(0, 0);
 bottomBar.antialiasing = true;
-
 add(bottomBar);
 
         // ===============================
