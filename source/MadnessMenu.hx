@@ -152,49 +152,47 @@ class MadnessMenu extends MusicBeatState
     }
 
     override function update(elapsed:Float)
-    {
-        super.update(elapsed);
+{
+    super.update(elapsed);
 
-#if mobile
-if (FlxG.mouse.justPressed) {
-    for (i in baseButtons.members) {
-        if (i == null) continue;
-
-        // verifica se o ponto do toque está sobre o sprite
+    #if mobile
+    // TOQUE NA TELA
+    if (FlxG.mouse.justPressed()) {
         var touchPoint = new FlxPoint(FlxG.mouse.screenX, FlxG.mouse.screenY);
 
-for (i in baseButtons.members) {
-    if (i == null) continue;
+        for (i in baseButtons.members) {
+            if (i == null) continue;
 
-    if (i.overlapsPoint(touchPoint)) {
-        switch (i.frames.name) {
-            case "storymode":
-                MusicBeatState.switchState(new StoryMenuState());
-                return;
-            case "freeplay":
-                MusicBeatState.switchState(new MadnessCredits());
-                return;
-            case "options":
-                MusicBeatState.switchState(new OptionsState());
-                return;
+            if (i.overlapsPoint(touchPoint)) {
+                switch (i.frames.name) {
+                    case "storymode":
+                        MusicBeatState.switchState(new StoryMenuState());
+                        return;
+                    case "freeplay":
+                        MusicBeatState.switchState(new MadnessCredits());
+                        return;
+                    case "options":
+                        MusicBeatState.switchState(new MadnessCredits());
+                        return;
+                }
+            }
         }
     }
+
+    // VIRTUALPAD
+    if (virtualPad.buttonLeft.justPressed) changeSel(-1);
+    if (virtualPad.buttonRight.justPressed) changeSel(1);
+    if (virtualPad.buttonA.justPressed) confirmSel();
+    if (virtualPad.buttonB.justPressed) goBack();
+    #end
+
+    // CONTROLES DO TECLADO/PC
+    if (controls.UI_LEFT_P || controls.UI_RIGHT_P)
+        changeSel(controls.UI_LEFT_P ? -1 : 1);
+
+    if (controls.ACCEPT)
+        confirmSel();
 }
-
-        #if mobile
-        if (virtualPad.buttonLeft.justPressed) changeSel(-1);
-        if (virtualPad.buttonRight.justPressed) changeSel(1);
-        if (virtualPad.buttonA.justPressed) confirmSel();
-        if (virtualPad.buttonB.justPressed) goBack();
-        #end
-
-        if (controls.UI_LEFT_P || controls.UI_RIGHT_P)
-            changeSel(controls.UI_LEFT_P ? -1 : 1);
-
-        if (controls.ACCEPT)
-            confirmSel();
-
-    }
 
 function goBack()
 {
