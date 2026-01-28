@@ -161,19 +161,25 @@ if (FlxG.mouse.justPressed) {
         if (i == null) continue;
 
         // verifica se o ponto do toque está sobre o sprite
-        if (i.overlapsPoint(FlxG.mouse.screenX, FlxG.mouse.screenY)) {
-            switch (i.frames.name) { // usa o nome do sprite carregado
-                case "storymode":
-                    MusicBeatState.switchState(new StoryMenuState());
-                case "options":
-                    MusicBeatState.switchState(new OptionsState());
-                case "freeplay":
-                    MusicBeatState.switchState(new MadnessCredits());
-            }
+        var touchPoint = new FlxPoint(FlxG.mouse.screenX, FlxG.mouse.screenY);
+
+for (i in baseButtons.members) {
+    if (i == null) continue;
+
+    if (i.overlapsPoint(touchPoint)) {
+        switch (i.frames.name) {
+            case "storymode":
+                MusicBeatState.switchState(new StoryMenuState());
+                return;
+            case "freeplay":
+                MusicBeatState.switchState(new MadnessCredits());
+                return;
+            case "options":
+                MusicBeatState.switchState(new OptionsState());
+                return;
         }
     }
 }
-#end
 
         #if mobile
         if (virtualPad.buttonLeft.justPressed) changeSel(-1);
