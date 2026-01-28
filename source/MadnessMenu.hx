@@ -30,6 +30,7 @@ class MadnessMenu extends MusicBeatState
 
     override function create()
     {
+
         var bg = new FlxSprite(Paths.image('madnessmenu/back'));
         bg.setGraphicSize(FlxG.width);
         bg.updateHitbox();
@@ -100,15 +101,17 @@ class MadnessMenu extends MusicBeatState
 
         // ✅ 3️⃣ CRIAR VIRTUALPAD (IGUAL MAINMENU MOBILE)
         #if mobile
-        virtualPad = new FlxVirtualPad(LEFT_RIGHT, A_B);
-        virtualPad.alpha = 0.75;
-        add(virtualPad);
-        #end
+virtualPad = new FlxVirtualPad(LEFT_RIGHT, A_B);
+virtualPad.alpha = 0.75;
 
-#if mobile
+// 🔍 tamanho correto no mobile
 virtualPad.scale.set(1.6, 1.6);
 virtualPad.updateHitbox();
+
+// 📌 fixa na tela
 virtualPad.scrollFactor.set();
+
+add(virtualPad);
 #end
 
         super.create();
@@ -137,6 +140,8 @@ virtualPad.scrollFactor.set();
     override function update(elapsed:Float)
     {
         super.update(elapsed);
+
+FlxG.camera.scroll.set(0, 0);
 
         var left = controls.UI_LEFT_P;
         var right = controls.UI_RIGHT_P;
