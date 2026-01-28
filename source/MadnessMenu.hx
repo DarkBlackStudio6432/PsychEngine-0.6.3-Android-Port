@@ -82,7 +82,7 @@ sil.scrollFactor.set(0, 0);
 add(sil);
 
 // espaçamento do repetição horizontal
-sil.spacing.set(20, 0);
+//sil.spacing.set(20, 0);
 
 // BARRA SUPERIOR
 var topBar = new FlxSprite(0, 0);
