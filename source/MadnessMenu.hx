@@ -105,6 +105,12 @@ class MadnessMenu extends MusicBeatState
         add(virtualPad);
         #end
 
+#if mobile
+virtualPad.scale.set(1.6, 1.6);
+virtualPad.updateHitbox();
+virtualPad.scrollFactor.set();
+#end
+
         super.create();
         changeSel();
     }
