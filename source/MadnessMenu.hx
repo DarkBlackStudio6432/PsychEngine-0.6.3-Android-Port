@@ -12,9 +12,9 @@ import flixel.FlxCamera;
 import flixel.group.FlxSpriteGroup;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
+import flixel.math.FlxPoint;
 import flixel.addons.display.FlxBackdrop;
 import flixel.ui.FlxVirtualPad;
-import flixel.math.FlxPoint;
 
 class MadnessMenu extends MusicBeatState
 {
@@ -24,6 +24,7 @@ class MadnessMenu extends MusicBeatState
     var currentSel:Int = 0;
 
     var baseButtons:FlxTypedGroup<FlxSprite>;
+    var buttonTypes:Array<String>; // <-- Array para identificar botões
     var circles:FlxSpriteGroup;
     var storyButton:FlxSprite;
 
@@ -97,22 +98,26 @@ class MadnessMenu extends MusicBeatState
         // BOTÕES DO MENU
         // ===============================
         baseButtons = new FlxTypedGroup<FlxSprite>();
+        buttonTypes = []; // inicializa array de tipos
         add(baseButtons);
 
+        // STORY MODE
         storyButton = makeButton('storymode');
-        storyButton.tag = 0;
         storyButton.setPosition(1169 * uniScale, 405 * uniScale);
         baseButtons.add(storyButton);
+        buttonTypes.push("storymode");
 
+        // FREEPLAY
         var freeplayButton = makeButton('freeplay');
-        freeplayButton.tag = 1;
         freeplayButton.setPosition(storyButton.x + storyButton.width + 10, storyButton.y);
         baseButtons.add(freeplayButton);
+        buttonTypes.push("freeplay");
 
+        // OPTIONS
         var optionsButton = makeButton('options');
-        optionsButton.tag = 2;
         optionsButton.setPosition(freeplayButton.x + freeplayButton.width + 10, freeplayButton.y);
         baseButtons.add(optionsButton);
+        buttonTypes.push("options");
 
         circles = new FlxSpriteGroup();
         add(circles);
@@ -153,20 +158,21 @@ class MadnessMenu extends MusicBeatState
         if (FlxG.mouse.justPressed) {
             var touchPoint = new FlxPoint(FlxG.mouse.screenX, FlxG.mouse.screenY);
 
-            for (i in baseButtons.members) {
-                if (i == null) continue;
+            for (i in 0...baseButtons.length) {
+                var button = baseButtons.members[i];
+                if (button == null) continue;
 
-                if (i.overlapsPoint(touchPoint)) {
-                    switch (i.tag) {
-                        case 0:
+                if (button.overlapsPoint(touchPoint)) {
+                    switch (buttonTypes[i]) {
+                        case "storymode":
                             MusicBeatState.switchState(new StoryMenuState());
                             return;
-                        case 1:
+                        case "freeplay":
                             MusicBeatState.switchState(new MadnessCredits());
                             return;
-                        case 2:
+                        case "options":
                             MusicBeatState.switchState(new MadnessCredits());
-                            return; // Options
+                            return;
                     }
                 }
             }
