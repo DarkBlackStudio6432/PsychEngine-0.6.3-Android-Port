@@ -3,8 +3,10 @@ package;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.text.FlxText;
-import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.util.FlxColor;
+import flixel.group.FlxTypedGroup;
 import flixel.math.FlxMath;
+import MusicBeatState;
 
 @:structInit class Credit {
     public var name:String = '';
@@ -48,32 +50,27 @@ class MadnessCredits extends MusicBeatState
 
     var holdTime:Float = 0;
     var scrollLerp:Float = 0;
-
-    var lastTouchY:Float = 0;
+    var _prevAnim:Int = 0;
 
     override function create() {
         persistentUpdate = true;
         super.create();
 
-        FlxG.camera.scroll.set(0,0);
-
-        glow = new FlxSprite('madnessmenu/credits/glows');
+        glow = new FlxSprite(Paths.image('madnessmenu/credits/glows'));
         glow.alpha = 0.7;
-        glow.scrollFactor.set();
         add(glow);
 
         creditText = new FlxTypedGroup<FlxText>();
         add(creditText);
 
-        arrow = new FlxSprite('madnessmenu/credits/arrow');
-        arrow.scrollFactor.set();
+        arrow = new FlxSprite(Paths.image('madnessmenu/credits/arrow'));
         add(arrow);
 
-        for (k in 0...credits.length) {
-            var text = new FlxText(20, 0, 0, credits[k].name.toUpperCase(), 61);
-            text.y = (text.height + 25) * k;
+        for (k=>i in credits)
+        {
+            var text = new FlxText(20, k * 86, Std.int(FlxG.width), i.name.toUpperCase(), 61);
             text.font = Paths.font('impact.ttf');
-            text.color = 0xFF0000; // vermelho
+            text.color = FlxColor.RED;
             creditText.add(text);
         }
 
@@ -102,17 +99,17 @@ class MadnessCredits extends MusicBeatState
         rim.y = spotlight.y + spotlight.height + 10;
         rim.x = spotlight.x + (spotlight.width - rim.width)/2;
 
-        displayedRole = new FlxText(0,0,FlxG.width - 25,'',60);
-        displayedRole.alignment = "right";
+        displayedRole = new FlxText(0, 0, Std.int(FlxG.width) - 25, '', 60);
+        displayedRole.alignment = "right"; // Psych Engine 0.6.3 FlxText usa string
         displayedRole.font = Paths.font('BebasNeue-Regular.ttf');
         displayedRole.scale.y = 1.5;
         displayedRole.updateHitbox();
         displayedRole.scrollFactor.set();
         add(displayedRole);
 
-        displayedQuote = new FlxText(0, Std.int(rim.y + rim.height), 0, '', 40);
+        displayedQuote = new FlxText(0, Std.int(rim.y + rim.height), Std.int(FlxG.width), '', 40);
         displayedQuote.font = Paths.font('impact.ttf');
-        displayedQuote.color = 0xFF0000;
+        displayedQuote.color = FlxColor.RED;
         displayedQuote.scrollFactor.set();
         add(displayedQuote);
 
@@ -122,20 +119,20 @@ class MadnessCredits extends MusicBeatState
     override function update(elapsed:Float) {
         super.update(elapsed);
 
-        // 📌 Scroll por teclado ou mouse
-        if (controls.UI_DOWN_P || controls.UI_UP_P || FlxG.mouse.wheel != 0) {
+        if (controls.UI_DOWN_P || controls.UI_UP_P || FlxG.mouse.wheel != 0)
+        {
             holdTime = 0;
             changeSel(FlxG.mouse.wheel == 0 ? (controls.UI_DOWN_P ? 1 : -1) : -FlxG.mouse.wheel);
         }
 
-        // 📌 Botão back do celular
-        if (controls.BACK) MusicBeatState.switchState(new MadnessMenu());
+        if (controls.BACK)
+            MusicBeatState.switchState(new MadnessMenu());
 
-        // 📌 Abrir link
-        if (controls.ACCEPT || FlxG.mouse.justPressed) CoolUtil.browserLoad(credits[curSel].link);
+        if (controls.ACCEPT || FlxG.mouse.justPressed)
+            CoolUtil.browserLoad(credits[curSel].link);
 
-        // 📌 Scroll por tecla segurada
-        if(controls.UI_DOWN || controls.UI_UP) {
+        if(controls.UI_DOWN || controls.UI_UP)
+        {
             var checkLastHold:Int = Math.floor((holdTime - 0.5) * 10);
             holdTime += elapsed;
             var checkNewHold:Int = Math.floor((holdTime - 0.5) * 10);
@@ -144,69 +141,55 @@ class MadnessCredits extends MusicBeatState
                 changeSel((checkNewHold - checkLastHold) * (controls.UI_UP ? -1 : 1));
         }
 
-        // 📌 Scroll por touch
-        #if mobile
-        if (FlxG.mouse.pressed) {
-            if (lastTouchY != 0) {
-                var diff = lastTouchY - FlxG.mouse.screenY;
-                if (Math.abs(diff) > 5) changeSel(diff > 0 ? 1 : -1);
-            }
-            lastTouchY = FlxG.mouse.screenY;
-        } else lastTouchY = 0;
-        #end
-
         FlxG.camera.scroll.y = FlxMath.lerp(FlxG.camera.scroll.y, scrollLerp, 0.4 * 60 * elapsed);
 
-        for (k in 0...creditText.length) {
-            var i = creditText.members[k];
-            if (i == null) continue;
+        for (k=>i in creditText)
+        {
+            var pos:Int = k == curSel ? 150 : 20;
+            i.x = FlxMath.lerp(i.x, pos, 0.4 * 60 * elapsed);
 
-            var pos = k == curSel ? 150 : 20;
-            i.x = FlxMath.lerp(i.x,pos,0.4 * 60 * elapsed);
-
-            var alpha = Math.abs(FlxMath.remapToRange(Math.abs(k - curSel),4,0,0,1));
-            i.alpha = FlxMath.lerp(i.alpha, alpha,0.4 * 60 * elapsed);
+            var alpha:Float = Math.abs(FlxMath.remapToRange(Math.abs(k - curSel), 4, 0, 0, 1));
+            i.alpha = FlxMath.lerp(i.alpha, alpha, 0.4 * 60 * elapsed);
         }
     }
 
-    function changeSel(s:Int = 0) {
+    function changeSel(s:Int = 0)
+    {
         if (s != 0) FlxG.sound.play(Paths.sound('madness/beep'));
 
-        curSel = FlxMath.wrap(curSel + s,0,credits.length-1);
-
+        curSel = FlxMath.wrap(curSel + s, 0, credits.length - 1);
         var curText = creditText.members[curSel];
 
         displayedQuote.text = '"' + credits[curSel].quote.toUpperCase() + '"';
         displayedRole.text = credits[curSel].role.toUpperCase();
-
-        scrollLerp = (curText.y + (curText.height/2)) - (FlxG.height/2);
-
-        displayedQuote.x = rim.x + (rim.width - displayedQuote.width)/2;
+        scrollLerp = (curText.y + (curText.height / 2)) - (FlxG.height / 2);
+        displayedQuote.x = rim.x + (rim.width - displayedQuote.width) / 2;
 
         arrow.x = curText.x + curText.width + 10;
         arrow.y = curText.y + (curText.height - arrow.height)/2;
 
+        glow.setGraphicSize(Std.int(curText.width + 25), Std.int(curText.height));
         glow.x = curText.x + (curText.width - glow.width)/2;
         glow.y = curText.y + (curText.height - glow.height)/2;
-        glow.setGraphicSize(curText.width + 25, curText.height);
 
-        if (credits[curSel].name == 'infry') {
+        if (credits[curSel].name == 'infry')
+        {
             character.visible = true;
             everyoneButInfry.visible = false;
 
-            character.animation.play('infry',true);
+            character.animation.play(credits[curSel].name, true);
+
             character.x = rim.x + (rim.width - character.width)/2 - 100;
             character.y = rim.y - character.height + rim.height/2 + 35;
-
-        } else {
+        }
+        else
+        {
             character.visible = false;
             everyoneButInfry.visible = true;
 
-            var danceNum = FlxG.random.int(1,4,[_prevAnim]);
-            everyoneButInfry.frame = 0; // fallback visual
+            var danceNum:Int = FlxG.random.int(1, 4, [_prevAnim]);
+            everyoneButInfry.frame = 0; // frame inicial
             _prevAnim = danceNum;
         }
     }
-
-    var _prevAnim:Int = 0;
 }
