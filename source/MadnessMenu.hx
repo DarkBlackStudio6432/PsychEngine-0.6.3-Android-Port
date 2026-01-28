@@ -156,7 +156,7 @@ class MadnessMenu extends MusicBeatState
         super.update(elapsed);
 
 #if mobile
-if (FlxG.mouse.justPressed()) {
+if (FlxG.mouse.justPressed) {
     for (i in baseButtons.members) {
         if (i == null) continue;
 
