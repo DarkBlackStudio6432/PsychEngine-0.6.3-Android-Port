@@ -1,4 +1,4 @@
-package states;
+package;
 
 import objects.Character;
 import openfl.filters.GlowFilter;
