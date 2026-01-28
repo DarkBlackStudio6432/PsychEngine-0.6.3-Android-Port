@@ -171,7 +171,7 @@ class MadnessMenu extends MusicBeatState
                             MusicBeatState.switchState(new MadnessCredits());
                             return;
                         case "options":
-                            MusicBeatState.switchState(new MadnessCredits());
+                            MusicBeatState.switchState(new OptionsState());
                             return;
                     }
                 }
