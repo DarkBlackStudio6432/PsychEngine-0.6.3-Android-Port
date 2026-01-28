@@ -157,27 +157,27 @@ class MadnessMenu extends MusicBeatState
 
     #if mobile
     // TOQUE NA TELA
-    if (FlxG.mouse.justPressed()) {
-        var touchPoint = new FlxPoint(FlxG.mouse.screenX, FlxG.mouse.screenY);
+    if (FlxG.mouse.justPressed) {
+    var touchPoint = new FlxPoint(FlxG.mouse.screenX, FlxG.mouse.screenY);
 
-        for (i in baseButtons.members) {
-            if (i == null) continue;
+    for (i in baseButtons.members) {
+        if (i == null) continue;
 
-            if (i.overlapsPoint(touchPoint)) {
-                switch (i.frames.name) {
-                    case "storymode":
-                        MusicBeatState.switchState(new StoryMenuState());
-                        return;
-                    case "freeplay":
-                        MusicBeatState.switchState(new MadnessCredits());
-                        return;
-                    case "options":
-                        MusicBeatState.switchState(new MadnessCredits());
-                        return;
-                }
+        if (i.overlapsPoint(touchPoint)) {
+            switch (i.frames.name) {
+                case "storymode":
+                    MusicBeatState.switchState(new StoryMenuState());
+                    return;
+                case "freeplay":
+                    MusicBeatState.switchState(new MadnessCredits());
+                    return;
+                case "options":
+                    MusicBeatState.switchState(new MadnessCredits());
+                    return;
             }
         }
     }
+}
 
     // VIRTUALPAD
     if (virtualPad.buttonLeft.justPressed) changeSel(-1);
