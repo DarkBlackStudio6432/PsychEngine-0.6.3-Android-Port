@@ -155,10 +155,31 @@ class MadnessMenu extends MusicBeatState
     {
         super.update(elapsed);
 
+#if mobile
+if (FlxG.mouse.justPressed()) {
+    for (i in baseButtons.members) {
+        if (i == null) continue;
+
+        // verifica se o ponto do toque está sobre o sprite
+        if (i.overlapsPoint(FlxG.mouse.screenX, FlxG.mouse.screenY)) {
+            switch (i.frames.name) { // usa o nome do sprite carregado
+                case "storymode":
+                    MusicBeatState.switchState(new StoryMenuState());
+                case "options":
+                    MusicBeatState.switchState(new OptionsState());
+                case "freeplay":
+                    MusicBeatState.switchState(new MadnessCredits());
+            }
+        }
+    }
+}
+#end
+
         #if mobile
         if (virtualPad.buttonLeft.justPressed) changeSel(-1);
         if (virtualPad.buttonRight.justPressed) changeSel(1);
         if (virtualPad.buttonA.justPressed) confirmSel();
+        if (virtualPad.buttonB.justPressed) goBack();
         #end
 
         if (controls.UI_LEFT_P || controls.UI_RIGHT_P)
@@ -166,7 +187,14 @@ class MadnessMenu extends MusicBeatState
 
         if (controls.ACCEPT)
             confirmSel();
+
     }
+
+function goBack()
+{
+    FlxG.sound.play(Paths.sound('madness/cancel')); // som de cancelar
+    MusicBeatState.switchState(new TitleState()); // volta para a tela de título
+}
 
     function confirmSel()
     {
@@ -180,6 +208,8 @@ class MadnessMenu extends MusicBeatState
                 MusicBeatState.switchState(new StoryMenuState());
             case 1:
                 MusicBeatState.switchState(new CreditsState());
+            case 2:
+            MusicBeatState.switchState(new MadnessCredits());    // Options
         }
     }
 
