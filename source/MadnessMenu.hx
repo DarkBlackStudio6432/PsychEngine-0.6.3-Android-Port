@@ -14,6 +14,7 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
 import flixel.addons.display.FlxBackdrop;
 import flixel.ui.FlxVirtualPad;
+import flixel.math.FlxPoint;
 
 class MadnessMenu extends MusicBeatState
 {
@@ -93,54 +94,25 @@ class MadnessMenu extends MusicBeatState
         add(logo);
 
         // ===============================
-        // OPTIONS
-        // ===============================
-        var options = new FlxSprite();
-        options.frames = Paths.getSparrowAtlas("madnessmenu/options");
-        options.animation.addByPrefix("idle", "options idle", 24, true);
-        options.animation.addByPrefix("select", "options select", 24, true);
-        options.animation.play("idle");
-        options.setGraphicSize(Std.int(options.width * uniScale));
-        options.updateHitbox();
-        options.x = FlxG.width - options.width - (40 * uniScale);
-        options.y = bottomBar.y + (bottomBar.height / 2) - (options.height / 2);
-        options.scrollFactor.set(0, 0);
-        add(options);
-
-        // ===============================
         // BOTÕES DO MENU
         // ===============================
         baseButtons = new FlxTypedGroup<FlxSprite>();
         add(baseButtons);
 
         storyButton = makeButton('storymode');
-        storyButton.ID = "storymode";
+        storyButton.tag = 0;
         storyButton.setPosition(1169 * uniScale, 405 * uniScale);
         baseButtons.add(storyButton);
 
         var freeplayButton = makeButton('freeplay');
-        freeplayButton.ID = "freeplay";
+        freeplayButton.tag = 1;
         freeplayButton.setPosition(storyButton.x + storyButton.width + 10, storyButton.y);
         baseButtons.add(freeplayButton);
 
-// ===============================
-// OPTIONS
-// ===============================
-var options = new FlxSprite();
-options.frames = Paths.getSparrowAtlas("madnessmenu/options");
-options.animation.addByPrefix("idle", "options idle", 24, true);
-options.animation.addByPrefix("select", "options select", 24, true);
-options.animation.play("idle");
-options.setGraphicSize(Std.int(options.width * uniScale));
-options.updateHitbox();
-options.x = FlxG.width - options.width - (40 * uniScale);
-options.y = bottomBar.y + (bottomBar.height / 2) - (options.height / 2);
-options.scrollFactor.set(0, 0);
-
-// Define o ID para identificar no toque
-options.ID = "options";
-
-add(options);
+        var optionsButton = makeButton('options');
+        optionsButton.tag = 2;
+        optionsButton.setPosition(freeplayButton.x + freeplayButton.width + 10, freeplayButton.y);
+        baseButtons.add(optionsButton);
 
         circles = new FlxSpriteGroup();
         add(circles);
@@ -173,53 +145,53 @@ add(options);
     }
 
     override function update(elapsed:Float)
-{
-    super.update(elapsed);
+    {
+        super.update(elapsed);
 
-    #if mobile
-    // TOQUE NA TELA
-    if (FlxG.mouse.justPressed) { // sem parênteses
-    var touchPoint = new FlxPoint(FlxG.mouse.screenX, FlxG.mouse.screenY);
+        #if mobile
+        // TOQUE NA TELA
+        if (FlxG.mouse.justPressed) {
+            var touchPoint = new FlxPoint(FlxG.mouse.screenX, FlxG.mouse.screenY);
 
-    for (i in baseButtons.members) {
-        if (i == null) continue;
+            for (i in baseButtons.members) {
+                if (i == null) continue;
 
-        if (i.overlapsPoint(touchPoint)) {
-            switch (i.frames.name) {
-                case "storymode":
-                    MusicBeatState.switchState(new StoryMenuState());
-                    return;
-                case "freeplay":
-                    MusicBeatState.switchState(new MadnessCredits());
-                    return;
-                case "options":
-                    MusicBeatState.switchState(new MadnessCredits());
-                    return;
+                if (i.overlapsPoint(touchPoint)) {
+                    switch (i.tag) {
+                        case 0:
+                            MusicBeatState.switchState(new StoryMenuState());
+                            return;
+                        case 1:
+                            MusicBeatState.switchState(new MadnessCredits());
+                            return;
+                        case 2:
+                            MusicBeatState.switchState(new MadnessCredits());
+                            return; // Options
+                    }
+                }
             }
         }
+
+        // VIRTUALPAD
+        if (virtualPad.buttonLeft.justPressed) changeSel(-1);
+        if (virtualPad.buttonRight.justPressed) changeSel(1);
+        if (virtualPad.buttonA.justPressed) confirmSel();
+        if (virtualPad.buttonB.justPressed) goBack();
+        #end
+
+        // CONTROLES DO TECLADO/PC
+        if (controls.UI_LEFT_P || controls.UI_RIGHT_P)
+            changeSel(controls.UI_LEFT_P ? -1 : 1);
+
+        if (controls.ACCEPT)
+            confirmSel();
     }
-}
 
-    // VIRTUALPAD
-    if (virtualPad.buttonLeft.justPressed) changeSel(-1);
-    if (virtualPad.buttonRight.justPressed) changeSel(1);
-    if (virtualPad.buttonA.justPressed) confirmSel();
-    if (virtualPad.buttonB.justPressed) goBack();
-    #end
-
-    // CONTROLES DO TECLADO/PC
-    if (controls.UI_LEFT_P || controls.UI_RIGHT_P)
-        changeSel(controls.UI_LEFT_P ? -1 : 1);
-
-    if (controls.ACCEPT)
-        confirmSel();
-}
-
-function goBack()
-{
-    FlxG.sound.play(Paths.sound('madness/cancel')); // som de cancelar
-    MusicBeatState.switchState(new TitleState()); // volta para a tela de título
-}
+    function goBack()
+    {
+        FlxG.sound.play(Paths.sound('madness/cancel')); // som de cancelar
+        MusicBeatState.switchState(new TitleState()); // volta para a tela de título
+    }
 
     function confirmSel()
     {
@@ -231,12 +203,10 @@ function goBack()
         {
             case 0:
                 MusicBeatState.switchState(new StoryMenuState());
-            
             case 1:
                 MusicBeatState.switchState(new CreditsState());
-            
             case 2:
-            MusicBeatState.switchState(new MadnessCredits()); // Options
+                MusicBeatState.switchState(new MadnessCredits()); // Options
         }
     }
 
