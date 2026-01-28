@@ -1,10 +1,12 @@
 package;
 
-import objects.Character;
-import openfl.filters.GlowFilter;
-import flixel.util.FlxGradient;
-import objects.AttachedSprite;
 import flixel.FlxCamera;
+import flixel.FlxSprite;
+import flixel.FlxG;
+import flixel.text.FlxText;
+import flixel.util.FlxColor;
+import flixel.group.FlxTypedGroup;
+import flixel.math.FlxMath;
 
 
 @:structInit class Credit {
@@ -42,11 +44,11 @@ class MadnessCredits extends MusicBeatState
     var displayedRole:FlxText;
 
     var rim:FlxSprite;
-    var arrow:AttachedSprite;
-    var glow:AttachedSprite;
+    var arrow:FlxSprite;
+    var glow:FlxSprite;
 
     //gonna keep infry a sheet cuz it works and i dont feel like reexporting
-    var everyoneButInfry:Character;
+    var everyoneButInfry:FlxSprite;
     var character:FlxSprite;
 
     override function create() {
@@ -54,7 +56,7 @@ class MadnessCredits extends MusicBeatState
         super.create();
 
 
-        glow = new AttachedSprite('madnessmenu/credits/glows');
+        glow = new FlxSprite('madnessmenu/credits/glows');
         glow.copyAlpha = false;
         glow.alpha = 0.7;
         add(glow);        
@@ -62,7 +64,7 @@ class MadnessCredits extends MusicBeatState
         creditText = new FlxTypedGroup();
         add(creditText);
 
-        arrow = new AttachedSprite('madnessmenu/credits/arrow');
+        arrow = new FlxSprite('madnessmenu/credits/arrow');
         add(arrow);
 
         for (k=>i in credits)
@@ -80,9 +82,12 @@ class MadnessCredits extends MusicBeatState
         add(rim);
         rim.scrollFactor.set();
 
-        everyoneButInfry = new Character(650,140,'creditChar');
-        everyoneButInfry.antialiasing = true;
-        add(everyoneButInfry);
+        everyoneButInfry = new FlxSprite(650, 140);
+everyoneButInfry.frames = Paths.getSparrowAtlas('madnessmenu/credits/creditChar');
+everyoneButInfry.animation.addByPrefix('idle', 'idle', 24, true);
+everyoneButInfry.animation.play('idle');
+everyoneButInfry.antialiasing = true;
+add(everyoneButInfry);
 
         everyoneButInfry.scrollFactor.set();
         character = new FlxSprite();
@@ -159,15 +164,19 @@ class MadnessCredits extends MusicBeatState
 
         FlxG.camera.scroll.y = FlxMath.lerp(FlxG.camera.scroll.y,scrollLerp,0.4 * 60 *elapsed);
 
-        for (k=>i in creditText)
-        {
-            final pos = k == curSel ? 150 : 20;
-            i.x = FlxMath.lerp(i.x,pos,0.4 * 60 * elapsed);
+        for (k in 0...creditText.length)
+{
+    var i = creditText.members[k];
+    if (i == null) continue;
 
+    var pos = (k == curSel) ? 150 : 20;
+    i.x = FlxMath.lerp(i.x, pos, 0.4 * 60 * elapsed);
 
-            final alpha = Math.abs(FlxMath.remapToRange(Math.abs(k-curSel),4,0,0,1));
-            i.alpha = FlxMath.lerp(i.alpha, alpha,0.4 * 60 * elapsed);
-        }
+    var alpha = Math.abs(
+        FlxMath.remapToRange(Math.abs(k - curSel), 4, 0, 0, 1)
+    );
+    i.alpha = FlxMath.lerp(i.alpha, alpha, 0.4 * 60 * elapsed);
+}
 
     }
 
@@ -185,17 +194,11 @@ class MadnessCredits extends MusicBeatState
 
         displayedQuote.x = rim.x + (rim.width - displayedQuote.width)/2;
 
-        arrow.sprTracker = curText;
-        arrow.yAdd = (curText.height - arrow.height)/2;
-        arrow.xAdd = curText.width + 10;
-        arrow.update(FlxG.elapsed);
+        arrow.y = curText.y + (curText.height - arrow.height) / 2;
+        arrow.x = curText.x + curText.width + 10;
 
-        glow.sprTracker = curText;
         glow.setGraphicSize(curText.width + 25,curText.height);
         glow.updateHitbox();
-        glow.yAdd = (curText.height - glow.height)/2;
-        glow.xAdd = (curText.width - glow.width)/2;
-        glow.update(FlxG.elapsed);
 
 
 
@@ -213,16 +216,11 @@ class MadnessCredits extends MusicBeatState
             character.y += 35;
 
         }
-        else 
-        {
-            character.visible = false;
-            everyoneButInfry.visible = true;
-
-            final danceNum = FlxG.random.int(1,4,[_prevAnim]);
-            // final prevFrame = everyoneButInfry.atlas.anim.curFrame;
-            everyoneButInfry.playAnim(credits[curSel].name + danceNum,true);
-            _prevAnim = danceNum;
-        }
+        else
+{
+    character.visible = false;
+    everyoneButInfry.visible = true;
+}
 
 
     }
