@@ -1,53 +1,116 @@
 package;
 
+import MusicBeatState;
+import StoryMenuState;
+import CreditsState;
+import ClientPrefs;
+import Paths;
+
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.FlxCamera;
 import flixel.group.FlxSpriteGroup;
-import flixel.addons.display.FlxBackdrop;
-import flixel.util.FlxTimer;
+import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
-import flixel.text.FlxText;
-import flixel.util.FlxColor;
-import flixel.FlxState;
-import flixel.input.mouse.FlxMouseEvent;
-
-// ✅ 1️⃣ IMPORT DO VIRTUALPAD
+import flixel.addons.display.FlxBackdrop;
 import flixel.ui.FlxVirtualPad;
 
 class MadnessMenu extends MusicBeatState
 {
+    var bottomBar:FlxSprite;
+    var sil:FlxBackdrop;
     var uniScale:Float = 1;
-
     var currentSel:Int = 0;
-    var baseButtons:FlxSpriteGroup;
+
+    var baseButtons:FlxTypedGroup<FlxSprite>;
     var circles:FlxSpriteGroup;
-
     var storyButton:FlxSprite;
-    var optionsButton:FlxSprite;
 
-    // ✅ 2️⃣ VARIÁVEL DO VIRTUALPAD
+    // VirtualPad
+    #if mobile
     var virtualPad:FlxVirtualPad;
+    #end
 
     override function create()
     {
+        persistentUpdate = true;
+        persistentDraw = true;
 
-        var bg = new FlxSprite(Paths.image('madnessmenu/back'));
-        bg.setGraphicSize(FlxG.width);
+        super.create();
+
+        // ===============================
+        // BACKGROUND
+        // ===============================
+        var bg = new FlxSprite(0, 0);
+        bg.loadGraphic(Paths.image("madnessmenu/back"));
+        bg.setGraphicSize(FlxG.width, FlxG.height);
         bg.updateHitbox();
-        bg.screenCenter();
-        bg.y += 100;
+        bg.scrollFactor.set(0, 0);
         add(bg);
 
         uniScale = bg.scale.x;
 
-        var sil = new FlxBackdrop(Paths.image('madnessmenu/siloets'));
+        // ===============================
+        // SILHUETAS
+        // ===============================
+        sil = new FlxBackdrop(Paths.image('madnessmenu/siloets'), 1, 20);
         sil.scale.set(uniScale, uniScale);
         sil.y = 300;
         sil.velocity.x = -50;
         sil.alpha = 0.3;
+        sil.scrollFactor.set(0, 0);
         add(sil);
 
-        baseButtons = new FlxSpriteGroup();
+        // ===============================
+        // TOP BAR
+        // ===============================
+        var topBar = new FlxSprite(0, 0);
+        topBar.loadGraphic(Paths.image('madnessmenu/top bar'));
+        topBar.setGraphicSize(FlxG.width);
+        topBar.updateHitbox();
+        topBar.scrollFactor.set(0, 0);
+        add(topBar);
+
+        // ===============================
+        // BOTTOM BAR
+        // ===============================
+        bottomBar = new FlxSprite(Paths.image('madnessmenu/bottom bar'));
+        bottomBar.scale.set(uniScale, uniScale);
+        bottomBar.updateHitbox();
+        bottomBar.y = FlxG.height - bottomBar.height + (100 * uniScale);
+        bottomBar.scrollFactor.set(0, 0);
+        add(bottomBar);
+
+        // ===============================
+        // LOGO
+        // ===============================
+        var logo = new FlxSprite(0, 86 * uniScale);
+        logo.loadGraphic(Paths.image('madnessmenu/logo temp'));
+        logo.setGraphicSize(Std.int(820 * uniScale));
+        logo.updateHitbox();
+        logo.scrollFactor.set(0, 0);
+        logo.screenCenter(X);
+        add(logo);
+
+        // ===============================
+        // OPTIONS
+        // ===============================
+        var options = new FlxSprite();
+        options.frames = Paths.getSparrowAtlas("madnessmenu/options");
+        options.animation.addByPrefix("idle", "options idle", 24, true);
+        options.animation.addByPrefix("select", "options select", 24, true);
+        options.animation.play("idle");
+        options.setGraphicSize(Std.int(options.width * uniScale));
+        options.updateHitbox();
+        options.x = FlxG.width - options.width - (40 * uniScale);
+        options.y = bottomBar.y + (bottomBar.height / 2) - (options.height / 2);
+        options.scrollFactor.set(0, 0);
+        add(options);
+
+        // ===============================
+        // BOTÕES DO MENU
+        // ===============================
+        baseButtons = new FlxTypedGroup<FlxSprite>();
         add(baseButtons);
 
         storyButton = makeButton('storymode');
@@ -55,132 +118,74 @@ class MadnessMenu extends MusicBeatState
         baseButtons.add(storyButton);
 
         var freeplayButton = makeButton('freeplay');
-        freeplayButton.setPosition(
-            storyButton.x + storyButton.width + 10,
-            storyButton.y
-        );
+        freeplayButton.setPosition(storyButton.x + storyButton.width + 10, storyButton.y);
         baseButtons.add(freeplayButton);
-
-        optionsButton = makeButton('options');
-        optionsButton.setPosition(storyButton.x, 760 * uniScale);
-        add(optionsButton);
-
-        var topBar = new FlxSprite(Paths.image('madnessmenu/top bar'));
-        topBar.scale.set(uniScale, uniScale);
-        add(topBar);
-
-        var bottomBar = new FlxSprite(Paths.image('madnessmenu/bottom bar'));
-        bottomBar.scale.set(uniScale, uniScale);
-        bottomBar.y = FlxG.height - bottomBar.height + 100;
-        add(bottomBar);
-
-        var logo = new FlxSprite(0, 86 * uniScale, Paths.image('madnessmenu/logo temp'));
-        logo.setGraphicSize(Std.int(820 * uniScale));
-        logo.updateHitbox();
-        logo.screenCenter(X);
-        add(logo);
-
-        // ✅ TROPHY (Highscore removido)
-        var trophyKey = (FlxG.save.data.beatExpurgation == true) ? 'Trophy2' : 'trophy';
-        var trophy = new FlxSprite(Paths.image('madnessmenu/' + trophyKey));
-        trophy.scale.set(0.4, 0.4);
-        trophy.visible = FlxG.save.data.beatExpurgation == true;
-        trophy.y = FlxG.height - trophy.height;
-        trophy.screenCenter(X);
-        add(trophy);
 
         circles = new FlxSpriteGroup();
         add(circles);
 
-        spawnCircle();
-
-        // ✅ 5️⃣ ESCONDER MOUSE NO MOBILE
-        #if mobile
-        FlxG.mouse.visible = false;
-        #end
-
-        // ✅ 3️⃣ CRIAR VIRTUALPAD (IGUAL MAINMENU MOBILE)
-        #if mobile
-virtualPad = new FlxVirtualPad(LEFT_RIGHT, A_B);
-virtualPad.alpha = 0.75;
-
-// 🔍 tamanho correto no mobile
-virtualPad.scale.set(1.6, 1.6);
-virtualPad.updateHitbox();
-
-// 📌 fixa na tela
-virtualPad.scrollFactor.set();
-
-add(virtualPad);
-#end
-
-        super.create();
         changeSel();
+
+        // ===============================
+        // VIRTUALPAD MOBILE
+        // ===============================
+        #if mobile
+        virtualPad = new FlxVirtualPad(LEFT_RIGHT, A_B);
+        virtualPad.alpha = 0.75;
+        virtualPad.scale.set(uniScale, uniScale); // escala proporcional
+        virtualPad.scrollFactor.set(0, 0);       // fixa na tela
+        add(virtualPad);
+
+        // Ajuste manual dos botões
+        virtualPad.buttonA.x = FlxG.width - 180 * uniScale;
+        virtualPad.buttonA.y = FlxG.height - 150 * uniScale;
+
+        virtualPad.buttonB.x = FlxG.width - 90 * uniScale;
+        virtualPad.buttonB.y = FlxG.height - 150 * uniScale;
+
+        virtualPad.buttonLeft.x = 50 * uniScale;
+        virtualPad.buttonLeft.y = FlxG.height - 150 * uniScale;
+
+        virtualPad.buttonRight.x = 140 * uniScale;
+        virtualPad.buttonRight.y = FlxG.height - 150 * uniScale;
+        #end
     }
 
-    function spawnCircle()
-    {
-        var circle = new FlxSprite(
-            FlxG.random.int(200, 900),
-            FlxG.random.int(100, 500),
-            Paths.image('madnessmenu/circle')
-        );
-        circle.scale.set(uniScale * 0.2, uniScale * 0.2);
-        circle.alpha = 0.15;
-        circles.add(circle);
-
-        // ✅ FlxTween removido
-        new FlxTimer().start(5, function(t)
-        {
-            circle.kill();
-        });
-    }
-
-    // ✅ 4️⃣ UPDATE COM VIRTUALPAD INTEGRADO
     override function update(elapsed:Float)
     {
         super.update(elapsed);
 
-FlxG.camera.scroll.set(0, 0);
-
-        var left = controls.UI_LEFT_P;
-        var right = controls.UI_RIGHT_P;
-        var accept = controls.ACCEPT;
-
         #if mobile
-        if (virtualPad.buttonLeft.justPressed) left = true;
-        if (virtualPad.buttonRight.justPressed) right = true;
-        if (virtualPad.buttonA.justPressed) accept = true;
+        if (virtualPad.buttonLeft.justPressed) changeSel(-1);
+        if (virtualPad.buttonRight.justPressed) changeSel(1);
+        if (virtualPad.buttonA.justPressed) confirmSel();
         #end
 
-        if (left)
-            changeSel(-1);
+        if (controls.UI_LEFT_P || controls.UI_RIGHT_P)
+            changeSel(controls.UI_LEFT_P ? -1 : 1);
 
-        if (right)
-            changeSel(1);
-
-        if (accept)
+        if (controls.ACCEPT)
             confirmSel();
     }
 
     function confirmSel()
     {
         FlxG.sound.play(Paths.sound('madness/select'));
+        var button = baseButtons.members[currentSel];
+        button.animation.play('confirm');
 
-        if (currentSel == 0)
+        switch (currentSel)
         {
-            MusicBeatState.switchState(new StoryMenuState());
-        }
-        else
-        {
-            MusicBeatState.switchState(new MadnessCredits());
+            case 0:
+                MusicBeatState.switchState(new StoryMenuState());
+            case 1:
+                MusicBeatState.switchState(new CreditsState());
         }
     }
 
     function changeSel(v:Int = 0)
     {
         FlxG.sound.play(Paths.sound('madness/beep'));
-
         for (i in baseButtons.members)
             i.animation.play('i');
 
@@ -193,10 +198,10 @@ FlxG.camera.scroll.set(0, 0);
         var spr = new FlxSprite();
         spr.frames = Paths.getSparrowAtlas('madnessmenu/' + path);
         spr.animation.addByPrefix('i', path + '0');
-        spr.animation.addByPrefix('select', path + ' select');
         spr.animation.addByPrefix('confirm', path + ' confirm');
+        spr.animation.addByPrefix('select', path + ' select');
         spr.animation.play('i');
-        spr.scale.set(uniScale + 0.2, uniScale + 0.2);
+        spr.scale.set(uniScale + 0.2, uniScale + 0.2); // escala proporcional
         return spr;
     }
 }
