@@ -4,7 +4,7 @@ import objects.Character;
 import openfl.filters.GlowFilter;
 import flixel.util.FlxGradient;
 import objects.AttachedSprite;
-import backend.PsychCamera;
+import flixel.FlxCamera;
 
 
 @:structInit class Credit {
