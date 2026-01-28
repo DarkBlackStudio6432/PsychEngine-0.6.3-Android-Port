@@ -49,11 +49,14 @@ class MadnessCredits extends MusicBeatState
     var everyoneButInfry:FlxSprite;
     var character:FlxSprite;
 
-    // VirtualPad
-    var virtualPad:FlxVirtualPad;
+    // VirtualPad (documentado, não usado)
+    // var virtualPad:FlxVirtualPad;
 
     var holdTime:Float = 0;
     var scrollLerp:Float = 0;
+
+    // Para touch swipe
+    var lastTouchY:Float = 0;
 
     override function create()
     {
@@ -64,7 +67,7 @@ class MadnessCredits extends MusicBeatState
         FlxG.mouse.visible = false;
         #end
 
-        // 📌 Câmera inicial fixa
+        // Câmera inicial fixa
         FlxG.camera.scroll.set(0, 0);
 
         glow = new FlxSprite('madnessmenu/credits/glows');
@@ -131,15 +134,15 @@ class MadnessCredits extends MusicBeatState
         displayedQuote.scrollFactor.set();
         add(displayedQuote);
 
-        // VirtualPad mobile
-        #if mobile
-        virtualPad = new FlxVirtualPad(UP_DOWN, A_B);
-        virtualPad.alpha = 0.75;
-        virtualPad.scale.set(1.6,1.6);
-        virtualPad.updateHitbox();
-        virtualPad.scrollFactor.set();
-        add(virtualPad);
-        #end
+        // VirtualPad mobile (documentado)
+//      #if mobile
+//      virtualPad = new FlxVirtualPad(UP_DOWN, A_B);
+//      virtualPad.alpha = 0.75;
+//      virtualPad.scale.set(1.6,1.6);
+//      virtualPad.updateHitbox();
+//      virtualPad.scrollFactor.set();
+//      add(virtualPad);
+//      #end
 
         changeSel();
     }
@@ -148,7 +151,6 @@ class MadnessCredits extends MusicBeatState
     {
         super.update(elapsed);
 
-        // 📌 Câmera fixa no mobile
         #if mobile
         FlxG.camera.scroll.set(0, 0);
         #end
@@ -158,11 +160,29 @@ class MadnessCredits extends MusicBeatState
         var accept = controls.ACCEPT;
         var back = controls.BACK;
 
+        // VirtualPad documentado
+//      #if mobile
+//      if (virtualPad.buttonUp.justPressed) up = true;
+//      if (virtualPad.buttonDown.justPressed) down = true;
+//      if (virtualPad.buttonA.justPressed) accept = true;
+//      if (virtualPad.buttonB.justPressed) back = true;
+//      #end
+
+        // Swipe/Touch para scroll
         #if mobile
-        if (virtualPad.buttonUp.justPressed) up = true;
-        if (virtualPad.buttonDown.justPressed) down = true;
-        if (virtualPad.buttonA.justPressed) accept = true;
-        if (virtualPad.buttonB.justPressed) back = true;
+        if (FlxG.mouse.pressed)
+        {
+            if (lastTouchY != 0)
+            {
+                var delta = lastTouchY - FlxG.mouse.screenY;
+                scrollLerp += delta;
+            }
+            lastTouchY = FlxG.mouse.screenY;
+        }
+        else
+        {
+            lastTouchY = 0;
+        }
         #end
 
         if (up || down)
