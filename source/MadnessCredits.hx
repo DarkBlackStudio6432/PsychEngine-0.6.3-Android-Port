@@ -7,7 +7,7 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
-
+import flixel.ui.FlxVirtualPad;
 
 @:structInit class Credit {
     public var name:String = '';
@@ -22,21 +22,21 @@ class MadnessCredits extends MusicBeatState
 
     var creditText:FlxTypedGroup<FlxText>;
     var credits:Array<Credit> = [
-        {name: 'grave',quote: 'this mod is a disease',role: 'director, artist',link: 'https://x.com/konn_artist'},
-        {name: 'vamazotz',quote: 'i fuckingf love hank j wimbleton',role: 'co-director, artist',link: 'https://x.com/vamazotz'},
-        {name: 'jads',quote: 'get a bunch of bikes, and ride em around with your friends',role: 'composer',link: 'https://x.com/Aw3somejds'},
-        {name: 'cval',quote: 'well hello everyone',role: 'charter, composer',link: 'https://x.com/cval_brown'},
-        {name: 'punkett',quote: 'made everything',role: 'composer',link: 'https://x.com/_punkett'},
-        {name: 'marstarbro',quote: "They just threw me in a group chat and 3 hours later, here's a pause theme",role: 'composer',link: 'https://x.com/MarstarMain'},
-        {name: 'river',quote: 'hold the crust',role: 'composer',link: 'https://x.com/rivermusic_'},
-        {name: 'shayreyez',quote: 'i need to plap thick booba mmm futa porn',role: 'artist',link: 'https://x.com/ShayReyZed'},
-        {name: 'yabo',quote: 'i really rwally like gruntfriend',role: 'charter, artist',link: 'https://x.com/yaboigp'},
-        {name: 'data5',quote: 'well',role: 'coder',link: 'https://x.com/_data5'},
-        {name: 'smokey5',quote: 'fuck data fuuuuuuuuuuuuuuuuuuuck help me think of a quote',role: 'coder',link: 'https://x.com/Smokey_5_'},
-        {name: 'jayythunder',quote: 'NOTHING BUT BANGERS, AND I KNOW BANGERS',role: 'chromatic',link: 'https://x.com/ThunderJayy'},
-        {name: 'laeko',quote: 'I love my ladies like I looove burgers! Ahaha i just lov burgre ahahahahahahaha Ok wait where are u guys going',role: 'artist',link: 'https://x.com/LaekoGah'},
-        {name: 'infry',quote: 'my belly is so big and round, also credit to suitman he wanted credit for genuinely nothign',role: 'saved the god damned mod',link: 'https://x.com/Infry20'},
-        {name: 'mr krinkles',quote: 'thank u for making amdness combat',role: 'made madness combat',link: 'https://x.com/MRKrinkels'},
+        {name: 'grave', quote: 'this mod is a disease', role: 'director, artist', link: 'https://x.com/konn_artist'},
+        {name: 'vamazotz', quote: 'i fuckingf love hank j wimbleton', role: 'co-director, artist', link: 'https://x.com/vamazotz'},
+        {name: 'jads', quote: 'get a bunch of bikes, and ride em around with your friends', role: 'composer', link: 'https://x.com/Aw3somejds'},
+        {name: 'cval', quote: 'well hello everyone', role: 'charter, composer', link: 'https://x.com/cval_brown'},
+        {name: 'punkett', quote: 'made everything', role: 'composer', link: 'https://x.com/_punkett'},
+        {name: 'marstarbro', quote: "They just threw me in a group chat and 3 hours later, here's a pause theme", role: 'composer', link: 'https://x.com/MarstarMain'},
+        {name: 'river', quote: 'hold the crust', role: 'composer', link: 'https://x.com/rivermusic_'},
+        {name: 'shayreyez', quote: 'i need to plap thick booba mmm futa porn', role: 'artist', link: 'https://x.com/ShayReyZed'},
+        {name: 'yabo', quote: 'i really rwally like gruntfriend', role: 'charter, artist', link: 'https://x.com/yaboigp'},
+        {name: 'data5', quote: 'well', role: 'coder', link: 'https://x.com/_data5'},
+        {name: 'smokey5', quote: 'fuck data fuuuuuuuuuuuuuuuuuuuck help me think of a quote', role: 'coder', link: 'https://x.com/Smokey_5_'},
+        {name: 'jayythunder', quote: 'NOTHING BUT BANGERS, AND I KNOW BANGERS', role: 'chromatic', link: 'https://x.com/ThunderJayy'},
+        {name: 'laeko', quote: 'I love my ladies like I looove burgers! Ahaha i just lov burgre ahahahahahahaha Ok wait where are u guys going', role: 'artist', link: 'https://x.com/LaekoGah'},
+        {name: 'infry', quote: 'my belly is so big and round, also credit to suitman he wanted credit for genuinely nothign', role: 'saved the god damned mod', link: 'https://x.com/Infry20'},
+        {name: 'mr krinkles', quote: 'thank u for making amdness combat', role: 'made madness combat', link: 'https://x.com/MRKrinkels'},
     ];
 
     var displayedQuote:FlxText;
@@ -49,25 +49,39 @@ class MadnessCredits extends MusicBeatState
     var everyoneButInfry:FlxSprite;
     var character:FlxSprite;
 
-    override function create() {
+    // VirtualPad
+    var virtualPad:FlxVirtualPad;
+
+    var holdTime:Float = 0;
+    var scrollLerp:Float = 0;
+
+    override function create()
+    {
         persistentUpdate = true;
         super.create();
+
+        #if mobile
+        FlxG.mouse.visible = false;
+        #end
+
+        // 📌 Câmera inicial fixa
+        FlxG.camera.scroll.set(0, 0);
 
         glow = new FlxSprite('madnessmenu/credits/glows');
         glow.alpha = 0.7;
         glow.scrollFactor.set();
-        add(glow);        
+        add(glow);
 
-        creditText = new FlxTypedGroup();
+        creditText = new FlxTypedGroup<FlxText>();
         add(creditText);
 
         arrow = new FlxSprite('madnessmenu/credits/arrow');
         arrow.scrollFactor.set();
         add(arrow);
 
-        for (k=>i in credits)
+        for (k => i in credits)
         {
-            var text = new FlxText(20,0,0,i.name.toUpperCase(),61);
+            var text = new FlxText(20, 0, 0, i.name.toUpperCase(), 61);
             text.y = (text.height + 25) * k;
             text.font = Paths.font('impact.ttf');
             text.color = FlxColor.RED;
@@ -75,7 +89,7 @@ class MadnessCredits extends MusicBeatState
         }
 
         rim = new FlxSprite(Paths.image('madnessmenu/credits/grey'));
-        rim.scale.set(1.1,1.1);
+        rim.scale.set(1.1, 1.1);
         rim.updateHitbox();
         rim.scrollFactor.set();
         add(rim);
@@ -94,7 +108,7 @@ class MadnessCredits extends MusicBeatState
         character.scrollFactor.set();
         add(character);
 
-        var spotlight = new FlxSprite(FlxG.width - rim.width - 25,Paths.image('madnessmenu/credits/light'));
+        var spotlight = new FlxSprite(FlxG.width - rim.width - 25, Paths.image('madnessmenu/credits/light'));
         spotlight.scale.copyFrom(rim.scale);
         spotlight.updateHitbox();
         spotlight.scrollFactor.set();
@@ -117,14 +131,48 @@ class MadnessCredits extends MusicBeatState
         displayedQuote.scrollFactor.set();
         add(displayedQuote);
 
+        // VirtualPad mobile
+        #if mobile
+        virtualPad = new FlxVirtualPad(UP_DOWN, A_B);
+        virtualPad.alpha = 0.75;
+        virtualPad.scale.set(1.6,1.6);
+        virtualPad.updateHitbox();
+        virtualPad.scrollFactor.set();
+        add(virtualPad);
+        #end
+
         changeSel();
     }
 
-    var holdTime:Float = 0;
-    var scrollLerp:Float = 0;
-
-    override function update(elapsed:Float) {
+    override function update(elapsed:Float)
+    {
         super.update(elapsed);
+
+        // 📌 Câmera fixa no mobile
+        #if mobile
+        FlxG.camera.scroll.set(0, 0);
+        #end
+
+        var up = controls.UI_UP_P;
+        var down = controls.UI_DOWN_P;
+        var accept = controls.ACCEPT;
+        var back = controls.BACK;
+
+        #if mobile
+        if (virtualPad.buttonUp.justPressed) up = true;
+        if (virtualPad.buttonDown.justPressed) down = true;
+        if (virtualPad.buttonA.justPressed) accept = true;
+        if (virtualPad.buttonB.justPressed) back = true;
+        #end
+
+        if (up || down)
+            changeSel(down ? 1 : -1);
+
+        if (accept)
+            CoolUtil.browserLoad(credits[curSel].link);
+
+        if (back)
+            MusicBeatState.switchState(new MadnessMenu());
 
         FlxG.camera.scroll.y = FlxMath.lerp(
             FlxG.camera.scroll.y,
@@ -156,7 +204,7 @@ class MadnessCredits extends MusicBeatState
         displayedQuote.text = '"' + credits[curSel].quote.toUpperCase() + '"';
         displayedRole.text = credits[curSel].role.toUpperCase();
 
-        scrollLerp = (curText.y + (curText.height / 2)) - (FlxG.height / 2);
+        scrollLerp = (curText.y + curText.height / 2) - (FlxG.height / 2);
 
         arrow.y = curText.y + (curText.height - arrow.height) / 2;
         arrow.x = curText.x + curText.width + 10;
