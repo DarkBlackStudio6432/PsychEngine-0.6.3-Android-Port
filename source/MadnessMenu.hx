@@ -114,12 +114,33 @@ class MadnessMenu extends MusicBeatState
         add(baseButtons);
 
         storyButton = makeButton('storymode');
+        storyButton.ID = "storymode";
         storyButton.setPosition(1169 * uniScale, 405 * uniScale);
         baseButtons.add(storyButton);
 
         var freeplayButton = makeButton('freeplay');
+        freeplayButton.ID = "freeplay";
         freeplayButton.setPosition(storyButton.x + storyButton.width + 10, storyButton.y);
         baseButtons.add(freeplayButton);
+
+// ===============================
+// OPTIONS
+// ===============================
+var options = new FlxSprite();
+options.frames = Paths.getSparrowAtlas("madnessmenu/options");
+options.animation.addByPrefix("idle", "options idle", 24, true);
+options.animation.addByPrefix("select", "options select", 24, true);
+options.animation.play("idle");
+options.setGraphicSize(Std.int(options.width * uniScale));
+options.updateHitbox();
+options.x = FlxG.width - options.width - (40 * uniScale);
+options.y = bottomBar.y + (bottomBar.height / 2) - (options.height / 2);
+options.scrollFactor.set(0, 0);
+
+// Define o ID para identificar no toque
+options.ID = "options";
+
+add(options);
 
         circles = new FlxSpriteGroup();
         add(circles);
@@ -210,13 +231,12 @@ function goBack()
         {
             case 0:
                 MusicBeatState.switchState(new StoryMenuState());
-            break;
+            
             case 1:
                 MusicBeatState.switchState(new CreditsState());
-            break;
+            
             case 2:
-            MusicBeatState.switchState(new MadnessCredits()); 
-            break;   // Options
+            MusicBeatState.switchState(new MadnessCredits()); // Options
         }
     }
 
