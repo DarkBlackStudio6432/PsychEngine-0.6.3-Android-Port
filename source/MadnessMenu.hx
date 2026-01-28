@@ -157,7 +157,7 @@ class MadnessMenu extends MusicBeatState
 
     #if mobile
     // TOQUE NA TELA
-    if (FlxG.mouse.justPressed) {
+    if (FlxG.mouse.justPressed) { // sem parênteses
     var touchPoint = new FlxPoint(FlxG.mouse.screenX, FlxG.mouse.screenY);
 
     for (i in baseButtons.members) {
@@ -210,10 +210,13 @@ function goBack()
         {
             case 0:
                 MusicBeatState.switchState(new StoryMenuState());
+            break;
             case 1:
                 MusicBeatState.switchState(new CreditsState());
+            break;
             case 2:
-            MusicBeatState.switchState(new MadnessCredits());    // Options
+            MusicBeatState.switchState(new MadnessCredits()); 
+            break;   // Options
         }
     }
 
