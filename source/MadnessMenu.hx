@@ -74,7 +74,7 @@ class MadnessMenu extends MusicBeatState
         add(bottomBar);
 
         var logo = new FlxSprite(0, 86 * uniScale, Paths.image('madnessmenu/logo temp'));
-        logo.setGraphicSize(820 * uniScale);
+        logo.setGraphicSize(Std.int(820 * uniScale));
         logo.updateHitbox();
         logo.screenCenter(X);
         add(logo);
@@ -158,7 +158,7 @@ class MadnessMenu extends MusicBeatState
 
         if (currentSel == 0)
         {
-            PlayState.loadSong('assassination');
+            MusicBeatState.switchState(new StoryMenuState());
         }
         else
         {
