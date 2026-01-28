@@ -5,7 +5,7 @@ import flixel.FlxSprite;
 import flixel.FlxG;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
-import flixel.group.FlxTypedGroup;
+import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
 
 
@@ -57,7 +57,6 @@ class MadnessCredits extends MusicBeatState
 
 
         glow = new FlxSprite('madnessmenu/credits/glows');
-        glow.copyAlpha = false;
         glow.alpha = 0.7;
         add(glow);        
 
@@ -197,7 +196,10 @@ add(everyoneButInfry);
         arrow.y = curText.y + (curText.height - arrow.height) / 2;
         arrow.x = curText.x + curText.width + 10;
 
-        glow.setGraphicSize(curText.width + 25,curText.height);
+        glow.setGraphicSize(
+    Std.int(curText.width + 25),
+    Std.int(curText.height)
+);
         glow.updateHitbox();
 
 
