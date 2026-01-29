@@ -123,9 +123,9 @@ class MadnessCredits extends MusicBeatState
         var accept = FlxG.keys.justPressed.ENTER;
 
         #if mobile
-        up = up || mobileControls.UP;
-        down = down || mobileControls.DOWN;
-        accept = accept || mobileControls.ACCEPT;
+        up = up || mobileControls.upPressed;
+        down = down || mobileControls.downPressed;
+        accept = accept || mobileControls.acceptPressed;
         #end
 
         if (up) changeSelection(-1);
@@ -145,9 +145,11 @@ class MadnessCredits extends MusicBeatState
             curSelected = 0;
 
         var i = 0;
-        for (text in creditTexts.members)
+        for (basic in creditTexts.members)
         {
-            if (text == null) continue;
+            if (basic == null) continue;
+
+            var text:FlxText = cast basic;
 
             var targetX = (i == curSelected) ? 150 : 20;
             text.x = FlxMath.lerp(text.x, targetX, 0.4);
