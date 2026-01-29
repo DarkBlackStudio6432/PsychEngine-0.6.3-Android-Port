@@ -7,6 +7,7 @@ import flixel.util.FlxColor;
 import flixel.math.FlxMath;
 import flixel.group.FlxGroup;
 import flixel.ui.FlxVirtualPad;
+import flixel.util.FlxDestroyUtil;
 
 import MusicBeatState;
 import CoolUtil;
@@ -116,10 +117,9 @@ class MadnessCredits extends MusicBeatState
         add(displayedQuote);
 
         #if mobile
-        // Criando o pad com setas e botão B para voltar
-        virtualPad = new FlxVirtualPad(UP_DOWN, B);
+        // CORREÇÃO: Usando a enumeração completa para evitar erro de identificador
+        virtualPad = new FlxVirtualPad(flixel.ui.FlxVirtualPad.FlxDPadMode.UP_DOWN, flixel.ui.FlxVirtualPad.FlxActionMode.A_B);
         virtualPad.alpha = 0.75;
-        // Importante: impede que o pad "suba" junto com a lista de nomes
         virtualPad.scrollFactor.set(); 
         add(virtualPad);
         #end
@@ -137,11 +137,8 @@ class MadnessCredits extends MusicBeatState
         #if mobile
         if (virtualPad != null)
         {
-            if (virtualPad.buttonUp != null)
-                up = up || virtualPad.buttonUp.justPressed;
-
-            if (virtualPad.buttonDown != null)
-                down = down || virtualPad.buttonDown.justPressed;
+            up = up || virtualPad.buttonUp.justPressed;
+            down = down || virtualPad.buttonDown.justPressed;
         }
         #end
 
@@ -151,17 +148,21 @@ class MadnessCredits extends MusicBeatState
             changeSel(FlxG.mouse.wheel != 0 ? -FlxG.mouse.wheel : (down ? 1 : -1));
         }
 
-        // Lógica de voltar atualizada para Mobile
+        // Verifica se clicou em B ou ESC para sair
         if (controls.BACK #if mobile || (virtualPad != null && virtualPad.buttonB.justPressed) #end)
             MusicBeatState.switchState(new MadnessMenu());
 
         #if mobile
-        if (FlxG.mouse.justPressed)
+        // Ação para abrir link no Mobile com botão A ou toque
+        var mobileAccept:Bool = (virtualPad != null && virtualPad.buttonA.justPressed);
+        
+        if (FlxG.mouse.justPressed || mobileAccept)
         {
             var p = FlxG.mouse.getWorldPosition();
             var curText:FlxText = cast creditText.members[curSel];
 
-            if (curText != null && curText.overlapsPoint(p))
+            // Se clicou no botão A ou tocou em cima do nome
+            if (mobileAccept || (curText != null && curText.overlapsPoint(p)))
                 CoolUtil.browserLoad(credits[curSel].link);
         }
         #else
