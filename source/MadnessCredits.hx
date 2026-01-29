@@ -1,9 +1,17 @@
+package;
+
 import flixel.FlxG;
+import flixel.FlxSprite;
 import flixel.text.FlxText;
-import flixel.group.FlxGroup;
-import flixel.math.FlxMath;
 import flixel.util.FlxColor;
-import flixel.input.touch.FlxTouch;
+import flixel.math.FlxMath;
+import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.ui.FlxVirtualPad;
+import backend.MusicBeatState;
+import backend.CoolUtil;
+import objects.Character;
+import objects.AttachedSprite;
+import Paths;
 
 @:structInit class Credit {
     public var name:String = '';
@@ -15,98 +23,163 @@ import flixel.input.touch.FlxTouch;
 class MadnessCredits extends MusicBeatState
 {
     var curSel:Int = 0;
+    var uniScale:Float = 1;
 
-    var creditText:FlxGroup;
+    var creditText:FlxTypedGroup<FlxText>;
     var credits:Array<Credit> = [
-        {name: 'grave', quote: 'this mod is a disease', role: 'director, artist', link: ''},
-        {name: 'vamazotz', quote: 'i love hank j wimbleton', role: 'co-director, artist', link: ''},
-        {name: 'jads', quote: 'get a bunch of bikes, and ride em around with your friends', role: 'composer', link: ''},
-        {name: 'cval', quote: 'well hello everyone', role: 'charter, composer', link: ''},
-        {name: 'punkett', quote: 'made everything', role: 'composer', link: ''},
-        {name: 'marstarbro', quote: "They just threw me in a group chat and 3 hours later, here's a pause theme", role: 'composer', link: ''}
+        {name:'grave',quote:'this mod is a disease',role:'director, artist',link:'https://x.com/konn_artist'},
+        {name:'vamazotz',quote:'i fucking love hank j wimbleton',role:'co-director, artist',link:'https://x.com/vamazotz'},
+        {name:'jads',quote:'get a bunch of bikes, and ride em around with your friends',role:'composer',link:'https://x.com/Aw3somejds'},
+        {name:'cval',quote:'well hello everyone',role:'charter, composer',link:'https://x.com/cval_brown'},
+        {name:'punkett',quote:'made everything',role:'composer',link:'https://x.com/_punkett'},
+        {name:'river',quote:'hold the crust',role:'composer',link:'https://x.com/rivermusic_'},
+        {name:'shayreyez',quote:'artist moment',role:'artist',link:'https://x.com/ShayReyZed'},
+        {name:'data5',quote:'well',role:'coder',link:'https://x.com/_data5'},
+        {name:'infry',quote:'saved the god damned mod',role:'savior',link:'https://x.com/Infry20'},
+        {name:'mr krinkles',quote:'thank u for making madness combat',role:'madness creator',link:'https://x.com/MRKrinkels'},
     ];
 
     var displayedQuote:FlxText;
     var displayedRole:FlxText;
 
-    var scrollLerp:Float = 0;
-    var lastYTouch:Float = 0;
+    var rim:FlxSprite;
+    var arrow:AttachedSprite;
+    var glow:AttachedSprite;
 
-    override function create() {
+    var character:FlxSprite;
+    var everyoneButInfry:Character;
+
+    #if mobile
+    var virtualPad:FlxVirtualPad;
+    #end
+
+    override function create()
+    {
         persistentUpdate = true;
         super.create();
 
-        // Grupo de textos
-        creditText = new FlxGroup();
+        #if mobile
+        uniScale = FlxG.width / 1280;
+        #end
+
+        creditText = new FlxTypedGroup<FlxText>();
         add(creditText);
 
-        // Criar textos
-        for (k => i in credits) {
-            var text:FlxText = new FlxText(20, 0, FlxG.width - 40, i.name.toUpperCase() + " - " + i.role.toUpperCase() + "\n\"" + i.quote.toUpperCase() + "\"");
-            text.size = 20;
-            text.alignment = "center";
-            text.color = FlxColor.RED;
-            creditText.add(text);
+        for (k => c in credits)
+        {
+            var txt = new FlxText(
+                20 * uniScale,
+                0,
+                0,
+                c.name.toUpperCase(),
+                Std.int(60 * uniScale)
+            );
+            txt.font = Paths.font('impact.ttf');
+            txt.color = FlxColor.RED;
+            txt.y = (txt.height + 25 * uniScale) * k;
+            creditText.add(txt);
         }
 
-        // Textos destacados
-        displayedQuote = new FlxText(0, 0, FlxG.width, '', 24);
-        displayedQuote.alignment = "center";
+        rim = new FlxSprite(Paths.image('madnessmenu/credits/grey'));
+        rim.scale.set(1.1 * uniScale, 1.1 * uniScale);
+        rim.updateHitbox();
+        rim.scrollFactor.set();
+        add(rim);
+
+        rim.screenCenter(X);
+        rim.y = 80 * uniScale;
+
+        displayedRole = new FlxText(
+            0,
+            rim.y - 60 * uniScale,
+            FlxG.width - 40 * uniScale,
+            '',
+            Std.int(50 * uniScale)
+        );
+        displayedRole.alignment = RIGHT;
+        displayedRole.font = Paths.font('BebasNeue-Regular.ttf');
+        displayedRole.scrollFactor.set();
+        add(displayedRole);
+
+        displayedQuote = new FlxText(
+            0,
+            rim.y + rim.height + 10 * uniScale,
+            FlxG.width - 40 * uniScale,
+            '',
+            Std.int(36 * uniScale)
+        );
+        displayedQuote.font = Paths.font('impact.ttf');
+        displayedQuote.color = FlxColor.RED;
+        displayedQuote.scrollFactor.set();
         add(displayedQuote);
 
-        displayedRole = new FlxText(0, 0, FlxG.width, '', 18);
-        displayedRole.alignment = "center";
-        add(displayedRole);
+        arrow = new AttachedSprite('madnessmenu/credits/arrow');
+        arrow.scale.set(uniScale, uniScale);
+        arrow.updateHitbox();
+        add(arrow);
+
+        glow = new AttachedSprite('madnessmenu/credits/glows');
+        glow.alpha = 0.7;
+        glow.scale.set(uniScale, uniScale);
+        glow.updateHitbox();
+        add(glow);
+
+        everyoneButInfry = new Character(0, 0, 'creditChar');
+        everyoneButInfry.scrollFactor.set();
+        add(everyoneButInfry);
+
+        character = new FlxSprite();
+        character.frames = Paths.getSparrowAtlas('madnessmenu/credits/infry');
+        character.animation.addByPrefix('infry', 'infry', 24, true);
+        character.scrollFactor.set();
+        add(character);
+
+        #if mobile
+        virtualPad = new FlxVirtualPad(UP_DOWN, A_B);
+        virtualPad.alpha = 0.75;
+        add(virtualPad);
+        #end
 
         changeSel();
     }
 
-    override function update(elapsed:Float) {
-    super.update(elapsed);
+    override function update(elapsed:Float)
+    {
+        super.update(elapsed);
 
-    // Scroll com teclado / setas (desktop)
-    if (controls.UI_DOWN_P) changeSel(1);
-    if (controls.UI_UP_P) changeSel(-1);
+        if (controls.UI_DOWN_P) changeSel(1);
+        if (controls.UI_UP_P) changeSel(-1);
 
-    // Mobile-specific
-    #if mobile
-        // Botão de voltar do celular
-        if (FlxG.keys.justPressed.ESCAPE)
+        if (controls.ACCEPT)
+            CoolUtil.browserLoad(credits[curSel].link);
+
+        if (controls.BACK)
             MusicBeatState.switchState(new MadnessMenu());
 
-        // Scroll touch compatível 0.6.3
-        for (touch in FlxG.touches.list) {
-            if (touch != null) {
-                if (touch.justPressed) lastYTouch = touch.screenY;
-                var deltaY = touch.screenY - lastYTouch;
-                scrollLerp -= deltaY;
-                lastYTouch = touch.screenY;
-                scrollLerp = clamp(scrollLerp, 0, (credits.length - 1) * 100);
-            }
-        }
-    #end
-
-    // Scroll suave
-    for (k => i in creditText.members) {
-        var t:FlxText = cast i;
-        var targetY:Float = (k - curSel) * 100 + (FlxG.height/2 - 50);
-        t.y = FlxMath.lerp(t.y, targetY, 0.2 * 60 * elapsed);
+        #if mobile
+        if (virtualPad.buttonUp.justPressed) changeSel(-1);
+        if (virtualPad.buttonDown.justPressed) changeSel(1);
+        if (virtualPad.buttonA.justPressed)
+            CoolUtil.browserLoad(credits[curSel].link);
+        if (virtualPad.buttonB.justPressed)
+            MusicBeatState.switchState(new MadnessMenu());
+        #end
     }
-}
 
-    function changeSel(s:Int = 0) {
-        curSel = FlxMath.wrap(curSel + s, 0, credits.length - 1);
+    function changeSel(v:Int = 0)
+    {
+        curSel = FlxMath.wrap(curSel + v, 0, credits.length - 1);
 
-        var curText:FlxText = cast creditText.members[curSel];
+        var cur = creditText.members[curSel];
         displayedQuote.text = '"' + credits[curSel].quote.toUpperCase() + '"';
         displayedRole.text = credits[curSel].role.toUpperCase();
 
-        // Posicionar textos destacados
-        displayedQuote.y = curText.y + curText.height + 10;
-        displayedRole.y = displayedQuote.y + displayedQuote.height + 5;
-    }
+        arrow.sprTracker = cur;
+        arrow.xAdd = cur.width + 10 * uniScale;
+        arrow.yAdd = (cur.height - arrow.height) / 2;
 
-    function clamp(value:Float, min:Float, max:Float):Float {
-        return value < min ? min : (value > max ? max : value);
+        glow.sprTracker = cur;
+        glow.xAdd = -10 * uniScale;
+        glow.yAdd = (cur.height - glow.height) / 2;
     }
 }
