@@ -151,8 +151,11 @@ class MadnessCredits extends MusicBeatState
         #if mobile
         if (virtualPad != null)
         {
-            up = up || virtualPad.buttonUp.justPressed;
-            down = down || virtualPad.buttonDown.justPressed;
+            if (virtualPad.buttonUp != null)
+                up = up || virtualPad.buttonUp.justPressed;
+
+            if (virtualPad.buttonDown != null)
+                down = down || virtualPad.buttonDown.justPressed;
         }
         #end
 
@@ -166,23 +169,38 @@ class MadnessCredits extends MusicBeatState
             MusicBeatState.switchState(new MadnessMenu());
 
         #if mobile
-        if (controls.ACCEPT)
-            CoolUtil.browserLoad(credits[curSel].link);
+        if (FlxG.mouse.justPressed)
+        {
+            var p = FlxG.mouse.getWorldPosition();
+            var curText:FlxText = cast creditText.members[curSel];
+
+            if (curText != null && curText.overlapsPoint(p))
+                CoolUtil.browserLoad(credits[curSel].link);
+        }
         #else
         if (controls.ACCEPT || FlxG.mouse.justPressed)
+        {
             CoolUtil.browserLoad(credits[curSel].link);
+        }
         #end
 
-        FlxG.camera.scroll.y = FlxMath.lerp(FlxG.camera.scroll.y, scrollLerp, 0.4 * 60 * elapsed);
+        FlxG.camera.scroll.y = FlxMath.lerp(
+            FlxG.camera.scroll.y,
+            scrollLerp,
+            0.4 * 60 * elapsed
+        );
 
         for (i in 0...creditText.members.length)
         {
             var t:FlxText = cast creditText.members[i];
             var targetX = (i == curSel) ? 150 : 20;
+
             t.x = FlxMath.lerp(t.x, targetX, 0.4 * 60 * elapsed);
-            t.alpha = FlxMath.lerp(t.alpha,
+            t.alpha = FlxMath.lerp(
+                t.alpha,
                 Math.abs(FlxMath.remapToRange(Math.abs(i - curSel), 4, 0, 0, 1)),
-                0.4 * 60 * elapsed);
+                0.4 * 60 * elapsed
+            );
         }
     }
 
