@@ -10,8 +10,8 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
 
-import objects.Character;
-import objects.AttachedSprite;
+import Character;
+import AttachedSprite;
 
 #if mobile
 import mobile.objects.MobileControls;
