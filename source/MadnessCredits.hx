@@ -1,6 +1,8 @@
 import flixel.FlxG;
+import flixel.FlxSprite;
 import flixel.text.FlxText;
 import flixel.group.FlxGroup;
+import flixel.util.FlxColor;
 import flixel.math.FlxMath;
 import flixel.input.touch.FlxTouch;
 
@@ -14,6 +16,7 @@ import flixel.input.touch.FlxTouch;
 class MadnessCredits extends MusicBeatState
 {
     var curSel:Int = 0;
+
     var creditText:FlxGroup;
     var credits:Array<Credit> = [
         {name: 'grave', quote: 'this mod is a disease', role: 'director, artist', link: ''},
@@ -24,6 +27,9 @@ class MadnessCredits extends MusicBeatState
         {name: 'marstarbro', quote: "They just threw me in a group chat and 3 hours later, here's a pause theme", role: 'composer', link: ''}
     ];
 
+    var displayedQuote:FlxText;
+    var displayedRole:FlxText;
+
     var scrollLerp:Float = 0;
     var lastYTouch:Float = 0;
 
@@ -31,16 +37,27 @@ class MadnessCredits extends MusicBeatState
         persistentUpdate = true;
         super.create();
 
+        // Grupo de textos
         creditText = new FlxGroup();
         add(creditText);
 
-        // criar textos
+        // Criar textos
         for (k => i in credits) {
             var text:FlxText = new FlxText(20, 0, FlxG.width - 40, i.name.toUpperCase() + " - " + i.role.toUpperCase() + "\n\"" + i.quote.toUpperCase() + "\"");
             text.size = 20;
             text.alignment = "center";
+            text.color = FlxColor.RED;
             creditText.add(text);
         }
+
+        // Texto destacado (opcional)
+        displayedQuote = new FlxText(0, 0, FlxG.width, '', 24);
+        displayedQuote.alignment = "center";
+        add(displayedQuote);
+
+        displayedRole = new FlxText(0, 0, FlxG.width, '', 18);
+        displayedRole.alignment = "center";
+        add(displayedRole);
 
         changeSel();
     }
@@ -48,24 +65,23 @@ class MadnessCredits extends MusicBeatState
     override function update(elapsed:Float) {
         super.update(elapsed);
 
-        // scroll com teclado / mouse
+        // Scroll com teclado / mouse
         if (controls.UI_DOWN_P) changeSel(1);
         if (controls.UI_UP_P) changeSel(-1);
 
-        // Voltar para o menu principal
         if (controls.BACK) MusicBeatState.switchState(new MadnessMenu());
 
-        // scroll suave
+        // Scroll suave
         for (k => i in creditText.members) {
             var t:FlxText = cast i;
             var targetY:Float = (k - curSel) * 100 + (FlxG.height/2 - 50);
             t.y = FlxMath.lerp(t.y, targetY, 0.2 * 60 * elapsed);
         }
 
-        // scroll touch para mobile
+        // Scroll touch para mobile
         #if mobile
-        for (i in 0...FlxG.touches.getNumActive()) {
-            var touch:FlxTouch = FlxG.touches.getTouch(i);
+        for (i in 0...FlxG.touches._activeTouches.length) {
+            var touch:FlxTouch = FlxG.touches._activeTouches[i];
             if (touch != null) {
                 if (touch.justPressed) lastYTouch = touch.screenY;
                 var deltaY = touch.screenY - lastYTouch;
@@ -79,6 +95,14 @@ class MadnessCredits extends MusicBeatState
 
     function changeSel(s:Int = 0) {
         curSel = FlxMath.wrap(curSel + s, 0, credits.length - 1);
+
+        var curText:FlxText = cast creditText.members[curSel];
+        displayedQuote.text = '"' + credits[curSel].quote.toUpperCase() + '"';
+        displayedRole.text = credits[curSel].role.toUpperCase();
+
+        // Posicionar textos destacados
+        displayedQuote.y = curText.y + curText.height + 10;
+        displayedRole.y = displayedQuote.y + displayedQuote.height + 5;
     }
 
     function clamp(value:Float, min:Float, max:Float):Float {
