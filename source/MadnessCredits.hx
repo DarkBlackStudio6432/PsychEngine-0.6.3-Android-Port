@@ -70,7 +70,7 @@ class MadnessCredits extends MusicBeatState
 
         // credits text
         for (k => i in credits) {
-            var text = new FlxText(20, 0, 0, i.name.toUpperCase(), 61);
+            var text:FlxText = new FlxText(20, 0, 0, i.name.toUpperCase(), 61);
             text.y = (text.height + 25) * k;
             text.font = Paths.font('impact.ttf');
             text.color = FlxColor.RED;
@@ -139,22 +139,22 @@ class MadnessCredits extends MusicBeatState
         }
 
         // smooth camera scroll
-        FlxG.camera.scroll.y = lerp(FlxG.camera.scroll.y, scrollLerp, 0.4 * 60 * elapsed);
+        FlxG.camera.scroll.y = FlxMath.lerp(FlxG.camera.scroll.y, scrollLerp, 0.4 * 60 * elapsed);
 
         // text position/alpha
         for (k => i in creditText.members) {
             var pos = k == curSel ? 150 : 20;
-            var curText:FlxText = cast(i, FlxText);
-            curText.x = lerp(curText.x, pos, 0.4 * 60 * elapsed);
+            (cast i:FlxText).x = FlxMath.lerp((cast i:FlxText).x, pos, 0.4 * 60 * elapsed);
 
-            var alpha = Math.abs(remapToRange(Math.abs(k - curSel), 4, 0, 0, 1));
-            curText.alpha = lerp(curText.alpha, alpha, 0.4 * 60 * elapsed);
+            var alpha = Math.abs(FlxMath.remapToRange(Math.abs(k - curSel), 4, 0, 0, 1));
+            (cast i:FlxText).alpha = FlxMath.lerp((cast i:FlxText).alpha, alpha, 0.4 * 60 * elapsed);
         }
 
         // touch scroll for mobile
         #if mobile
-        if (FlxG.touches._activeTouches.length > 0) {
-            var touch:FlxTouch = FlxG.touches._activeTouches[0];
+        var numTouches = FlxG.touches.getNumActive();
+        if (numTouches > 0) {
+            var touch:FlxTouch = FlxG.touches.getTouch(0);
             if (touch.justPressed) lastYTouch = touch.screenY;
             var deltaY = touch.screenY - lastYTouch;
             scrollLerp -= deltaY;
@@ -169,7 +169,7 @@ class MadnessCredits extends MusicBeatState
 
         curSel = FlxMath.wrap(curSel + s, 0, credits.length - 1);
 
-        var curText:FlxText = cast(creditText.members[curSel], FlxText);
+        var curText:FlxText = cast creditText.members[curSel];
 
         displayedQuote.text = '"' + credits[curSel].quote.toUpperCase() + '"';
         displayedRole.text = credits[curSel].role.toUpperCase();
@@ -196,17 +196,7 @@ class MadnessCredits extends MusicBeatState
         }
     }
 
-    // --- Helpers para 0.6.3 ---
     function clamp(value:Float, min:Float, max:Float):Float {
-        return Math.max(min, Math.min(max, value));
-    }
-
-    function lerp(a:Float, b:Float, t:Float):Float {
-        return a + (b - a) * t;
-    }
-
-    function remapToRange(value:Float, oldMin:Float, oldMax:Float, newMin:Float, newMax:Float):Float {
-        var t = (value - oldMin)/(oldMax - oldMin);
-        return newMin + t * (newMax - newMin);
+        return value < min ? min : (value > max ? max : value);
     }
 }
