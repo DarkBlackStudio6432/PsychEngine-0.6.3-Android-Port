@@ -50,31 +50,27 @@ class MadnessCredits extends MusicBeatState
     var character:Character;
 
     #if mobile
-    var controls:MobileControls;
+    var mobileControls:MobileControls;
     #end
 
     override function create()
     {
         super.create();
 
-        // Fundo
         var bg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
         add(bg);
 
-        // Rim (moldura central)
         rim = new FlxSprite(FlxG.width / 2 - 350, 80);
         rim.makeGraphic(700, 350, FlxColor.TRANSPARENT);
         rim.scrollFactor.set();
         add(rim);
 
-        // Personagem
         character = new Character(0, 0, 'tricky');
         add(character);
 
         character.x = rim.x + (rim.width / 2) - (character.width / 2) - 100;
         character.y = rim.y + rim.height - character.height + 35;
 
-        // Lista de créditos
         creditTexts = new FlxGroup();
         add(creditTexts);
 
@@ -90,7 +86,6 @@ class MadnessCredits extends MusicBeatState
             creditTexts.add(txt);
         }
 
-        // Cargo (topo direito)
         displayedRole = new FlxText(0, 0, FlxG.width - 25, "", 60);
         displayedRole.font = Paths.font("BebasNeue-Regular.ttf");
         displayedRole.alignment = RIGHT;
@@ -101,7 +96,6 @@ class MadnessCredits extends MusicBeatState
 
         displayedRole.y = rim.y - displayedRole.height - 5;
 
-        // Frase (abaixo do rim)
         displayedQuote = new FlxText(0, 0, FlxG.width, "", 40);
         displayedQuote.font = Paths.font("impact.ttf");
         displayedQuote.alignment = CENTER;
@@ -113,8 +107,8 @@ class MadnessCredits extends MusicBeatState
         displayedQuote.y = rim.y + rim.height + 5;
 
         #if mobile
-        controls = new MobileControls();
-        add(controls);
+        mobileControls = new MobileControls();
+        add(mobileControls);
         #end
 
         changeSelection(0);
@@ -129,9 +123,9 @@ class MadnessCredits extends MusicBeatState
         var accept = FlxG.keys.justPressed.ENTER;
 
         #if mobile
-        up = up || controls.UP;
-        down = down || controls.DOWN;
-        accept = accept || controls.ACCEPT;
+        up = up || mobileControls.UP;
+        down = down || mobileControls.DOWN;
+        accept = accept || mobileControls.ACCEPT;
         #end
 
         if (up) changeSelection(-1);
