@@ -7,7 +7,8 @@ import flixel.math.FlxMath;
 import flixel.input.touch.FlxTouch;
 import options.OptionsState;
 
-@:structInit class Credit {
+@:structInit
+class Credit {
     public var name:String = '';
     public var quote:String = '';
     public var role:String = '';
@@ -121,7 +122,7 @@ class MadnessCredits extends MusicBeatState
         // keyboard / mouse scroll
         if (controls.UI_DOWN_P || controls.UI_UP_P || FlxG.mouse.wheel != 0) {
             holdTime = 0;
-            changeSel(FlxG.mouse.wheel == 0 ? controls.UI_DOWN_P ? 1 : -1 : -FlxG.mouse.wheel);
+            changeSel(FlxG.mouse.wheel == 0 ? (controls.UI_DOWN_P ? 1 : -1) : -FlxG.mouse.wheel);
         }
 
         if (controls.BACK) MusicBeatState.switchState(new MadnessMenu());
@@ -143,27 +144,28 @@ class MadnessCredits extends MusicBeatState
 
         // text position/alpha
         for (k => i in creditText.members) {
+            var text:FlxText = cast i;
             var pos = k == curSel ? 150 : 20;
-            (cast i:FlxText).x = FlxMath.lerp((cast i:FlxText).x, pos, 0.4 * 60 * elapsed);
+            text.x = FlxMath.lerp(text.x, pos, 0.4 * 60 * elapsed);
 
             var alpha = Math.abs(FlxMath.remapToRange(Math.abs(k - curSel), 4, 0, 0, 1));
-            (cast i:FlxText).alpha = FlxMath.lerp((cast i:FlxText).alpha, alpha, 0.4 * 60 * elapsed);
+            text.alpha = FlxMath.lerp(text.alpha, alpha, 0.4 * 60 * elapsed);
         }
 
         // touch scroll for mobile
-        // touch scroll for mobile
 #if mobile
-for (i in 0...FlxG.touches._activeTouches.length) {
-    var touch:FlxTouch = FlxG.touches._activeTouches[i];
-    if (touch != null && touch.touchID >= 0) {
-        if (touch.justPressed) lastYTouch = touch.screenY;
-        var deltaY = touch.screenY - lastYTouch;
-        scrollLerp -= deltaY;
-        lastYTouch = touch.screenY;
-        scrollLerp = clamp(scrollLerp, 0, (credits.length - 1) * 100);
-    }
-}
+        for (i in 0...FlxG.touches._touches.length) {
+            var touch:FlxTouch = FlxG.touches._touches[i];
+            if (touch != null && touch.touchID >= 0) {
+                if (touch.justPressed) lastYTouch = touch.screenY;
+                var deltaY = touch.screenY - lastYTouch;
+                scrollLerp -= deltaY;
+                lastYTouch = touch.screenY;
+                scrollLerp = clamp(scrollLerp, 0, (credits.length - 1) * 100);
+            }
+        }
 #end
+    }
 
     function changeSel(s:Int = 0) {
         if (s != 0) FlxG.sound.play(Paths.sound('madness/beep'));
