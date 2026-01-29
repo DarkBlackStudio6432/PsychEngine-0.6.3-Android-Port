@@ -52,7 +52,8 @@ class MadnessCredits extends MusicBeatState
         if (controls.UI_DOWN_P) changeSel(1);
         if (controls.UI_UP_P) changeSel(-1);
 
-        if (controls.BACK) MusicBeatState.switchState(new OptionsState());
+        // Voltar para o menu principal
+        if (controls.BACK) MusicBeatState.switchState(new MadnessMenu());
 
         // scroll suave
         for (k => i in creditText.members) {
