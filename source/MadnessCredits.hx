@@ -7,7 +7,7 @@ import flixel.util.FlxColor;
 import flixel.math.FlxMath;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.ui.FlxVirtualPad;
-import backend.MusicBeatState;
+import MusicBeatState;
 import backend.CoolUtil;
 import objects.Character;
 import objects.AttachedSprite;
