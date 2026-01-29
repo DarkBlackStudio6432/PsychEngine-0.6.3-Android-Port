@@ -1,9 +1,8 @@
 import flixel.FlxG;
-import flixel.FlxSprite;
 import flixel.text.FlxText;
 import flixel.group.FlxGroup;
-import flixel.util.FlxColor;
 import flixel.math.FlxMath;
+import flixel.util.FlxColor;
 import flixel.input.touch.FlxTouch;
 
 @:structInit class Credit {
@@ -21,10 +20,10 @@ class MadnessCredits extends MusicBeatState
     var credits:Array<Credit> = [
         {name: 'grave', quote: 'this mod is a disease', role: 'director, artist', link: ''},
         {name: 'vamazotz', quote: 'i love hank j wimbleton', role: 'co-director, artist', link: ''},
-        {name: 'jads', quote: 'get a bunch of bikes, and ride em', role: 'composer', link: ''},
+        {name: 'jads', quote: 'get a bunch of bikes, and ride em around with your friends', role: 'composer', link: ''},
         {name: 'cval', quote: 'well hello everyone', role: 'charter, composer', link: ''},
         {name: 'punkett', quote: 'made everything', role: 'composer', link: ''},
-        {name: 'marstarbro', quote: "They just threw me in a group chat", role: 'composer', link: ''}
+        {name: 'marstarbro', quote: "They just threw me in a group chat and 3 hours later, here's a pause theme", role: 'composer', link: ''}
     ];
 
     var displayedQuote:FlxText;
@@ -65,23 +64,22 @@ class MadnessCredits extends MusicBeatState
     override function update(elapsed:Float) {
         super.update(elapsed);
 
-        // Scroll com teclado / mouse
+        // Scroll com teclado / setas (desktop)
         if (controls.UI_DOWN_P) changeSel(1);
         if (controls.UI_UP_P) changeSel(-1);
 
-        // Voltar para menu principal
-        if (controls.BACK) {
-            MusicBeatState.switchState(new MadnessMenu());
-        }
+        // BACK: volta pro menu
+        if (FlxG.keys.justPressed.BACK) {
+    MusicBeatState.switchState(new MadnessMenu());
 
-        // Scroll suave dos textos
+        // Scroll suave
         for (k => i in creditText.members) {
             var t:FlxText = cast i;
             var targetY:Float = (k - curSel) * 100 + (FlxG.height/2 - 50);
             t.y = FlxMath.lerp(t.y, targetY, 0.2 * 60 * elapsed);
         }
 
-        // Scroll touch para mobile (0.6.3 compatível)
+        // Scroll touch compatível 0.6.3
         #if mobile
         for (touch in FlxG.touches.list) {
             if (touch != null) {
