@@ -3,7 +3,6 @@ import flixel.text.FlxText;
 import flixel.group.FlxGroup;
 import flixel.math.FlxMath;
 import flixel.input.touch.FlxTouch;
-import options.OptionsState;
 
 @:structInit class Credit {
     public var name:String = '';
