@@ -70,8 +70,8 @@ class MadnessCredits extends MusicBeatState
 
         // credits text
         for (k => i in credits) {
-            var text:FlxText = new FlxText(20, 0, 0, i.name.toUpperCase(), 61);
-            text.y = (text.height + 25) * k;
+            var text:FlxText = new FlxText(20, 0, FlxG.width, i.name.toUpperCase(), 61);
+            text.y = Std.int((text.height + 25) * k);
             text.font = Paths.font('impact.ttf');
             text.color = FlxColor.RED;
             creditText.add(text);
@@ -105,7 +105,7 @@ class MadnessCredits extends MusicBeatState
         displayedRole.font = Paths.font('BebasNeue-Regular.ttf');
         add(displayedRole);
 
-        displayedQuote = new FlxText(0, 0, 0, '', 40);
+        displayedQuote = new FlxText(0, 0, FlxG.width, '', 40);
         displayedQuote.font = Paths.font('impact.ttf');
         displayedQuote.scrollFactor.set();
         add(displayedQuote);
@@ -121,7 +121,7 @@ class MadnessCredits extends MusicBeatState
         // keyboard / mouse scroll
         if (controls.UI_DOWN_P || controls.UI_UP_P || FlxG.mouse.wheel != 0) {
             holdTime = 0;
-            changeSel(FlxG.mouse.wheel == 0 ? controls.UI_DOWN_P ? 1 : -1 : -FlxG.mouse.wheel);
+            changeSel(FlxG.mouse.wheel == 0 ? (controls.UI_DOWN_P ? 1 : -1) : -FlxG.mouse.wheel);
         }
 
         if (controls.BACK) MusicBeatState.switchState(new MadnessMenu());
@@ -143,15 +143,15 @@ class MadnessCredits extends MusicBeatState
 
         // text position/alpha
         for (k => i in creditText.members) {
+            var text:FlxText = cast i;
             var pos = k == curSel ? 150 : 20;
-            (cast i:FlxText).x = FlxMath.lerp((cast i:FlxText).x, pos, 0.4 * 60 * elapsed);
-
+            text.x = FlxMath.lerp(text.x, pos, 0.4 * 60 * elapsed);
             var alpha = Math.abs(FlxMath.remapToRange(Math.abs(k - curSel), 4, 0, 0, 1));
-            (cast i:FlxText).alpha = FlxMath.lerp((cast i:FlxText).alpha, alpha, 0.4 * 60 * elapsed);
+            text.alpha = FlxMath.lerp(text.alpha, alpha, 0.4 * 60 * elapsed);
         }
 
         // touch scroll for mobile
-        #if mobile
+#if mobile
         for (i in 0...FlxG.touches.getNumActive()) {
             var touch:FlxTouch = FlxG.touches.getTouch(i);
             if (touch != null) {
@@ -159,10 +159,10 @@ class MadnessCredits extends MusicBeatState
                 var deltaY = touch.screenY - lastYTouch;
                 scrollLerp -= deltaY;
                 lastYTouch = touch.screenY;
-                scrollLerp = clamp(scrollLerp, 0, (credits.length - 1) * 100);
+                scrollLerp = clamp(scrollLerp, 0, Std.int((credits.length - 1) * 100));
             }
         }
-        #end
+#end
     }
 
     function changeSel(s:Int = 0) {
