@@ -2,9 +2,6 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.text.FlxText;
 import flixel.group.FlxGroup;
-import flixel.math.FlxMath;
-import flixel.input.touch.FlxTouch;
-import flixel.input.touch.FlxTouchManager;
 
 @:structInit class Credit {
     public var name:String = '';
@@ -69,7 +66,7 @@ class MadnessCredits extends MusicBeatState
         add(arrow);
 
         for (k => i in credits) {
-            var text = new FlxText(20, (i.height + 25) * k, 0, i.name.toUpperCase(), 61);
+            var text = new FlxText(20, k * 100, 0, i.name.toUpperCase(), 61);
             text.font = Paths.font('impact.ttf');
             text.color = FlxColor.RED;
             creditText.add(text);
@@ -120,10 +117,10 @@ class MadnessCredits extends MusicBeatState
     override function update(elapsed:Float) {
         super.update(elapsed);
 
-        // Touch scroll
+        // Mobile touch scroll
         #if mobile
-        if(FlxG.touches.getNumActive() > 0) {
-            var touch:FlxTouch = FlxG.touches.getTouch(0);
+        if(FlxG.touches.activeTouches.length > 0) {
+            var touch = FlxG.touches.activeTouches[0];
             if(touch.justPressed) lastYTouch = touch.y;
             var deltaY = touch.y - lastYTouch;
             scrollLerp -= deltaY;
@@ -143,16 +140,16 @@ class MadnessCredits extends MusicBeatState
         for (k => i in creditText.members) {
             if(i == null) continue;
             var posX = (k == curSel) ? 150 : 20;
-            i.x = FlxMath.lerp(i.x, posX, 0.4*60*elapsed);
+            (cast i:FlxText).x = FlxMath.lerp((cast i:FlxText).x, posX, 0.4*60*elapsed);
             var alpha = Math.abs(remap(Math.abs(k-curSel),4,0,0,1));
-            i.alpha = FlxMath.lerp(i.alpha, alpha, 0.4*60*elapsed);
+            (cast i:FlxText).alpha = FlxMath.lerp((cast i:FlxText).alpha, alpha, 0.4*60*elapsed);
         }
     }
 
     function changeSel(s:Int = 0) {
         curSel = FlxMath.wrap(curSel + s,0,credits.length-1);
 
-        var curText:FlxText = creditText.members[curSel];
+        var curText:FlxText = cast creditText.members[curSel];
 
         displayedQuote.text = '"' + credits[curSel].quote.toUpperCase() + '"';
         displayedRole.text = credits[curSel].role.toUpperCase();
