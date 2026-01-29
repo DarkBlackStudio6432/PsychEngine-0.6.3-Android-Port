@@ -8,7 +8,7 @@ import flixel.math.FlxMath;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.ui.FlxVirtualPad;
 import MusicBeatState;
-import backend.CoolUtil;
+import CoolUtil;
 import objects.Character;
 import objects.AttachedSprite;
 import Paths;
