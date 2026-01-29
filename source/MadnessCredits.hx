@@ -62,25 +62,19 @@ class MadnessCredits extends MusicBeatState
     }
 
     override function update(elapsed:Float) {
-        super.update(elapsed);
+    super.update(elapsed);
 
-        // Scroll com teclado / setas (desktop)
-        if (controls.UI_DOWN_P) changeSel(1);
-        if (controls.UI_UP_P) changeSel(-1);
+    // Scroll com teclado / setas (desktop)
+    if (controls.UI_DOWN_P) changeSel(1);
+    if (controls.UI_UP_P) changeSel(-1);
 
-        // BACK: volta pro menu
-        if (FlxG.keys.justPressed.BACK) {
-    MusicBeatState.switchState(new MadnessMenu());
-}
-        // Scroll suave
-        for (k => i in creditText.members) {
-            var t:FlxText = cast i;
-            var targetY:Float = (k - curSel) * 100 + (FlxG.height/2 - 50);
-            t.y = FlxMath.lerp(t.y, targetY, 0.2 * 60 * elapsed);
-        }
+    // Mobile-specific
+    #if mobile
+        // Botão de voltar do celular
+        if (FlxG.keys.justPressed.ESCAPE)
+            MusicBeatState.switchState(new MadnessMenu());
 
         // Scroll touch compatível 0.6.3
-        #if mobile
         for (touch in FlxG.touches.list) {
             if (touch != null) {
                 if (touch.justPressed) lastYTouch = touch.screenY;
@@ -90,8 +84,15 @@ class MadnessCredits extends MusicBeatState
                 scrollLerp = clamp(scrollLerp, 0, (credits.length - 1) * 100);
             }
         }
-        #end
+    #end
+
+    // Scroll suave
+    for (k => i in creditText.members) {
+        var t:FlxText = cast i;
+        var targetY:Float = (k - curSel) * 100 + (FlxG.height/2 - 50);
+        t.y = FlxMath.lerp(t.y, targetY, 0.2 * 60 * elapsed);
     }
+}
 
     function changeSel(s:Int = 0) {
         curSel = FlxMath.wrap(curSel + s, 0, credits.length - 1);
