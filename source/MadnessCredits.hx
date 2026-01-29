@@ -1,7 +1,10 @@
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.text.FlxText;
-import flixel.group.FlxGroup;
+import flixel.group.FlxTypedGroup;
+import flixel.util.FlxColor;
+import flixel.math.FlxMath;
+import flixel.input.touch.FlxTouch;
 
 @:structInit class Credit {
     public var name:String = '';
@@ -14,10 +17,10 @@ class MadnessCredits extends MusicBeatState
 {
     var curSel:Int = 0;
 
-    var creditText:FlxGroup;
+    var creditText:FlxTypedGroup<FlxText>;
     var credits:Array<Credit> = [
         {name: 'grave', quote: 'this mod is a disease', role: 'director, artist', link: 'https://x.com/konn_artist'},
-        {name: 'vamazotz', quote: 'i fuckingf love hank j wimbleton', role: 'co-director, artist', link: 'https://x.com/vamazotz'},
+        {name: 'vamazotz', quote: 'i fucking love hank j wimbleton', role: 'co-director, artist', link: 'https://x.com/vamazotz'},
         {name: 'jads', quote: 'get a bunch of bikes, and ride em around with your friends', role: 'composer', link: 'https://x.com/Aw3somejds'},
         {name: 'cval', quote: 'well hello everyone', role: 'charter, composer', link: 'https://x.com/cval_brown'},
         {name: 'punkett', quote: 'made everything', role: 'composer', link: 'https://x.com/_punkett'},
@@ -30,7 +33,7 @@ class MadnessCredits extends MusicBeatState
         {name: 'jayythunder', quote: 'NOTHING BUT BANGERS, AND I KNOW BANGERS', role: 'chromatic', link: 'https://x.com/ThunderJayy'},
         {name: 'laeko', quote: 'I love my ladies like I looove burgers! Ahaha i just lov burgre ahahahahahahaha Ok wait where are u guys going', role: 'artist', link: 'https://x.com/LaekoGah'},
         {name: 'infry', quote: 'my belly is so big and round, also credit to suitman he wanted credit for genuinely nothign', role: 'saved the god damned mod', link: 'https://x.com/Infry20'},
-        {name: 'mr krinkles', quote: 'thank u for making amdness combat', role: 'made madness combat', link: 'https://x.com/MRKrinkels'},
+        {name: 'mr krinkles', quote: 'thank u for making amdness combat', role: 'made madness combat', link: 'https://x.com/MRKrinkels'}
     ];
 
     var displayedQuote:FlxText;
@@ -43,73 +46,70 @@ class MadnessCredits extends MusicBeatState
     var everyoneButInfry:FlxSprite;
     var character:FlxSprite;
 
-    var holdTime:Float = 0;
     var scrollLerp:Float = 0;
+    var holdTime:Float = 0;
     var lastYTouch:Float = 0;
 
     override function create() {
         persistentUpdate = true;
         super.create();
 
-        FlxG.camera.scroll.set(0,0);
-
-        glow = new FlxSprite('madnessmenu/credits/glows');
+        // glow
+        glow = new FlxSprite(Paths.image('madnessmenu/credits/glows'));
         glow.alpha = 0.7;
-        glow.scrollFactor.set();
         add(glow);
 
-        creditText = new FlxGroup();
+        // creditText group
+        creditText = new FlxTypedGroup<FlxText>();
         add(creditText);
 
-        arrow = new FlxSprite('madnessmenu/credits/arrow');
-        arrow.scrollFactor.set();
+        // arrow
+        arrow = new FlxSprite(Paths.image('madnessmenu/credits/arrow'));
         add(arrow);
 
+        // credits text
         for (k => i in credits) {
-            var text = new FlxText(20, k * 100, 0, i.name.toUpperCase(), 61);
+            var text = new FlxText(20, 0, 0, i.name.toUpperCase(), 61);
+            text.y = (text.height + 25) * k;
             text.font = Paths.font('impact.ttf');
             text.color = FlxColor.RED;
             creditText.add(text);
         }
 
+        // rim
         rim = new FlxSprite(Paths.image('madnessmenu/credits/grey'));
-        rim.scale.set(1.1,1.1);
+        rim.scale.set(1.1, 1.1);
         rim.updateHitbox();
-        rim.scrollFactor.set();
         add(rim);
 
+        // characters
         everyoneButInfry = new FlxSprite(Paths.image('madnessmenu/credits/creditChar'));
-        everyoneButInfry.antialiasing = true;
-        everyoneButInfry.scrollFactor.set();
         add(everyoneButInfry);
 
         character = new FlxSprite(Paths.image('madnessmenu/credits/infry'));
-        character.animation.addByPrefix('infry','infry',24,false);
-        character.scrollFactor.set();
         add(character);
 
+        // spotlight
         var spotlight = new FlxSprite(FlxG.width - rim.width - 25, Paths.image('madnessmenu/credits/light'));
         spotlight.scale.copyFrom(rim.scale);
         spotlight.updateHitbox();
-        spotlight.scrollFactor.set();
         add(spotlight);
 
         rim.y = spotlight.y + spotlight.height + 10;
-        rim.x = spotlight.x + Std.int((spotlight.width - rim.width)/2);
+        rim.x = spotlight.x + (spotlight.width - rim.width)/2;
 
-        displayedRole = new FlxText(0,0,Std.int(FlxG.width - 25),'',60);
+        // displayed texts
+        displayedRole = new FlxText(0, 0, FlxG.width - 25, '', 60);
         displayedRole.alignment = "right";
         displayedRole.font = Paths.font('BebasNeue-Regular.ttf');
-        displayedRole.scale.y = 1.5;
-        displayedRole.scrollFactor.set();
         add(displayedRole);
 
-        displayedQuote = new FlxText(0,0,0,'',40);
+        displayedQuote = new FlxText(0, 0, 0, '', 40);
         displayedQuote.font = Paths.font('impact.ttf');
-        displayedQuote.color = FlxColor.RED;
         displayedQuote.scrollFactor.set();
-        displayedQuote.y = rim.y + rim.height;
         add(displayedQuote);
+        displayedQuote.y = rim.y + rim.height;
+        displayedQuote.color = FlxColor.RED;
 
         changeSel();
     }
@@ -117,69 +117,80 @@ class MadnessCredits extends MusicBeatState
     override function update(elapsed:Float) {
         super.update(elapsed);
 
-        // Mobile touch scroll
-        #if mobile
-        if(FlxG.touches.activeTouches.length > 0) {
-            var touch = FlxG.touches.activeTouches[0];
-            if(touch.justPressed) lastYTouch = touch.y;
-            var deltaY = touch.y - lastYTouch;
-            scrollLerp -= deltaY;
-            lastYTouch = touch.y;
-            scrollLerp = clamp(scrollLerp, 0, (credits.length -1) * 100);
+        // keyboard / mouse scroll
+        if (controls.UI_DOWN_P || controls.UI_UP_P || FlxG.mouse.wheel != 0) {
+            holdTime = 0;
+            changeSel(FlxG.mouse.wheel == 0 ? controls.UI_DOWN_P ? 1 : -1 : -FlxG.mouse.wheel);
         }
-        #end
 
-        // Keyboard / Mouse
-        if (FlxG.keys.pressed.UP || FlxG.keys.pressed.W) changeSel(-1);
-        if (FlxG.keys.pressed.DOWN || FlxG.keys.pressed.S) changeSel(1);
-        if (FlxG.mouse.wheel != 0) changeSel(-FlxG.mouse.wheel);
-        if (FlxG.keys.justPressed.ESCAPE) MusicBeatState.switchState(new MadnessMenu());
+        if (controls.BACK) MusicBeatState.switchState(new MadnessMenu());
 
+        if (controls.ACCEPT || FlxG.mouse.justPressed) {
+            CoolUtil.browserLoad(credits[curSel].link);
+        }
+
+        if (controls.UI_DOWN || controls.UI_UP) {
+            var checkLastHold:Int = Math.floor((holdTime - 0.5) * 10);
+            holdTime += elapsed;
+            var checkNewHold:Int = Math.floor((holdTime - 0.5) * 10);
+            if (holdTime > 0.5 && checkNewHold - checkLastHold > 0)
+                changeSel((checkNewHold - checkLastHold) * (controls.UI_UP ? -1 : 1));
+        }
+
+        // smooth camera scroll
         FlxG.camera.scroll.y = FlxMath.lerp(FlxG.camera.scroll.y, scrollLerp, 0.4 * 60 * elapsed);
 
+        // text position/alpha
         for (k => i in creditText.members) {
-            if(i == null) continue;
-            var posX = (k == curSel) ? 150 : 20;
-            (cast i:FlxText).x = FlxMath.lerp((cast i:FlxText).x, posX, 0.4*60*elapsed);
-            var alpha = Math.abs(remap(Math.abs(k-curSel),4,0,0,1));
-            (cast i:FlxText).alpha = FlxMath.lerp((cast i:FlxText).alpha, alpha, 0.4*60*elapsed);
+            var pos = k == curSel ? 150 : 20;
+            i.x = FlxMath.lerp(i.x, pos, 0.4 * 60 * elapsed);
+
+            var alpha = Math.abs(FlxMath.remapToRange(Math.abs(k - curSel), 4, 0, 0, 1));
+            i.alpha = FlxMath.lerp(i.alpha, alpha, 0.4 * 60 * elapsed);
         }
+
+        // touch scroll for mobile
+        #if mobile
+        if (FlxG.touches.length > 0) {
+            var touch:FlxTouch = FlxG.touches[0];
+            if (touch.justPressed) lastYTouch = touch.screenY;
+            var deltaY = touch.screenY - lastYTouch;
+            scrollLerp -= deltaY;
+            lastYTouch = touch.screenY;
+            scrollLerp = FlxMath.clamp(scrollLerp, 0, (credits.length - 1) * 100);
+        }
+        #end
     }
 
     function changeSel(s:Int = 0) {
-        curSel = FlxMath.wrap(curSel + s,0,credits.length-1);
+        if (s != 0) FlxG.sound.play(Paths.sound('madness/beep'));
 
-        var curText:FlxText = cast creditText.members[curSel];
+        curSel = FlxMath.wrap(curSel + s, 0, credits.length - 1);
+
+        var curText:FlxText = creditText.members[curSel];
 
         displayedQuote.text = '"' + credits[curSel].quote.toUpperCase() + '"';
         displayedRole.text = credits[curSel].role.toUpperCase();
+        scrollLerp = (curText.y + (curText.height / 2)) - (FlxG.height / 2);
 
-        scrollLerp = (curText.y + curText.height/2) - FlxG.height/2;
+        displayedQuote.x = rim.x + (rim.width - displayedQuote.width) / 2;
 
         arrow.x = curText.x + curText.width + 10;
-        arrow.y = curText.y + (curText.height - arrow.height)/2;
+        arrow.y = curText.y + (curText.height - arrow.height) / 2;
 
-        glow.x = curText.x + (curText.width - glow.width)/2;
-        glow.y = curText.y + (curText.height - glow.height)/2;
-        glow.makeGraphic(Std.int(curText.width + 25), Std.int(curText.height), 0xFFFFFFFF);
+        glow.x = curText.x + (curText.width - glow.width) / 2;
+        glow.y = curText.y + (curText.height - glow.height) / 2;
+        glow.width = curText.width + 25;
+        glow.height = curText.height;
 
-        if(credits[curSel].name == "infry") {
+        if (credits[curSel].name == 'infry') {
             character.visible = true;
             everyoneButInfry.visible = false;
-            character.animation.play("infry",true);
-            character.x = rim.x + Std.int((rim.width - character.width)/2) - 100;
-            character.y = rim.y - character.height + Std.int(rim.height/2) + 35;
+            character.x = rim.x + (rim.width - character.width)/2 - 100;
+            character.y = rim.y - character.height + rim.height/2 + 35;
         } else {
             character.visible = false;
             everyoneButInfry.visible = true;
         }
-    }
-
-    function clamp(value:Float, min:Float, max:Float):Float {
-        return Math.max(min, Math.min(max, value));
-    }
-
-    function remap(value:Float, from1:Float, to1:Float, from2:Float, to2:Float):Float {
-        return from2 + (value - from1) * (to2 - from2) / (to1 - from1);
     }
 }
