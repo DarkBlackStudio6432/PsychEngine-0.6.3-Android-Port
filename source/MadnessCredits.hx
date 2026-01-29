@@ -1,147 +1,196 @@
 package;
 
+import MusicBeatState;
+import CoolUtil;
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.group.FlxTypedGroup;
+import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.math.FlxMath;
 
-import MusicBeatState;
-import CoolUtil;
-
 import Character;
 import AttachedSprite;
-import mobile.objects.MobileControls;
 
-@:structInit
-class Credit {
-	public var name:String = '';
-	public var quote:String = '';
-	public var role:String = '';
-	public var link:String = '';
+#if mobile
+import mobile.objects.MobileControls;
+#end
+
+@:structInit class Credit {
+    public var name:String = '';
+    public var quote:String = '';
+    public var role:String = '';
+    public var link:String = '';
 }
 
 class MadnessCredits extends MusicBeatState
 {
-	var curSel:Int = 0;
+    var curSel:Int = 0;
 
-	var creditText:FlxTypedGroup<FlxText>;
-	var credits:Array<Credit> = [
-		{name:'grave',quote:'this mod is a disease',role:'director, artist',link:'https://x.com/konn_artist'},
-		{name:'vamazotz',quote:'i fucking love hank j wimbleton',role:'co-director, artist',link:'https://x.com/vamazotz'},
-		{name:'jads',quote:'get a bunch of bikes, and ride em around with your friends',role:'composer',link:'https://x.com/Aw3somejds'},
-		{name:'cval',quote:'well hello everyone',role:'charter, composer',link:'https://x.com/cval_brown'},
-		{name:'punkett',quote:'made everything',role:'composer',link:'https://x.com/_punkett'},
-		{name:'marstarbro',quote:"They just threw me in a group chat and 3 hours later, here's a pause theme",role:'composer',link:'https://x.com/MarstarMain'},
-		{name:'river',quote:'hold the crust',role:'composer',link:'https://x.com/rivermusic_'},
-		{name:'shayreyez',quote:'i need to plap thick booba mmm futa porn',role:'artist',link:'https://x.com/ShayReyZed'},
-		{name:'yabo',quote:'i really rwally like gruntfriend',role:'charter, artist',link:'https://x.com/yaboigp'},
-		{name:'data5',quote:'well',role:'coder',link:'https://x.com/_data5'},
-		{name:'smokey5',quote:'fuck data fuuuuuck help me think of a quote',role:'coder',link:'https://x.com/Smokey_5_'},
-		{name:'jayythunder',quote:'NOTHING BUT BANGERS, AND I KNOW BANGERS',role:'chromatic',link:'https://x.com/ThunderJayy'},
-		{name:'laeko',quote:'I love my ladies like burgers',role:'artist',link:'https://x.com/LaekoGah'},
-		{name:'infry',quote:'my belly is so big and round',role:'saved the god damned mod',link:'https://x.com/Infry20'},
-		{name:'mr krinkles',quote:'thank u for making madness combat',role:'made madness combat',link:'https://x.com/MRKrinkels'}
-	];
+    var creditText:FlxTypedGroup<FlxText>;
+    var credits:Array<Credit> = [
+        {name:'grave',quote:'this mod is a disease',role:'director, artist',link:'https://x.com/konn_artist'},
+        {name:'vamazotz',quote:'i fucking love hank j wimbleton',role:'co-director, artist',link:'https://x.com/vamazotz'},
+        {name:'jads',quote:'get a bunch of bikes, and ride em around with your friends',role:'composer',link:'https://x.com/Aw3somejds'},
+        {name:'cval',quote:'well hello everyone',role:'charter, composer',link:'https://x.com/cval_brown'},
+        {name:'punkett',quote:'made everything',role:'composer',link:'https://x.com/_punkett'},
+        {name:'marstarbro',quote:"They just threw me in a group chat and 3 hours later, here's a pause theme",role:'composer',link:'https://x.com/MarstarMain'},
+        {name:'river',quote:'hold the crust',role:'composer',link:'https://x.com/rivermusic_'},
+        {name:'shayreyez',quote:'i need to plap thick booba mmm futa porn',role:'artist',link:'https://x.com/ShayReyZed'},
+        {name:'yabo',quote:'i really really like gruntfriend',role:'charter, artist',link:'https://x.com/yaboigp'},
+        {name:'data5',quote:'well',role:'coder',link:'https://x.com/_data5'},
+        {name:'smokey5',quote:'fuck data fuuuuuuuuuuuuuuuuuuuck help me think of a quote',role:'coder',link:'https://x.com/Smokey_5_'},
+        {name:'jayythunder',quote:'NOTHING BUT BANGERS, AND I KNOW BANGERS',role:'chromatic',link:'https://x.com/ThunderJayy'},
+        {name:'laeko',quote:'I love my ladies like I looove burgers!',role:'artist',link:'https://x.com/LaekoGah'},
+        {name:'infry',quote:'my belly is so big and round',role:'saved the god damned mod',link:'https://x.com/Infry20'},
+        {name:'mr krinkles',quote:'thank u for making madness combat',role:'made madness combat',link:'https://x.com/MRKrinkels'}
+    ];
 
-	var displayedQuote:FlxText;
-	var displayedRole:FlxText;
+    var displayedQuote:FlxText;
+    var displayedRole:FlxText;
 
-	var arrow:AttachedSprite;
-	var glow:AttachedSprite;
+    var rim:FlxSprite;
+    var arrow:AttachedSprite;
+    var glow:AttachedSprite;
 
-	var everyoneButInfry:Character;
-	var character:FlxSprite;
+    var everyoneButInfry:Character;
+    var character:FlxSprite;
 
-	var mobileControls:MobileControls;
+    var scrollLerp:Float = 0;
+    var holdTime:Float = 0;
+    var _prevAnim:Int = 0;
 
-	override function create()
-	{
-		super.create();
+    #if mobile
+    var mobileControls:MobileControls;
+    #end
 
-		// 📱 escala automática
-		var scale:Float = FlxG.width / 1280;
+    override function create()
+    {
+        persistentUpdate = true;
+        super.create();
 
-		creditText = new FlxTypedGroup<FlxText>();
-		add(creditText);
+        // === PC-LIKE SCALE VIA CAMERA ===
+        FlxG.camera.zoom = FlxG.width / 1280;
 
-		for (i in 0...credits.length)
-		{
-			var t = new FlxText(20, i * Std.int(80 * scale), 0, credits[i].name.toUpperCase(), Std.int(60 * scale));
-			t.font = Paths.font('impact.ttf');
-			t.color = FlxColor.RED;
-			creditText.add(t);
-		}
+        glow = new AttachedSprite('madnessmenu/credits/glows');
+        glow.alpha = 0.7;
+        add(glow);
 
-		displayedRole = new FlxText(0, FlxG.height - Std.int(180 * scale), FlxG.width, '', Std.int(50 * scale));
-		displayedRole.alignment = CENTER;
-		displayedRole.font = Paths.font('BebasNeue-Regular.ttf');
-		add(displayedRole);
+        creditText = new FlxTypedGroup<FlxText>();
+        add(creditText);
 
-		displayedQuote = new FlxText(0, FlxG.height - Std.int(120 * scale), FlxG.width, '', Std.int(32 * scale));
-		displayedQuote.alignment = CENTER;
-		displayedQuote.font = Paths.font('impact.ttf');
-		displayedQuote.color = FlxColor.RED;
-		add(displayedQuote);
+        arrow = new AttachedSprite('madnessmenu/credits/arrow');
+        add(arrow);
 
-		everyoneButInfry = new Character(Std.int(750 * scale), Std.int(180 * scale), 'creditChar');
-		add(everyoneButInfry);
+        for (k in 0...credits.length)
+        {
+            var txt = new FlxText(20, 0, 0, credits[k].name.toUpperCase(), 61);
+            txt.y = (txt.height + 25) * k;
+            txt.font = Paths.font('impact.ttf');
+            txt.color = FlxColor.RED;
+            creditText.add(txt);
+        }
 
-		character = new FlxSprite();
-		character.frames = Paths.getSparrowAtlas('madnessmenu/credits/infry');
-		character.animation.addByPrefix('infry', 'infry', 24, true);
-		add(character);
-		character.visible = false;
+        rim = new FlxSprite(Paths.image('madnessmenu/credits/grey'));
+        rim.scale.set(1.1,1.1);
+        rim.updateHitbox();
+        add(rim);
 
-		// 🎮 VirtualPad
-		mobileControls = new MobileControls();
-		add(mobileControls);
+        everyoneButInfry = new Character(650,140,'creditChar');
+        add(everyoneButInfry);
 
-		changeSel();
-	}
+        character = new FlxSprite();
+        character.frames = Paths.getSparrowAtlas('madnessmenu/credits/infry');
+        character.animation.addByPrefix('infry','infry',24,false);
+        add(character);
 
-	override function update(elapsed:Float)
-	{
-		super.update(elapsed);
+        displayedRole = new FlxText(0,0,FlxG.width,'',60);
+        displayedRole.alignment = RIGHT;
+        displayedRole.font = Paths.font('BebasNeue-Regular.ttf');
+        add(displayedRole);
 
-		if (mobileControls.justPressed.UP)
-			changeSel(-1);
+        displayedQuote = new FlxText(0,0,0,'',40);
+        displayedQuote.font = Paths.font('impact.ttf');
+        displayedQuote.color = FlxColor.RED;
+        add(displayedQuote);
 
-		if (mobileControls.justPressed.DOWN)
-			changeSel(1);
+        #if mobile
+        mobileControls = new MobileControls();
+        add(mobileControls);
+        #end
 
-		if (mobileControls.justPressed.BACK)
-			MusicBeatState.switchState(new MadnessMenu());
+        changeSel();
+    }
 
-		if (mobileControls.justPressed.ACCEPT)
-			CoolUtil.browserLoad(credits[curSel].link);
-	}
+    override function update(elapsed:Float)
+    {
+        super.update(elapsed);
 
-	function changeSel(add:Int = 0)
-	{
-		curSel = FlxMath.wrap(curSel + add, 0, credits.length - 1);
+        // === INPUT PC ===
+        if (controls.UI_UP_P) changeSel(-1);
+        if (controls.UI_DOWN_P) changeSel(1);
+        if (controls.ACCEPT) CoolUtil.browserLoad(credits[curSel].link);
+        if (controls.BACK) MusicBeatState.switchState(new MadnessMenu());
 
-		displayedRole.text = credits[curSel].role.toUpperCase();
-		displayedQuote.text = '"' + credits[curSel].quote.toUpperCase() + '"';
+        // === INPUT MOBILE ===
+        #if mobile
+        if (mobileControls.current.buttonUp.justPressed) changeSel(-1);
+        if (mobileControls.current.buttonDown.justPressed) changeSel(1);
+        if (mobileControls.current.buttonExtra1.justPressed)
+            CoolUtil.browserLoad(credits[curSel].link);
+        if (mobileControls.current.buttonExtra2.justPressed)
+            MusicBeatState.switchState(new MadnessMenu());
+        #end
 
-		for (i in 0...creditText.length)
-		{
-			var t = creditText.members[i];
-			t.alpha = (i == curSel) ? 1 : 0.4;
-		}
+        FlxG.camera.scroll.y = FlxMath.lerp(
+            FlxG.camera.scroll.y,
+            scrollLerp,
+            0.25 * 60 * elapsed
+        );
 
-		if (credits[curSel].name == 'infry')
-		{
-			character.visible = true;
-			everyoneButInfry.visible = false;
-			character.animation.play('infry', true);
-		}
-		else
-		{
-			character.visible = false;
-			everyoneButInfry.visible = true;
-			everyoneButInfry.playAnim(credits[curSel].name + FlxG.random.int(1, 4), true);
-		}
-	}
+        for (i in 0...creditText.length)
+        {
+            var txt = creditText.members[i];
+            var targetX = (i == curSel) ? 150 : 20;
+            txt.x = FlxMath.lerp(txt.x, targetX, 0.3 * 60 * elapsed);
+
+            var a = Math.abs(FlxMath.remapToRange(Math.abs(i - curSel), 4, 0, 0, 1));
+            txt.alpha = FlxMath.lerp(txt.alpha, a, 0.3 * 60 * elapsed);
+        }
+    }
+
+    function changeSel(v:Int = 0)
+    {
+        if (v != 0) FlxG.sound.play(Paths.sound('madness/beep'));
+
+        curSel = FlxMath.wrap(curSel + v, 0, credits.length - 1);
+        var curText = creditText.members[curSel];
+
+        displayedQuote.text = '"' + credits[curSel].quote.toUpperCase() + '"';
+        displayedRole.text = credits[curSel].role.toUpperCase();
+
+        scrollLerp = (curText.y + curText.height / 2) - FlxG.height / 2;
+
+        arrow.sprTracker = curText;
+        arrow.xAdd = curText.width + 10;
+
+        glow.sprTracker = curText;
+        glow.setGraphicSize(curText.width + 25, curText.height);
+        glow.updateHitbox();
+
+        if (credits[curSel].name == 'infry')
+        {
+            character.visible = true;
+            everyoneButInfry.visible = false;
+            character.animation.play('infry', true);
+        }
+        else
+        {
+            character.visible = false;
+            everyoneButInfry.visible = true;
+            var dance = FlxG.random.int(1,4,[_prevAnim]);
+            everyoneButInfry.playAnim(credits[curSel].name + dance, true);
+            _prevAnim = dance;
+        }
+    }
 }
