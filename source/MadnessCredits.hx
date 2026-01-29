@@ -123,10 +123,11 @@ class MadnessCredits extends MusicBeatState
         var accept = FlxG.keys.justPressed.ENTER;
 
         #if mobile
-        up = up || mobileControls.upPressed;
-        down = down || mobileControls.downPressed;
-        accept = accept || mobileControls.acceptPressed;
-        #end
+up = up || (Reflect.hasField(mobileControls, "upPressed") && Reflect.field(mobileControls, "upPressed"));
+down = down || (Reflect.hasField(mobileControls, "downPressed") && Reflect.field(mobileControls, "downPressed"));
+accept = accept || (Reflect.hasField(mobileControls, "acceptPressed") && Reflect.field(mobileControls, "acceptPressed"));
+#end
+
 
         if (up) changeSelection(-1);
         if (down) changeSelection(1);
