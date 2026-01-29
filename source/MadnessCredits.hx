@@ -71,7 +71,7 @@ class MadnessCredits extends MusicBeatState
         // BACK: volta pro menu
         if (FlxG.keys.justPressed.BACK) {
     MusicBeatState.switchState(new MadnessMenu());
-
+}
         // Scroll suave
         for (k => i in creditText.members) {
             var t:FlxText = cast i;
