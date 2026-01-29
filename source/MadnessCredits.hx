@@ -151,18 +151,19 @@ class MadnessCredits extends MusicBeatState
         }
 
         // touch scroll for mobile
-        #if mobile
-        var numTouches = FlxG.touches.getNumActive();
-        if (numTouches > 0) {
-            var touch:FlxTouch = FlxG.touches.getTouch(0);
-            if (touch.justPressed) lastYTouch = touch.screenY;
-            var deltaY = touch.screenY - lastYTouch;
-            scrollLerp -= deltaY;
-            lastYTouch = touch.screenY;
-            scrollLerp = clamp(scrollLerp, 0, (credits.length - 1) * 100);
-        }
-        #end
+        // touch scroll for mobile
+#if mobile
+for (i in 0...FlxG.touches._touches.length) {
+    var touch:FlxTouch = FlxG.touches._touches[i];
+    if (touch != null && touch.touchID >= 0) {
+        if (touch.justPressed) lastYTouch = touch.screenY;
+        var deltaY = touch.screenY - lastYTouch;
+        scrollLerp -= deltaY;
+        lastYTouch = touch.screenY;
+        scrollLerp = clamp(scrollLerp, 0, (credits.length - 1) * 100);
     }
+}
+#end
 
     function changeSel(s:Int = 0) {
         if (s != 0) FlxG.sound.play(Paths.sound('madness/beep'));
