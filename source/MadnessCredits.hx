@@ -143,12 +143,14 @@ class MadnessCredits extends MusicBeatState
 
 		// === MOBILE INPUT ===
 		#if mobile
-		if (mobileControls.current.buttonUp.justPressed()) changeSel(-1);
-		if (mobileControls.current.buttonDown.justPressed()) changeSel(1);
-		if (mobileControls.current.buttonExtra1.justPressed())
-			CoolUtil.browserLoad(credits[curSel].link);
-		if (mobileControls.current.buttonExtra2.justPressed())
-			MusicBeatState.switchState(new MadnessMenu());
+		if (mobileControls.current.buttonUp.justPressed) changeSel(-1);
+if (mobileControls.current.buttonDown.justPressed) changeSel(1);
+
+if (mobileControls.current.buttonExtra1.justPressed)
+    CoolUtil.browserLoad(credits[curSel].link);
+
+if (mobileControls.current.buttonExtra2.justPressed)
+    MusicBeatState.switchState(new MadnessMenu());
 		#end
 
 		FlxG.camera.scroll.y = FlxMath.lerp(
