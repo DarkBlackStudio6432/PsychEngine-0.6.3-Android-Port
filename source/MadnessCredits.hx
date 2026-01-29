@@ -80,17 +80,16 @@ class MadnessCredits extends MusicBeatState
 
         // Scroll touch para mobile
         #if mobile
-        for (i in 0...FlxG.touches._activeTouches.length) {
-            var touch:FlxTouch = FlxG.touches._activeTouches[i];
-            if (touch != null) {
-                if (touch.justPressed) lastYTouch = touch.screenY;
-                var deltaY = touch.screenY - lastYTouch;
-                scrollLerp -= deltaY;
-                lastYTouch = touch.screenY;
-                scrollLerp = clamp(scrollLerp, 0, (credits.length - 1) * 100);
-            }
-        }
-        #end
+for (touch in FlxG.touches.list) {
+    if (touch != null) {
+        if (touch.justPressed) lastYTouch = touch.screenY;
+        var deltaY = touch.screenY - lastYTouch;
+        scrollLerp -= deltaY;
+        lastYTouch = touch.screenY;
+        scrollLerp = clamp(scrollLerp, 0, (credits.length - 1) * 100);
+    }
+}
+#end
     }
 
     function changeSel(s:Int = 0) {
