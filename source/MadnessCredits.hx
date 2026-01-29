@@ -1,7 +1,7 @@
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.text.FlxText;
-import flixel.group.FlxTypedGroup;
+import flixel.group.FlxGroup;
 import flixel.util.FlxColor;
 import flixel.math.FlxMath;
 import flixel.input.touch.FlxTouch;
@@ -18,23 +18,23 @@ class MadnessCredits extends MusicBeatState
 {
     var curSel:Int = 0;
 
-    var creditText:FlxTypedGroup<FlxText>;
+    var creditText:FlxGroup;
     var credits:Array<Credit> = [
         {name: 'grave', quote: 'this mod is a disease', role: 'director, artist', link: 'https://x.com/konn_artist'},
-        {name: 'vamazotz', quote: 'i love hank j wimbleton', role: 'co-director, artist', link: 'https://x.com/vamazotz'},
+        {name: 'vamazotz', quote: 'i fucking love hank j wimbleton', role: 'co-director, artist', link: 'https://x.com/vamazotz'},
         {name: 'jads', quote: 'get a bunch of bikes, and ride em around with your friends', role: 'composer', link: 'https://x.com/Aw3somejds'},
         {name: 'cval', quote: 'well hello everyone', role: 'charter, composer', link: 'https://x.com/cval_brown'},
         {name: 'punkett', quote: 'made everything', role: 'composer', link: 'https://x.com/_punkett'},
-        {name: 'marstarbro', quote: "pause theme", role: 'composer', link: 'https://x.com/MarstarMain'},
+        {name: 'marstarbro', quote: "They just threw me in a group chat and 3 hours later, here's a pause theme", role: 'composer', link: 'https://x.com/MarstarMain'},
         {name: 'river', quote: 'hold the crust', role: 'composer', link: 'https://x.com/rivermusic_'},
-        {name: 'shayreyez', quote: 'fun quote', role: 'artist', link: 'https://x.com/ShayReyZed'},
-        {name: 'yabo', quote: 'i really like gruntfriend', role: 'charter, artist', link: 'https://x.com/yaboigp'},
+        {name: 'shayreyez', quote: 'i need to plap thick booba mmm futa porn', role: 'artist', link: 'https://x.com/ShayReyZed'},
+        {name: 'yabo', quote: 'i really rwally like gruntfriend', role: 'charter, artist', link: 'https://x.com/yaboigp'},
         {name: 'data5', quote: 'well', role: 'coder', link: 'https://x.com/_data5'},
-        {name: 'smokey5', quote: 'funny coder quote', role: 'coder', link: 'https://x.com/Smokey_5_'},
-        {name: 'jayythunder', quote: 'NOTHING BUT BANGERS', role: 'chromatic', link: 'https://x.com/ThunderJayy'},
-        {name: 'laeko', quote: 'i love burgers', role: 'artist', link: 'https://x.com/LaekoGah'},
-        {name: 'infry', quote: 'my belly is round', role: 'saved the mod', link: 'https://x.com/Infry20'},
-        {name: 'mr krinkles', quote: 'thank u for making madness combat', role: 'creator', link: 'https://x.com/MRKrinkels'}
+        {name: 'smokey5', quote: 'fuck data fuuuuuuuuuuuuuuuuuuuck help me think of a quote', role: 'coder', link: 'https://x.com/Smokey_5_'},
+        {name: 'jayythunder', quote: 'NOTHING BUT BANGERS, AND I KNOW BANGERS', role: 'chromatic', link: 'https://x.com/ThunderJayy'},
+        {name: 'laeko', quote: 'I love my ladies like I looove burgers! Ahaha i just lov burgre ahahahahahahaha Ok wait where are u guys going', role: 'artist', link: 'https://x.com/LaekoGah'},
+        {name: 'infry', quote: 'my belly is so big and round, also credit to suitman he wanted credit for genuinely nothign', role: 'saved the god damned mod', link: 'https://x.com/Infry20'},
+        {name: 'mr krinkles', quote: 'thank u for making amdness combat', role: 'made madness combat', link: 'https://x.com/MRKrinkels'}
     ];
 
     var displayedQuote:FlxText;
@@ -61,7 +61,7 @@ class MadnessCredits extends MusicBeatState
         add(glow);
 
         // creditText group
-        creditText = new FlxTypedGroup<FlxText>();
+        creditText = new FlxGroup();
         add(creditText);
 
         // arrow
@@ -121,7 +121,7 @@ class MadnessCredits extends MusicBeatState
         // keyboard / mouse scroll
         if (controls.UI_DOWN_P || controls.UI_UP_P || FlxG.mouse.wheel != 0) {
             holdTime = 0;
-            changeSel(FlxG.mouse.wheel == 0 ? (controls.UI_DOWN_P ? 1 : -1) : -FlxG.mouse.wheel);
+            changeSel(FlxG.mouse.wheel == 0 ? controls.UI_DOWN_P ? 1 : -1 : -FlxG.mouse.wheel);
         }
 
         if (controls.BACK) MusicBeatState.switchState(new MadnessMenu());
@@ -139,26 +139,27 @@ class MadnessCredits extends MusicBeatState
         }
 
         // smooth camera scroll
-        FlxG.camera.scroll.y = FlxMath.lerp(FlxG.camera.scroll.y, scrollLerp, 0.4 * 60 * elapsed);
+        FlxG.camera.scroll.y = lerp(FlxG.camera.scroll.y, scrollLerp, 0.4 * 60 * elapsed);
 
         // text position/alpha
         for (k => i in creditText.members) {
             var pos = k == curSel ? 150 : 20;
-            i.x = FlxMath.lerp(i.x, pos, 0.4 * 60 * elapsed);
+            var curText:FlxText = cast(i, FlxText);
+            curText.x = lerp(curText.x, pos, 0.4 * 60 * elapsed);
 
-            var alpha = Math.abs(FlxMath.remapToRange(Math.abs(k - curSel), 4, 0, 0, 1));
-            i.alpha = FlxMath.lerp(i.alpha, alpha, 0.4 * 60 * elapsed);
+            var alpha = Math.abs(remapToRange(Math.abs(k - curSel), 4, 0, 0, 1));
+            curText.alpha = lerp(curText.alpha, alpha, 0.4 * 60 * elapsed);
         }
 
         // touch scroll for mobile
         #if mobile
-        if (FlxG.touches.length > 0) {
-            var touch:FlxTouch = FlxG.touches[0];
+        if (FlxG.touches._activeTouches.length > 0) {
+            var touch:FlxTouch = FlxG.touches._activeTouches[0];
             if (touch.justPressed) lastYTouch = touch.screenY;
             var deltaY = touch.screenY - lastYTouch;
             scrollLerp -= deltaY;
             lastYTouch = touch.screenY;
-            scrollLerp = FlxMath.clamp(scrollLerp, 0, (credits.length - 1) * 100);
+            scrollLerp = clamp(scrollLerp, 0, (credits.length - 1) * 100);
         }
         #end
     }
@@ -168,7 +169,7 @@ class MadnessCredits extends MusicBeatState
 
         curSel = FlxMath.wrap(curSel + s, 0, credits.length - 1);
 
-        var curText:FlxText = creditText.members[curSel];
+        var curText:FlxText = cast(creditText.members[curSel], FlxText);
 
         displayedQuote.text = '"' + credits[curSel].quote.toUpperCase() + '"';
         displayedRole.text = credits[curSel].role.toUpperCase();
@@ -193,5 +194,19 @@ class MadnessCredits extends MusicBeatState
             character.visible = false;
             everyoneButInfry.visible = true;
         }
+    }
+
+    // --- Helpers para 0.6.3 ---
+    function clamp(value:Float, min:Float, max:Float):Float {
+        return Math.max(min, Math.min(max, value));
+    }
+
+    function lerp(a:Float, b:Float, t:Float):Float {
+        return a + (b - a) * t;
+    }
+
+    function remapToRange(value:Float, oldMin:Float, oldMax:Float, newMin:Float, newMax:Float):Float {
+        var t = (value - oldMin)/(oldMax - oldMin);
+        return newMin + t * (newMax - newMin);
     }
 }
