@@ -27,21 +27,21 @@ class MadnessCredits extends MusicBeatState
 
     var creditText:FlxGroup;
     var credits:Array<Credit> = [
-        {name:'grave',quote:'this mod is a disease',role:'director, artist',link:'https://x.com/konn_artist'},
-        {name:'vamazotz',quote:'i fuckingf love hank j wimbleton',role:'co-director, artist',link:'https://x.com/vamazotz'},
-        {name:'jads',quote:'get a bunch of bikes, and ride em around with your friends',role:'composer',link:'https://x.com/Aw3somejds'},
-        {name:'cval',quote:'well hello everyone',role:'charter, composer',link:'https://x.com/cval_brown'},
-        {name:'punkett',quote:'made everything',role:'composer',link:'https://x.com/_punkett'},
-        {name:'marstarbro',quote:"They just threw me in a group chat and 3 hours later, here's a pause theme",role:'composer',link:'https://x.com/MarstarMain'},
-        {name:'river',quote:'hold the crust',role:'composer',link:'https://x.com/rivermusic_'},
-        {name:'shayreyez',quote:'i need to plap thick booba mmm futa porn',role:'artist',link:'https://x.com/ShayReyZed'},
-        {name:'yabo',quote:'i really rwally like gruntfriend',role:'charter, artist',link:'https://x.com/yaboigp'},
-        {name:'data5',quote:'well',role:'coder',link:'https://x.com/_data5'},
-        {name:'smokey5',quote:'fuck data fuuuuuuuuuuuuuuuuuuuck help me think of a quote',role:'coder',link:'https://x.com/Smokey_5_'},
-        {name:'jayythunder',quote:'NOTHING BUT BANGERS, AND I KNOW BANGERS',role:'chromatic',link:'https://x.com/ThunderJayy'},
-        {name:'laeko',quote:'I love my ladies like I looove burgers!',role:'artist',link:'https://x.com/LaekoGah'},
-        {name:'infry',quote:'my belly is so big and round',role:'saved the god damned mod',link:'https://x.com/Infry20'},
-        {name:'mr krinkles',quote:'thank u for making amdness combat',role:'made madness combat',link:'https://x.com/MRKrinkels'}
+        {name:'grave',quote:'this mod is a disease',role:'director, artist',link:'https://x.com'},
+        {name:'vamazotz',quote:'i fuckingf love hank j wimbleton',role:'co-director, artist',link:'https://x.com'},
+        {name:'jads',quote:'get a bunch of bikes, and ride em around with your friends',role:'composer',link:'https://x.com'},
+        {name:'cval',quote:'well hello everyone',role:'charter, composer',link:'https://x.com'},
+        {name:'punkett',quote:'made everything',role:'composer',link:'https://x.com'},
+        {name:'marstarbro',quote:"They just threw me in a group chat and 3 hours later, here's a pause theme",role:'composer',link:'https://x.com'},
+        {name:'river',quote:'hold the crust',role:'composer',link:'https://x.com_'},
+        {name:'shayreyez',quote:'i need to plap thick booba mmm futa porn',role:'artist',link:'https://x.com'},
+        {name:'yabo',quote:'i really rwally like gruntfriend',role:'charter, artist',link:'https://x.com'},
+        {name:'data5',quote:'well',role:'coder',link:'https://x.com'},
+        {name:'smokey5',quote:'fuck data fuuuuuuuuuuuuuuuuuuuck help me think of a quote',role:'coder',link:'https://x.com_'},
+        {name:'jayythunder',quote:'NOTHING BUT BANGERS, AND I KNOW BANGERS',role:'chromatic',link:'https://x.com'},
+        {name:'laeko',quote:'I love my ladies like I looove burgers!',role:'artist',link:'https://x.com'},
+        {name:'infry',quote:'my belly is so big and round',role:'saved the god damned mod',link:'https://x.com'},
+        {name:'mr krinkles',quote:'thank u for making amdness combat',role:'made madness combat',link:'https://x.com'}
     ];
 
     var displayedQuote:FlxText;
@@ -116,26 +116,12 @@ class MadnessCredits extends MusicBeatState
         add(displayedQuote);
 
         #if mobile
-        virtualPad = new FlxVirtualPad(FlxDPadMode.UP_DOWN, FlxActionMode.NONE);
-        virtualPad.alpha = 0.9;
-        virtualPad.scrollFactor.set();
-
-        virtualPad.x = FlxG.width - virtualPad.width - 20;
-        virtualPad.y = (FlxG.height - virtualPad.height) / 2;
-
-        //virtualPad.cameras = [FlxG.cameras.list[0]];
+        // Criando o pad com setas e botão B para voltar
+        virtualPad = new FlxVirtualPad(UP_DOWN, B);
+        virtualPad.alpha = 0.75;
+        // Importante: impede que o pad "suba" junto com a lista de nomes
+        virtualPad.scrollFactor.set(); 
         add(virtualPad);
-
-        if (virtualPad.buttonUp != null)
-        {
-            //virtualPad.buttonUp.scale.set(1.5, 1.5);
-            virtualPad.buttonUp.updateHitbox();
-        }
-        if (virtualPad.buttonDown != null)
-        {
-            virtualPad.buttonDown.scale.set(1.5, 1.5);
-            virtualPad.buttonDown.updateHitbox();
-        }
         #end
 
         changeSel();
@@ -165,7 +151,8 @@ class MadnessCredits extends MusicBeatState
             changeSel(FlxG.mouse.wheel != 0 ? -FlxG.mouse.wheel : (down ? 1 : -1));
         }
 
-        if (controls.BACK)
+        // Lógica de voltar atualizada para Mobile
+        if (controls.BACK #if mobile || (virtualPad != null && virtualPad.buttonB.justPressed) #end)
             MusicBeatState.switchState(new MadnessMenu());
 
         #if mobile
@@ -233,17 +220,25 @@ class MadnessCredits extends MusicBeatState
         {
             character.visible = true;
             everyoneButInfry.visible = false;
-            character.animation.play('infry', true);
-            character.x = rim.x + (rim.width - character.width) / 2 - 100;
-            character.y = rim.y - character.height + rim.height / 2 + 35;
+            character.animation.play('infry');
         }
         else
         {
             character.visible = false;
             everyoneButInfry.visible = true;
-            var dance:Int = FlxG.random.int(1, 4, [_prevAnim]);
-            everyoneButInfry.playAnim(credits[curSel].name + dance, true);
-            _prevAnim = dance;
+            everyoneButInfry.animOffsets.clear();
+            everyoneButInfry.frames = Paths.getSparrowAtlas('madnessmenu/credits/' + credits[curSel].name);
+            everyoneButInfry.animation.addByPrefix('idle', 'idle', 24, true);
+            everyoneButInfry.playAnim('idle');
+            everyoneButInfry.setGraphicSize(0, 500);
+            everyoneButInfry.updateHitbox();
         }
+    }
+
+    override function destroy() {
+        #if mobile
+        if (virtualPad != null) virtualPad = FlxDestroyUtil.destroy(virtualPad);
+        #end
+        super.destroy();
     }
 }
