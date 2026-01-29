@@ -25,7 +25,7 @@ class MadnessCredits extends MusicBeatState
 {
 	var curSel:Int = 0;
 
-	var creditText:FlxTypedGroup<FlxText>;
+	var creditText:FlxGroup;
 	var credits:Array<Credit> = [
 		{name:'grave',quote:'this mod is a disease',role:'director, artist',link:'https://x.com/konn_artist'},
 		{name:'vamazotz',quote:'i fuckingf love hank j wimbleton',role:'co-director, artist',link:'https://x.com/vamazotz'},
@@ -71,7 +71,7 @@ class MadnessCredits extends MusicBeatState
 		glow.alpha = 0.7;
 		add(glow);
 
-		creditText = new FlxTypedGroup<FlxText>();
+		creditText = new FlxGroup();
 		add(creditText);
 
 		arrow = new AttachedSprite('madnessmenu/credits/arrow');
@@ -93,7 +93,6 @@ class MadnessCredits extends MusicBeatState
 		add(rim);
 
 		everyoneButInfry = new Character(650, 140, 'creditChar');
-		everyoneButInfry.antialiasing = true;
 		everyoneButInfry.scrollFactor.set();
 		add(everyoneButInfry);
 
@@ -118,10 +117,12 @@ class MadnessCredits extends MusicBeatState
 
 		#if mobile
 		virtualPad = new FlxVirtualPad(FlxDPadMode.UP_DOWN, FlxActionMode.NONE);
-		virtualPad.scale.set(1.3, 1.3);
+		virtualPad.scale.set(1.6, 1.6);
 		virtualPad.alpha = 0.9;
+		virtualPad.scrollFactor.set();
 		virtualPad.x = FlxG.width - virtualPad.width - 20;
 		virtualPad.y = (FlxG.height - virtualPad.height) / 2;
+		virtualPad.cameras = [FlxG.cameras.list[1]];
 		add(virtualPad);
 		#end
 
@@ -153,32 +154,20 @@ class MadnessCredits extends MusicBeatState
 		if (FlxG.mouse.justPressed)
 		{
 			var p = FlxG.mouse.getWorldPosition();
-			var curText = creditText.members[curSel];
-
+			var curText:FlxText = cast creditText.members[curSel];
 			if (curText != null && curText.overlapsPoint(p))
-			{
 				CoolUtil.browserLoad(credits[curSel].link);
-			}
 		}
 		#else
 		if (controls.ACCEPT || FlxG.mouse.justPressed)
 			CoolUtil.browserLoad(credits[curSel].link);
 		#end
 
-		if (controls.UI_DOWN || controls.UI_UP)
-		{
-			var last:Int = Math.floor((holdTime - 0.5) * 10);
-			holdTime += elapsed;
-			var cur:Int = Math.floor((holdTime - 0.5) * 10);
-			if (holdTime > 0.5 && cur - last > 0)
-				changeSel((cur - last) * (controls.UI_UP ? -1 : 1));
-		}
-
 		FlxG.camera.scroll.y = FlxMath.lerp(FlxG.camera.scroll.y, scrollLerp, 0.4 * 60 * elapsed);
 
-		for (i in 0...creditText.length)
+		for (i in 0...creditText.members.length)
 		{
-			var t = creditText.members[i];
+			var t:FlxText = cast creditText.members[i];
 			var targetX = (i == curSel) ? 150 : 20;
 			t.x = FlxMath.lerp(t.x, targetX, 0.4 * 60 * elapsed);
 			t.alpha = FlxMath.lerp(t.alpha,
@@ -194,7 +183,7 @@ class MadnessCredits extends MusicBeatState
 
 		curSel = FlxMath.wrap(curSel + s, 0, credits.length - 1);
 
-		var curText = creditText.members[curSel];
+		var curText:FlxText = cast creditText.members[curSel];
 
 		displayedQuote.text = '"' + credits[curSel].quote.toUpperCase() + '"';
 		displayedRole.text = credits[curSel].role.toUpperCase();
