@@ -2,164 +2,235 @@ package;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.FlxState;
-import flixel.group.FlxGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.math.FlxMath;
+import flixel.group.FlxTypedGroup;
+import flixel.ui.FlxVirtualPad;
 
 import MusicBeatState;
 import CoolUtil;
 import Character;
 import AttachedSprite;
 
-#if mobile
-import mobile.objects.MobileControls;
-#end
+@:structInit
+class Credit {
+	public var name:String = '';
+	public var quote:String = '';
+	public var role:String = '';
+	public var link:String = '';
+}
 
 class MadnessCredits extends MusicBeatState
 {
-    var creditNames:Array<String> = [
-        "Tricky Team",
-        "Animator",
-        "Coder",
-        "Composer"
-    ];
+	var curSel:Int = 0;
 
-    var creditRoles:Array<String> = [
-        "Original Creators",
-        "Animations",
-        "Programming",
-        "Music"
-    ];
+	var creditText:FlxTypedGroup<FlxText>;
+	var credits:Array<Credit> = [
+		{name:'grave',quote:'this mod is a disease',role:'director, artist',link:'https://x.com/konn_artist'},
+		{name:'vamazotz',quote:'i fuckingf love hank j wimbleton',role:'co-director, artist',link:'https://x.com/vamazotz'},
+		{name:'jads',quote:'get a bunch of bikes, and ride em around with your friends',role:'composer',link:'https://x.com/Aw3somejds'},
+		{name:'cval',quote:'well hello everyone',role:'charter, composer',link:'https://x.com/cval_brown'},
+		{name:'punkett',quote:'made everything',role:'composer',link:'https://x.com/_punkett'},
+		{name:'marstarbro',quote:"They just threw me in a group chat and 3 hours later, here's a pause theme",role:'composer',link:'https://x.com/MarstarMain'},
+		{name:'river',quote:'hold the crust',role:'composer',link:'https://x.com/rivermusic_'},
+		{name:'shayreyez',quote:'i need to plap thick booba mmm futa porn',role:'artist',link:'https://x.com/ShayReyZed'},
+		{name:'yabo',quote:'i really rwally like gruntfriend',role:'charter, artist',link:'https://x.com/yaboigp'},
+		{name:'data5',quote:'well',role:'coder',link:'https://x.com/_data5'},
+		{name:'smokey5',quote:'fuck data fuuuuuuuuuuuuuuuuuuuck help me think of a quote',role:'coder',link:'https://x.com/Smokey_5_'},
+		{name:'jayythunder',quote:'NOTHING BUT BANGERS, AND I KNOW BANGERS',role:'chromatic',link:'https://x.com/ThunderJayy'},
+		{name:'laeko',quote:'I love my ladies like I looove burgers!',role:'artist',link:'https://x.com/LaekoGah'},
+		{name:'infry',quote:'my belly is so big and round',role:'saved the god damned mod',link:'https://x.com/Infry20'},
+		{name:'mr krinkles',quote:'thank u for making amdness combat',role:'made madness combat',link:'https://x.com/MRKrinkels'}
+	];
 
-    var creditQuotes:Array<String> = [
-        "WELCOME TO MADNESS",
-        "PURE CHAOS",
-        "HARD AS HELL",
-        "TURN UP THE VOLUME"
-    ];
+	var displayedQuote:FlxText;
+	var displayedRole:FlxText;
 
-    var curSelected:Int = 0;
+	var rim:FlxSprite;
+	var arrow:AttachedSprite;
+	var glow:AttachedSprite;
 
-    var creditTexts:FlxGroup;
-    var displayedRole:FlxText;
-    var displayedQuote:FlxText;
+	var everyoneButInfry:Character;
+	var character:FlxSprite;
 
-    var rim:FlxSprite;
-    var character:Character;
+	var holdTime:Float = 0;
+	var scrollLerp:Float = 0;
+	var _prevAnim:Int = 0;
 
-    #if mobile
-    var mobileControls:MobileControls;
-    #end
+	var scrollSpeed:Float = 0;
 
-    override function create()
-    {
-        super.create();
+	#if mobile
+	var virtualPad:FlxVirtualPad;
+	#end
 
-        var bg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
-        add(bg);
+	override function create()
+	{
+		persistentUpdate = true;
+		super.create();
 
-        rim = new FlxSprite(FlxG.width / 2 - 350, 80);
-        rim.makeGraphic(700, 350, FlxColor.TRANSPARENT);
-        rim.scrollFactor.set();
-        add(rim);
+		glow = new AttachedSprite('madnessmenu/credits/glows');
+		glow.alpha = 0.7;
+		add(glow);
 
-        character = new Character(0, 0, 'tricky');
-        add(character);
+		creditText = new FlxTypedGroup<FlxText>();
+		add(creditText);
 
-        character.x = rim.x + (rim.width / 2) - (character.width / 2) - 100;
-        character.y = rim.y + rim.height - character.height + 35;
+		arrow = new AttachedSprite('madnessmenu/credits/arrow');
+		add(arrow);
 
-        creditTexts = new FlxGroup();
-        add(creditTexts);
+		for (i in 0...credits.length)
+		{
+			var t = new FlxText(20, 0, 0, credits[i].name.toUpperCase(), 61);
+			t.y = (t.height + 25) * i;
+			t.font = Paths.font('impact.ttf');
+			t.color = FlxColor.RED;
+			creditText.add(t);
+		}
 
-        for (i in 0...creditNames.length)
-        {
-            var txt = new FlxText(0, 0, 0, creditNames[i], 32);
-            txt.font = Paths.font("impact.ttf");
-            txt.color = FlxColor.WHITE;
-            txt.y = 200 + (txt.height + 25) * i;
-            txt.x = 20;
-            txt.scrollFactor.set();
-            txt.updateHitbox();
-            creditTexts.add(txt);
-        }
+		rim = new FlxSprite(Paths.image('madnessmenu/credits/grey'));
+		rim.scale.set(1.1, 1.1);
+		rim.updateHitbox();
+		rim.scrollFactor.set();
+		add(rim);
 
-        displayedRole = new FlxText(0, 0, FlxG.width - 25, "", 60);
-        displayedRole.font = Paths.font("BebasNeue-Regular.ttf");
-        displayedRole.alignment = RIGHT;
-        displayedRole.scale.y = 1.5;
-        displayedRole.scrollFactor.set();
-        displayedRole.updateHitbox();
-        add(displayedRole);
+		everyoneButInfry = new Character(650, 140, 'creditChar');
+		everyoneButInfry.antialiasing = true;
+		everyoneButInfry.scrollFactor.set();
+		add(everyoneButInfry);
 
-        displayedRole.y = rim.y - displayedRole.height - 5;
+		character = new FlxSprite();
+		character.frames = Paths.getSparrowAtlas('madnessmenu/credits/infry');
+		character.animation.addByPrefix('infry', 'infry', 24, false);
+		character.scrollFactor.set();
+		add(character);
 
-        displayedQuote = new FlxText(0, 0, FlxG.width, "", 40);
-        displayedQuote.font = Paths.font("impact.ttf");
-        displayedQuote.alignment = CENTER;
-        displayedQuote.color = FlxColor.RED;
-        displayedQuote.scrollFactor.set();
-        displayedQuote.updateHitbox();
-        add(displayedQuote);
+		displayedRole = new FlxText(0, 0, FlxG.width - 25, '', 60);
+		displayedRole.alignment = RIGHT;
+		displayedRole.font = Paths.font('BebasNeue-Regular.ttf');
+		displayedRole.scale.y = 1.5;
+		displayedRole.scrollFactor.set();
+		add(displayedRole);
 
-        displayedQuote.y = rim.y + rim.height + 5;
+		displayedQuote = new FlxText(0, 0, 0, '', 40);
+		displayedQuote.font = Paths.font('impact.ttf');
+		displayedQuote.color = FlxColor.RED;
+		displayedQuote.scrollFactor.set();
+		add(displayedQuote);
 
-        #if mobile
-        mobileControls = new MobileControls();
-        add(mobileControls);
-        #end
+		#if mobile
+		virtualPad = new FlxVirtualPad(FlxDPadMode.UP_DOWN, FlxActionMode.NONE);
+		virtualPad.alpha = 0.75;
+		add(virtualPad);
+		#end
 
-        changeSelection(0);
-    }
+		changeSel();
+	}
 
-    override function update(elapsed:Float)
-    {
-        super.update(elapsed);
+	override function update(elapsed:Float)
+	{
+		super.update(elapsed);
 
-        var up = FlxG.keys.justPressed.UP;
-        var down = FlxG.keys.justPressed.DOWN;
-        var accept = FlxG.keys.justPressed.ENTER;
+		if (controls.BACK)
+			MusicBeatState.switchState(new MadnessMenu());
 
-        #if mobile
-up = up || (Reflect.hasField(mobileControls, "upPressed") && Reflect.field(mobileControls, "upPressed"));
-down = down || (Reflect.hasField(mobileControls, "downPressed") && Reflect.field(mobileControls, "downPressed"));
-accept = accept || (Reflect.hasField(mobileControls, "acceptPressed") && Reflect.field(mobileControls, "acceptPressed"));
-#end
+		if (controls.ACCEPT || FlxG.mouse.justPressed)
+			CoolUtil.browserLoad(credits[curSel].link);
 
+		var move:Int = 0;
 
-        if (up) changeSelection(-1);
-        if (down) changeSelection(1);
+		if (controls.UI_DOWN) move = 1;
+		if (controls.UI_UP) move = -1;
 
-        if (accept)
-            FlxG.switchState(new MainMenuState());
-    }
+		#if mobile
+		if (virtualPad.buttonDown.pressed) move = 1;
+		if (virtualPad.buttonUp.pressed) move = -1;
+		#end
 
-    function changeSelection(change:Int)
-    {
-        curSelected += change;
+		scrollSpeed += move * 220 * elapsed;
+		scrollSpeed = FlxMath.lerp(scrollSpeed, 0, 0.15);
 
-        if (curSelected < 0)
-            curSelected = creditNames.length - 1;
-        if (curSelected >= creditNames.length)
-            curSelected = 0;
+		FlxG.camera.scroll.y += scrollSpeed * elapsed;
+		FlxG.camera.scroll.y = FlxMath.bound(
+			FlxG.camera.scroll.y,
+			0,
+			creditText.length * 90 - FlxG.height
+		);
 
-        var i = 0;
-        for (basic in creditTexts.members)
-        {
-            if (basic == null) continue;
+		var closest:Int = 0;
+		var closestDist:Float = 999999;
 
-            var text:FlxText = cast basic;
+		for (i in 0...creditText.length)
+		{
+			var t = creditText.members[i];
+			var dist = Math.abs((t.y - FlxG.camera.scroll.y) - FlxG.height / 2);
 
-            var targetX = (i == curSelected) ? 150 : 20;
-            text.x = FlxMath.lerp(text.x, targetX, 0.4);
-            text.alpha = (i == curSelected) ? 1 : 0.6;
+			if (dist < closestDist)
+			{
+				closestDist = dist;
+				closest = i;
+			}
+		}
 
-            i++;
-        }
+		if (closest != curSel)
+		{
+			curSel = closest;
+			changeSel(0);
+		}
 
-        displayedRole.text = creditRoles[curSelected];
-        displayedQuote.text = creditQuotes[curSelected];
-    }
+		for (i in 0...creditText.length)
+		{
+			var t = creditText.members[i];
+			var targetX = (i == curSel) ? 150 : 20;
+			t.x = FlxMath.lerp(t.x, targetX, 0.4 * 60 * elapsed);
+			t.alpha = FlxMath.lerp(
+				t.alpha,
+				Math.abs(FlxMath.remapToRange(Math.abs(i - curSel), 4, 0, 0, 1)),
+				0.4 * 60 * elapsed
+			);
+		}
+	}
+
+	function changeSel(s:Int = 0)
+	{
+		if (s != 0)
+			FlxG.sound.play(Paths.sound('madness/beep'));
+
+		curSel = FlxMath.wrap(curSel + s, 0, credits.length - 1);
+
+		var curText = creditText.members[curSel];
+
+		displayedQuote.text = '"' + credits[curSel].quote.toUpperCase() + '"';
+		displayedRole.text = credits[curSel].role.toUpperCase();
+		scrollLerp = (curText.y + curText.height / 2) - (FlxG.height / 2);
+
+		displayedQuote.x = rim.x + (rim.width - displayedQuote.width) / 2;
+
+		arrow.sprTracker = curText;
+		arrow.yAdd = (curText.height - arrow.height) / 2;
+		arrow.xAdd = curText.width + 10;
+
+		glow.sprTracker = curText;
+		glow.setGraphicSize(Std.int(curText.width + 25), Std.int(curText.height));
+		glow.updateHitbox();
+		glow.yAdd = (curText.height - glow.height) / 2;
+		glow.xAdd = (curText.width - glow.width) / 2;
+
+		if (credits[curSel].name == 'infry')
+		{
+			character.visible = true;
+			everyoneButInfry.visible = false;
+			character.animation.play('infry', true);
+			character.x = rim.x + (rim.width - character.width) / 2 - 100;
+			character.y = rim.y - character.height + rim.height / 2 + 35;
+		}
+		else
+		{
+			character.visible = false;
+			everyoneButInfry.visible = true;
+			var dance:Int = FlxG.random.int(1, 4, [_prevAnim]);
+			everyoneButInfry.playAnim(credits[curSel].name + dance, true);
+			_prevAnim = dance;
+		}
+	}
 }
