@@ -5,6 +5,7 @@ import StoryMenuState;
 import CreditsState;
 import ClientPrefs;
 import Paths;
+import options.OptionsState;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
