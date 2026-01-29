@@ -123,12 +123,12 @@ class MadnessCredits extends MusicBeatState
         virtualPad.x = FlxG.width - virtualPad.width - 20;
         virtualPad.y = (FlxG.height - virtualPad.height) / 2;
 
-        virtualPad.cameras = [FlxG.cameras.list[0]];
+        //virtualPad.cameras = [FlxG.cameras.list[0]];
         add(virtualPad);
 
         if (virtualPad.buttonUp != null)
         {
-            virtualPad.buttonUp.scale.set(1.5, 1.5);
+            //virtualPad.buttonUp.scale.set(1.5, 1.5);
             virtualPad.buttonUp.updateHitbox();
         }
         if (virtualPad.buttonDown != null)
