@@ -5,6 +5,7 @@ import flixel.group.FlxTypedGroup;
 import flixel.util.FlxColor;
 import flixel.math.FlxMath;
 import flixel.input.touch.FlxTouch;
+import options.OptionsState;
 
 @:structInit class Credit {
     public var name:String = '';
