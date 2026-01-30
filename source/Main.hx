@@ -1,5 +1,7 @@
 package;
 
+import states.TitleState;
+
 import mobile.backend.CrashHandler;
 import openfl.events.UncaughtErrorEvent;
 import debug.FPSCounter;
