@@ -3,6 +3,7 @@ package objects;
 import flixel.FlxSprite;
 import flixel.FlxG;
 import backend.ClientPrefs;
+import backend.Paths;
 
 #if MODS_ALLOWED
 import sys.FileSystem;
