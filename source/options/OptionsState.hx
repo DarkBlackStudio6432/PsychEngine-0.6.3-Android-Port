@@ -1,16 +1,20 @@
 package options;
 
-import objects.AttachedSprite;
-import backend.MadnessTransition;
-import flixel.FlxSubState;
-import states.MadnessMenu;
-import backend.StageData;
-import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
-import flixel.util.FlxColor;
-import flixel.math.FlxMath;
+import flixel.FlxG;
+
+import objects.AttachedSprite;
+import states.MadnessMenu;
+import backend.Paths;
+import backend.ClientPrefs;
+import backend.MadnessTransition;
+import backend.StageData;
+
+#if TOUCH_CONTROLS
+import mobile.objects.MobilePad;
+#end
 
 class OptionsState extends MusicBeatState
 {
