@@ -1,18 +1,16 @@
-package;
+package states;
 
 import lime.app.Promise;
 import lime.app.Future;
-import flixel.FlxG;
+
 import flixel.FlxState;
-import flixel.FlxSprite;
-import flixel.graphics.frames.FlxAtlasFrames;
-import flixel.util.FlxTimer;
-import flixel.math.FlxMath;
 
 import openfl.utils.Assets;
 import lime.utils.Assets as LimeAssets;
 import lime.utils.AssetLibrary;
 import lime.utils.AssetManifest;
+
+import backend.StageData;
 
 import haxe.io.Path;
 
@@ -45,18 +43,18 @@ class LoadingState extends MusicBeatState
 	override function create()
 	{
 		var bg:FlxSprite = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, 0xffcaff4d);
+		bg.antialiasing = ClientPrefs.data.antialiasing;
 		add(bg);
 		funkay = new FlxSprite(0, 0).loadGraphic(Paths.getPath('images/funkay.png', IMAGE));
 		funkay.setGraphicSize(0, FlxG.height);
 		funkay.updateHitbox();
-		funkay.antialiasing = ClientPrefs.globalAntialiasing;
 		add(funkay);
+		funkay.antialiasing = ClientPrefs.data.antialiasing;
 		funkay.scrollFactor.set();
 		funkay.screenCenter();
 
 		loadBar = new FlxSprite(0, FlxG.height - 20).makeGraphic(FlxG.width, 10, 0xffff16d2);
 		loadBar.screenCenter(X);
-		loadBar.antialiasing = ClientPrefs.globalAntialiasing;
 		add(loadBar);
 		
 		initSongsManifest().onComplete
@@ -65,14 +63,13 @@ class LoadingState extends MusicBeatState
 			{
 				callbacks = new MultiCallback(onLoad);
 				var introComplete = callbacks.add("introComplete");
-				/*if (PlayState.SONG != null) {
+				if (PlayState.SONG != null) {
 					checkLoadSong(getSongPath());
 					if (PlayState.SONG.needsVoices)
 						checkLoadSong(getVocalPath());
-				}*/
-				checkLibrary("shared");
+				}
 				if(directory != null && directory.length > 0 && directory != 'shared') {
-					checkLibrary(directory);
+					checkLibrary('week_assets');
 				}
 
 				var fadeTime = 0.5;
@@ -103,7 +100,7 @@ class LoadingState extends MusicBeatState
 		{
 			@:privateAccess
 			if (!LimeAssets.libraryPaths.exists(library))
-				throw "Missing library: " + library;
+				throw new haxe.Exception("Missing library: " + library);
 
 			var callback = callbacks.add("library:" + library);
 			Assets.loadLibrary(library).onComplete(function (_) { callback(); });
@@ -161,24 +158,25 @@ class LoadingState extends MusicBeatState
 		Paths.setCurrentLevel(directory);
 		trace('Setting asset folder to ' + directory);
 
-		#if NO_PRELOAD_ALL
+		/*#if NO_PRELOAD_ALL
 		var loaded:Bool = false;
 		if (PlayState.SONG != null) {
-			loaded = isSoundLoaded(getSongPath()) && (!PlayState.SONG.needsVoices || isSoundLoaded(getVocalPath())) && isLibraryLoaded("shared") && isLibraryLoaded(directory);
+			loaded = isSoundLoaded(getSongPath()) && (!PlayState.SONG.needsVoices || isSoundLoaded(getVocalPath())) && isLibraryLoaded('week_assets');
 		}
 		
 		if (!loaded)
 			return new LoadingState(target, stopMusic, directory);
-		#end
+		#end*/
 		if (stopMusic && FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 		
 		return target;
 	}
 	
-	#if NO_PRELOAD_ALL
+	/*#if NO_PRELOAD_ALL
 	static function isSoundLoaded(path:String):Bool
 	{
+		trace(path);
 		return Assets.cache.hasSound(path);
 	}
 	
@@ -186,7 +184,7 @@ class LoadingState extends MusicBeatState
 	{
 		return Assets.getLibrary(library) != null;
 	}
-	#end
+	#end*/
 	
 	override function destroy()
 	{

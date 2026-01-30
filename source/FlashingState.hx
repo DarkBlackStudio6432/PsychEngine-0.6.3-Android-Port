@@ -1,15 +1,10 @@
-package;
+package states;
 
-import flixel.FlxG;
-import flixel.FlxSprite;
 import flixel.FlxSubState;
-import flixel.text.FlxText;
-import flixel.util.FlxColor;
+
 import flixel.effects.FlxFlicker;
 import lime.app.Application;
 import flixel.addons.transition.FlxTransitionableState;
-import flixel.tweens.FlxTween;
-import flixel.util.FlxTimer;
 
 class FlashingState extends MusicBeatState
 {
@@ -23,15 +18,6 @@ class FlashingState extends MusicBeatState
 		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		add(bg);
 
-        #if TOUCH_CONTROLS
-        warnText = new FlxText(0, 0, FlxG.width,
-			"Hey, watch out!\n
-			This Mod contains some flashing lights!\n
-			Press A to disable them now or go to Options Menu.\n
-			Press B to ignore this message.\n
-			You've been warned!",
-			32);
-		#else
 		warnText = new FlxText(0, 0, FlxG.width,
 			"Hey, watch out!\n
 			This Mod contains some flashing lights!\n
@@ -39,13 +25,9 @@ class FlashingState extends MusicBeatState
 			Press ESCAPE to ignore this message.\n
 			You've been warned!",
 			32);
-		#end
 		warnText.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, CENTER);
 		warnText.screenCenter(Y);
 		add(warnText);
-		#if TOUCH_CONTROLS
-        addMobilePad("NONE", "A_B");
-        #end
 	}
 
 	override function update(elapsed:Float)
@@ -57,7 +39,7 @@ class FlashingState extends MusicBeatState
 				FlxTransitionableState.skipNextTransIn = true;
 				FlxTransitionableState.skipNextTransOut = true;
 				if(!back) {
-					ClientPrefs.flashing = false;
+					ClientPrefs.data.flashing = false;
 					ClientPrefs.saveSettings();
 					FlxG.sound.play(Paths.sound('confirmMenu'));
 					FlxFlicker.flicker(warnText, 1, 0.1, false, true, function(flk:FlxFlicker) {
