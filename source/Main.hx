@@ -8,7 +8,7 @@ import flixel.FlxGame;
 
 import backend.ClientPrefs;
 import backend.Paths;
-import backend.Highscore;   // se você usa Highscore no Main
+import backend.Highscore;   //se você usa Highscore no Main
 import states.TitleState;
 
 #if mobile
