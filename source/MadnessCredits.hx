@@ -6,12 +6,12 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.math.FlxMath;
 import flixel.group.FlxGroup;
-import flixel.ui.FlxVirtualPad;
-
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import AttachedSprite;
+import Character;
 import MusicBeatState;
 import CoolUtil;
-import Character;
-import AttachedSprite;
 
 @:structInit
 class Credit {
@@ -26,22 +26,22 @@ class MadnessCredits extends MusicBeatState
     var curSel:Int = 0;
 
     var creditText:FlxGroup;  
-    var credits:Array<Credit> = [
-        {name:'grave',quote:'this mod is a disease',role:'director, artist',link:'https://x.com/konn_artist'},
-        {name:'vamazotz',quote:'i fuckingf love hank j wimbleton',role:'co-director, artist',link:'https://x.com/vamazotz'},
-        {name:'jads',quote:'get a bunch of bikes, and ride em around with your friends',role:'composer',link:'https://x.com/Aw3somejds'},
-        {name:'cval',quote:'well hello everyone',role:'charter, composer',link:'https://x.com/cval_brown'},
-        {name:'punkett',quote:'made everything',role:'composer',link:'https://x.com/_punkett'},
-        {name:'marstarbro',quote:"They just threw me in a group chat and 3 hours later, here's a pause theme",role:'composer',link:'https://x.com/MarstarMain'},
-        {name:'river',quote:'hold the crust',role:'composer',link:'https://x.com/rivermusic_'},
-        {name:'shayreyez',quote:'i need to plap thick booba mmm futa porn',role:'artist',link:'https://x.com/ShayReyZed'},
-        {name:'yabo',quote:'i really rwally like gruntfriend',role:'charter, artist',link:'https://x.com/yaboigp'},
-        {name:'data5',quote:'well',role:'coder',link:'https://x.com/_data5'},
-        {name:'smokey5',quote:'fuck data fuuuuuuuuuuuuuuuuuuuck help me think of a quote',role:'coder',link:'https://x.com/Smokey_5_'},
-        {name:'jayythunder',quote:'NOTHING BUT BANGERS, AND I KNOW BANGERS',role:'chromatic',link:'https://x.com/ThunderJayy'},
-        {name:'laeko',quote:'I love my ladies like I looove burgers!',role:'artist',link:'https://x.com/LaekoGah'},
-        {name:'infry',quote:'my belly is so big and round',role:'saved the god damned mod',link:'https://x.com/Infry20'},
-        {name:'mr krinkles',quote:'thank u for making amdness combat',role:'made madness combat',link:'https://x.com/MRKrinkels'}
+    var credits:Array<Credit> = [  
+        {name:'grave',quote:'this mod is a disease',role:'director, artist',link:'https://x.com/konn_artist'},  
+        {name:'vamazotz',quote:'i fucking love hank j wimbleton',role:'co-director, artist',link:'https://x.com/vamazotz'},  
+        {name:'jads',quote:'get a bunch of bikes, and ride em around with your friends',role:'composer',link:'https://x.com/Aw3somejds'},  
+        {name:'cval',quote:'well hello everyone',role:'charter, composer',link:'https://x.com/cval_brown'},  
+        {name:'punkett',quote:'made everything',role:'composer',link:'https://x.com/_punkett'},  
+        {name:'marstarbro',quote:"They just threw me in a group chat and 3 hours later, here's a pause theme",role:'composer',link:'https://x.com/MarstarMain'},  
+        {name:'river',quote:'hold the crust',role:'composer',link:'https://x.com/rivermusic_'},  
+        {name:'shayreyez',quote:'i need to plap thick booba mmm futa porn',role:'artist',link:'https://x.com/ShayReyZed'},  
+        {name:'yabo',quote:'i really rwally like gruntfriend',role:'charter, artist',link:'https://x.com/yaboigp'},  
+        {name:'data5',quote:'well',role:'coder',link:'https://x.com/_data5'},  
+        {name:'smokey5',quote:'fuck data fuuuuuuuuuuuuuuuuuuuck help me think of a quote',role:'coder',link:'https://x.com/Smokey_5_'},  
+        {name:'jayythunder',quote:'NOTHING BUT BANGERS, AND I KNOW BANGERS',role:'chromatic',link:'https://x.com/ThunderJayy'},  
+        {name:'laeko',quote:'I love my ladies like I looove burgers!',role:'artist',link:'https://x.com/LaekoGah'},  
+        {name:'infry',quote:'my belly is so big and round',role:'saved the god damned mod',link:'https://x.com/Infry20'},  
+        {name:'mr krinkles',quote:'thank u for making amdness combat',role:'made madness combat',link:'https://x.com/MRKrinkels'}  
     ];  
 
     var displayedQuote:FlxText;  
@@ -58,8 +58,8 @@ class MadnessCredits extends MusicBeatState
     var scrollLerp:Float = 0;  
     var _prevAnim:Int = 0;  
 
-    #if mobile  
-    var virtualPad:FlxVirtualPad;  
+    #if TOUCH_CONTROLS
+    // VirtualPad oficial do Psych Engine
     #end  
 
     override function create()  
@@ -67,7 +67,7 @@ class MadnessCredits extends MusicBeatState
         persistentUpdate = true;  
         super.create();  
 
-        // ---------- SPRITES DE FUNDO ----------
+        // --- ELEMENTOS GRÁFICOS ---
         glow = new AttachedSprite('madnessmenu/credits/glows');  
         glow.alpha = 0.7;  
         add(glow);  
@@ -116,31 +116,14 @@ class MadnessCredits extends MusicBeatState
         displayedQuote.scrollFactor.set();  
         add(displayedQuote);  
 
-        // ---------- VIRTUAL PAD ----------
-        #if mobile  
-        virtualPad = new FlxVirtualPad();  
-        virtualPad.alpha = 0.9;  
-        virtualPad.scrollFactor.set();  
-
-        virtualPad.x = FlxG.width - virtualPad.width - 20;  
-        virtualPad.y = FlxG.height - virtualPad.height - 20;  
-
-        // Adiciona por último para aparecer na frente de tudo
-        add(virtualPad);  
-
-        // Escala cada botão individual
-        if (virtualPad.buttonUp != null) { virtualPad.buttonUp.scale.set(1.5, 1.5); virtualPad.buttonUp.updateHitbox(); }
-        if (virtualPad.buttonDown != null) { virtualPad.buttonDown.scale.set(1.5, 1.5); virtualPad.buttonDown.updateHitbox(); }
-        if (virtualPad.buttonLeft != null) { virtualPad.buttonLeft.scale.set(1.5, 1.5); virtualPad.buttonLeft.updateHitbox(); }
-        if (virtualPad.buttonRight != null) { virtualPad.buttonRight.scale.set(1.5, 1.5); virtualPad.buttonRight.updateHitbox(); }
-        if (virtualPad.buttonA != null) { virtualPad.buttonA.scale.set(1.5, 1.5); virtualPad.buttonA.updateHitbox(); }
-        if (virtualPad.buttonB != null) { virtualPad.buttonB.scale.set(1.5, 1.5); virtualPad.buttonB.updateHitbox(); }
+        // --- ADICIONA O VirtualPad oficial (mobile) ---
+        #if TOUCH_CONTROLS
+        addMobilePad("UP_DOWN", "A_B");  
         #end  
 
         changeSel();  
     }  
 
-    // ---------- UPDATE ----------
     override function update(elapsed:Float)  
     {  
         super.update(elapsed);  
@@ -148,12 +131,8 @@ class MadnessCredits extends MusicBeatState
         var up:Bool = controls.UI_UP_P;  
         var down:Bool = controls.UI_DOWN_P;  
 
-        #if mobile  
-        if (virtualPad != null)
-        {
-            if (virtualPad.buttonUp != null && virtualPad.buttonUp.justPressed) up = true;
-            if (virtualPad.buttonDown != null && virtualPad.buttonDown.justPressed) down = true;
-        }
+        #if TOUCH_CONTROLS
+        // O addMobilePad já atualiza controls.UI_UP_P / UI_DOWN_P / ACCEPT
         #end  
 
         if (up || down || FlxG.mouse.wheel != 0)  
@@ -165,23 +144,15 @@ class MadnessCredits extends MusicBeatState
         if (controls.BACK)  
             MusicBeatState.switchState(new MadnessMenu());  
 
-        #if mobile  
-        if (FlxG.mouse.justPressed)  
-        {  
-            var p = FlxG.mouse.getWorldPosition();  
-            var curText:FlxText = cast creditText.members[curSel];  
-
-            if (curText != null && curText.overlapsPoint(p))  
-                CoolUtil.browserLoad(credits[curSel].link);  
-        }  
-        #else  
+        // Clicar no link do crédito
         if (controls.ACCEPT || FlxG.mouse.justPressed)  
-        {  
             CoolUtil.browserLoad(credits[curSel].link);  
-        }  
-        #end  
 
-        FlxG.camera.scroll.y = FlxMath.lerp(FlxG.camera.scroll.y, scrollLerp, 0.4 * 60 * elapsed);  
+        FlxG.camera.scroll.y = FlxMath.lerp(  
+            FlxG.camera.scroll.y,  
+            scrollLerp,  
+            0.4 * 60 * elapsed  
+        );  
 
         for (i in 0...creditText.members.length)  
         {  
@@ -189,11 +160,14 @@ class MadnessCredits extends MusicBeatState
             var targetX = (i == curSel) ? 150 : 20;  
 
             t.x = FlxMath.lerp(t.x, targetX, 0.4 * 60 * elapsed);  
-            t.alpha = FlxMath.lerp(t.alpha, Math.abs(FlxMath.remapToRange(Math.abs(i - curSel), 4, 0, 0, 1)), 0.4 * 60 * elapsed);  
+            t.alpha = FlxMath.lerp(  
+                t.alpha,  
+                Math.abs(FlxMath.remapToRange(Math.abs(i - curSel), 4, 0, 0, 1)),  
+                0.4 * 60 * elapsed  
+            );  
         }  
     }  
 
-    // ---------- MUDAR SELEÇÃO ----------
     function changeSel(s:Int = 0)  
     {  
         if (s != 0) FlxG.sound.play(Paths.sound('madness/beep'));  
@@ -234,5 +208,5 @@ class MadnessCredits extends MusicBeatState
             everyoneButInfry.playAnim(credits[curSel].name + dance, true);  
             _prevAnim = dance;  
         }  
-    }
+    }  
 }
