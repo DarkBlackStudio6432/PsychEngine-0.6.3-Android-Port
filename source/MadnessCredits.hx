@@ -125,16 +125,20 @@ class MadnessCredits extends MusicBeatState
 
         add(virtualPad);  
 
-        if (virtualPad.dpad != null) {  
-            virtualPad.dpad.scale.set(1.5, 1.5);  
-            virtualPad.dpad.updateHitbox();  
-        }  
-        if (virtualPad.actionButtons != null) {  
-            for (b in virtualPad.actionButtons.members) {  
-                b.scale.set(1.5, 1.5);  
-                b.updateHitbox();  
-            }  
-        }  
+        // Ajusta DPad
+        if (virtualPad.dPad != null) {
+            virtualPad.dPad.scale.set(1.5, 1.5);
+            virtualPad.dPad.updateHitbox();
+        }
+
+        // Ajusta Action Buttons
+        if (virtualPad.actionButton != null) {
+            for (i in 0...virtualPad.actionButton.length) {
+                var b = cast virtualPad.actionButton[i];
+                b.scale.set(1.5, 1.5);
+                b.updateHitbox();
+            }
+        }
         #end  
 
         changeSel();  
@@ -148,11 +152,10 @@ class MadnessCredits extends MusicBeatState
         var down:Bool = controls.UI_DOWN_P;  
 
         #if mobile  
-        if (virtualPad != null && virtualPad.dpad != null)  
-        {  
-            up = up || virtualPad.dpad.up.justPressed;  
-            down = down || virtualPad.dpad.down.justPressed;  
-        }  
+        if (virtualPad != null && virtualPad.dPad != null) {
+            up = up || virtualPad.dPad.up.justPressed;
+            down = down || virtualPad.dPad.down.justPressed;
+        }
         #end  
 
         if (up || down || FlxG.mouse.wheel != 0)  
