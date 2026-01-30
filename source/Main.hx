@@ -5,7 +5,7 @@ import states.TitleState;
 import mobile.backend.CrashHandler;
 import openfl.events.UncaughtErrorEvent;
 import debug.FPSCounter;
-import Highscore;
+import backend.Highscore;
 import flixel.FlxGame;
 import haxe.io.Path;
 import openfl.Lib;
