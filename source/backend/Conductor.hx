@@ -1,5 +1,6 @@
 package backend;
 
+// só precisa importar Song, Section e Note se estiver usando eles
 import backend.Song;
 import backend.Section;
 import objects.Note;
