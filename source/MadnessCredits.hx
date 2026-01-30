@@ -125,11 +125,13 @@ class MadnessCredits extends MusicBeatState
 
         add(virtualPad);  
 
-        // Escala todos os botões do virtualPad
-        for (b in virtualPad.buttons) {
-            b.scale.set(1.5, 1.5);
-            b.updateHitbox();
-        }
+        // Escala todos os botões individuais
+        if (virtualPad.buttonUp != null) { virtualPad.buttonUp.scale.set(1.5, 1.5); virtualPad.buttonUp.updateHitbox(); }
+        if (virtualPad.buttonDown != null) { virtualPad.buttonDown.scale.set(1.5, 1.5); virtualPad.buttonDown.updateHitbox(); }
+        if (virtualPad.buttonLeft != null) { virtualPad.buttonLeft.scale.set(1.5, 1.5); virtualPad.buttonLeft.updateHitbox(); }
+        if (virtualPad.buttonRight != null) { virtualPad.buttonRight.scale.set(1.5, 1.5); virtualPad.buttonRight.updateHitbox(); }
+        if (virtualPad.buttonA != null) { virtualPad.buttonA.scale.set(1.5, 1.5); virtualPad.buttonA.updateHitbox(); }
+        if (virtualPad.buttonB != null) { virtualPad.buttonB.scale.set(1.5, 1.5); virtualPad.buttonB.updateHitbox(); }
         #end  
 
         changeSel();  
@@ -143,14 +145,10 @@ class MadnessCredits extends MusicBeatState
         var down:Bool = controls.UI_DOWN_P;  
 
         #if mobile  
-        if (virtualPad != null) {
-            for (b in virtualPad.buttons) {
-                switch (b.name) {
-                    case "up": if (b.justPressed) up = true;
-                    case "down": if (b.justPressed) down = true;
-                    default: // ignorar
-                }
-            }
+        if (virtualPad != null)
+        {
+            if (virtualPad.buttonUp != null && virtualPad.buttonUp.justPressed) up = true;
+            if (virtualPad.buttonDown != null && virtualPad.buttonDown.justPressed) down = true;
         }
         #end  
 
