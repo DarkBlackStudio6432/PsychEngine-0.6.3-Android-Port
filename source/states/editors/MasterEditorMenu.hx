@@ -1,7 +1,7 @@
 package states.editors;
 
 import backend.WeekData;
-
+import objects.Alphabet;
 import objects.Character;
 
 import states.MainMenuState;
