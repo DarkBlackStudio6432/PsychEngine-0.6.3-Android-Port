@@ -10,6 +10,7 @@ import flixel.graphics.frames.FlxFrame;
 import flixel.group.FlxGroup;
 import flixel.input.gamepad.FlxGamepad;
 import haxe.Json;
+import states.MadnessMenu;
 
 import openfl.Assets;
 import openfl.display.Bitmap;
