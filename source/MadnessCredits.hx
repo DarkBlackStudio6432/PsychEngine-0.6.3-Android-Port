@@ -67,6 +67,7 @@ class MadnessCredits extends MusicBeatState
         persistentUpdate = true;  
         super.create();  
 
+        // ---------- SPRITES DE FUNDO ----------
         glow = new AttachedSprite('madnessmenu/credits/glows');  
         glow.alpha = 0.7;  
         add(glow);  
@@ -115,6 +116,7 @@ class MadnessCredits extends MusicBeatState
         displayedQuote.scrollFactor.set();  
         add(displayedQuote);  
 
+        // ---------- VIRTUAL PAD ----------
         #if mobile  
         virtualPad = new FlxVirtualPad();  
         virtualPad.alpha = 0.9;  
@@ -123,9 +125,10 @@ class MadnessCredits extends MusicBeatState
         virtualPad.x = FlxG.width - virtualPad.width - 20;  
         virtualPad.y = FlxG.height - virtualPad.height - 20;  
 
+        // Adiciona por último para aparecer na frente de tudo
         add(virtualPad);  
 
-        // Escala todos os botões individuais
+        // Escala cada botão individual
         if (virtualPad.buttonUp != null) { virtualPad.buttonUp.scale.set(1.5, 1.5); virtualPad.buttonUp.updateHitbox(); }
         if (virtualPad.buttonDown != null) { virtualPad.buttonDown.scale.set(1.5, 1.5); virtualPad.buttonDown.updateHitbox(); }
         if (virtualPad.buttonLeft != null) { virtualPad.buttonLeft.scale.set(1.5, 1.5); virtualPad.buttonLeft.updateHitbox(); }
@@ -137,6 +140,7 @@ class MadnessCredits extends MusicBeatState
         changeSel();  
     }  
 
+    // ---------- UPDATE ----------
     override function update(elapsed:Float)  
     {  
         super.update(elapsed);  
@@ -185,18 +189,14 @@ class MadnessCredits extends MusicBeatState
             var targetX = (i == curSel) ? 150 : 20;  
 
             t.x = FlxMath.lerp(t.x, targetX, 0.4 * 60 * elapsed);  
-            t.alpha = FlxMath.lerp(  
-                t.alpha,  
-                Math.abs(FlxMath.remapToRange(Math.abs(i - curSel), 4, 0, 0, 1)),  
-                0.4 * 60 * elapsed  
-            );  
+            t.alpha = FlxMath.lerp(t.alpha, Math.abs(FlxMath.remapToRange(Math.abs(i - curSel), 4, 0, 0, 1)), 0.4 * 60 * elapsed);  
         }  
     }  
 
+    // ---------- MUDAR SELEÇÃO ----------
     function changeSel(s:Int = 0)  
     {  
-        if (s != 0)  
-            FlxG.sound.play(Paths.sound('madness/beep'));  
+        if (s != 0) FlxG.sound.play(Paths.sound('madness/beep'));  
 
         curSel = FlxMath.wrap(curSel + s, 0, credits.length - 1);  
 
