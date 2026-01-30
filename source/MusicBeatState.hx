@@ -1,7 +1,5 @@
 package;
 
-package;
-
 import flixel.FlxState;
 import flixel.FlxG;
 
