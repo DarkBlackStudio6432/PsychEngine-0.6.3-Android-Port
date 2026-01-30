@@ -1,5 +1,9 @@
 package objects;
 
+import flixel.FlxSprite;
+import flixel.FlxG;
+import backend.Paths;
+
 class AttachedSprite extends FlxSprite
 {
 	public var sprTracker:FlxSprite;
