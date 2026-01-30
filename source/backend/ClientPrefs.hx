@@ -1,162 +1,186 @@
 package backend;
 
-import flixel.util.FlxSave;
-import flixel.input.keyboard.FlxKey;
-import flixel.input.gamepad.FlxGamepadInputID;
+import flixel.FlxG;
+import flixel.graphics.FlxGraphic;
+import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.math.FlxRect;
+import openfl.display.BitmapData;
+import openfl.utils.AssetType;
+import openfl.utils.Assets as OpenFlAssets;
+import openfl.system.System;
+import lime.utils.Assets;
+import flash.media.Sound;
 
-@:structInit
-class SaveVariables {
-    public var unfairGimmicks:Bool = true;
-    public var trickyExperience:Bool = false;
+#if MODS_ALLOWED
+import backend.Mods;
+#end
 
-    public var downScroll:Bool = false;
-    public var middleScroll:Bool = false;
-    public var opponentStrums:Bool = true;
-    public var showFPS:Bool = true;
-    public var flashing:Bool = true;
-    public var autoPause:Bool = true;
-    public var antialiasing:Bool = true;
-    public var hitbox:Float = 1.0;
-    public var noteSkin:String = "Default";
-    public var splashSkin:String = "Psych";
-    public var splashAlpha:Float = 0.6;
-    public var lowQuality:Bool = false;
-    public var shaders:Bool = true;
-    public var cacheOnGPU:Bool = #if !switch false #else true #end;
-    public var framerate:Int = 60;
-    public var camZooms:Bool = true;
-    public var hideHud:Bool = false;
-    public var noteOffset:Int = 0;
+class Paths
+{
+    inline public static var SOUND_EXT = #if web "mp3" #else "ogg" #end;
+    inline public static var VIDEO_EXT = "mp4";
 
-    public var arrowRGB:Array<Array<FlxColor>> = [
-        [0xFFC24B99, 0xFFFFFFFF, 0xFF3C1F56],
-        [0xFF00FFFF, 0xFFFFFFFF, 0xFF1542B7],
-        [0xFF12FA05, 0xFFFFFFFF, 0xFF0A4447],
-        [0xFFF9393F, 0xFFFFFFFF, 0xFF651038]
-    ];
-    public var arrowRGBPixel:Array<Array<FlxColor>> = [
-        [0xFFE276FF, 0xFFFFF9FF, 0xFF60008D],
-        [0xFF3DCAFF, 0xFFF4FFFF, 0xFF003060],
-        [0xFF71E300, 0xFFF6FFE6, 0xFF003100],
-        [0xFFFF884E, 0xFFFFFAF5, 0xFF6C0000]
-    ];
+    public static var localTrackedAssets:Array<String> = [];
+    public static var currentTrackedAssets:Map<String, FlxGraphic> = [];
+    public static var currentTrackedSounds:Map<String, Sound> = [];
 
-    public var ghostTapping:Bool = true;
-    public var timeBarType:String = "Time Left";
-    public var scoreZoom:Bool = true;
-    public var noReset:Bool = false;
-    public var healthBarAlpha:Float = 1;
-    public var hitsoundVolume:Float = 0;
-    public var pauseMusic:String = "Tea Time";
-    public var checkForUpdates:Bool = true;
-    public var comboStacking:Bool = true;
+    public static var currentLevel:String;
 
-    public var gameplaySettings:Map<String, Dynamic> = [
-        "scrollspeed" => 1.0,
-        "scrolltype" => "multiplicative",
-        "songspeed" => 1.0,
-        "healthgain" => 1.0,
-        "healthloss" => 1.0,
-        "instakill" => false,
-        "practice" => false,
-        "botplay" => false,
-        "opponentplay" => false
-    ];
-
-    public var comboOffset:Array<Int> = [0,0,0,0];
-    public var ratingOffset:Int = 0;
-    public var sickWindow:Int = 45;
-    public var goodWindow:Int = 90;
-    public var badWindow:Int = 135;
-    public var safeFrames:Float = 10;
-    public var guitarHeroSustains:Bool = true;
-    public var discordRPC:Bool = true;
-}
-
-class ClientPrefs {
-    public static var data:SaveVariables = {};
-    public static var defaultData:SaveVariables = {};
-
-    public static var keyBinds:Map<String, Array<FlxKey>> = [
-        "note_up" => [W, UP],
-        "note_left" => [A, LEFT],
-        "note_down" => [S, DOWN],
-        "note_right" => [D, RIGHT],
-
-        "ui_up" => [W, UP],
-        "ui_left" => [A, LEFT],
-        "ui_down" => [S, DOWN],
-        "ui_right" => [D, RIGHT],
-
-        "accept" => [SPACE, ENTER],
-        "back" => [BACKSPACE, ESCAPE],
-        "pause" => [ENTER, ESCAPE],
-        "reset" => [R],
-
-        "volume_mute" => [ZERO],
-        "volume_up" => [NUMPADPLUS, PLUS],
-        "volume_down" => [NUMPADMINUS, MINUS],
-
-        "debug_1" => [SEVEN],
-        "debug_2" => [EIGHT]
-    ];
-
-    public static var gamepadBinds:Map<String, Array<FlxGamepadInputID>> = [
-        "note_up" => [DPAD_UP, Y],
-        "note_left" => [DPAD_LEFT, X],
-        "note_down" => [DPAD_DOWN, A],
-        "note_right" => [DPAD_RIGHT, B],
-
-        "ui_up" => [DPAD_UP, LEFT_STICK_DIGITAL_UP],
-        "ui_left" => [DPAD_LEFT, LEFT_STICK_DIGITAL_LEFT],
-        "ui_down" => [DPAD_DOWN, LEFT_STICK_DIGITAL_DOWN],
-        "ui_right" => [DPAD_RIGHT, LEFT_STICK_DIGITAL_RIGHT],
-
-        "accept" => [A, START],
-        "back" => [B],
-        "pause" => [START],
-        "reset" => [BACK]
-    ];
-
-    public static var defaultKeys:Map<String, Array<FlxKey>> = null;
-    public static var defaultButtons:Map<String, Array<FlxGamepadInputID>> = null;
-
-    public static function loadDefaultKeys() {
-        defaultKeys = keyBinds.copy();
-        defaultButtons = gamepadBinds.copy();
+    public static function setCurrentLevel(name:String)
+    {
+        currentLevel = name.toLowerCase();
     }
 
-    public static function resetKeys(controller:Null<Bool> = null) {
-        if(controller != true)
-            for (key in keyBinds.keys())
-                if(defaultKeys.exists(key))
-                    keyBinds.set(key, defaultKeys.get(key).copy());
-
-        if(controller != false)
-            for (button in gamepadBinds.keys())
-                if(defaultButtons.exists(button))
-                    gamepadBinds.set(button, defaultButtons.get(button).copy());
-    }
-
-    public static function loadPrefs():Void {
-        var save:FlxSave = new FlxSave();
-        if(save.bind("clientPrefs") && save.data != null) {
-            data = save.data;
-        } else {
-            data = defaultData;
+    public static function getPath(file:String, ?type:AssetType = TEXT, ?library:String = null, ?modsAllowed:Bool = false):String
+    {
+        #if MODS_ALLOWED
+        if(modsAllowed)
+        {
+            var modFile:String = if(library != null) '$library/$file' else file;
+            var modded:String = modFolders(modFile);
+            if(sys.FileSystem.exists(modded)) return modded;
         }
-    }
+        #end
 
-    public static function saveSettings():Void {
-        var save:FlxSave = new FlxSave();
-        if(save.bind("clientPrefs")) {
-            save.data = data;
-            save.flush();
+        if(library != null)
+            return getLibraryPath(file, library);
+
+        if(currentLevel != null && currentLevel != "shared")
+        {
+            var levelPath:String = getLibraryPathForce(file, "week_assets", currentLevel);
+            if(OpenFlAssets.exists(levelPath, type)) return levelPath;
         }
+
+        return getSharedPath(file);
     }
 
-    public static function getGameplaySetting(name:String, defaultValue:Dynamic = null):Dynamic {
-        if(defaultValue == null) defaultValue = defaultData.gameplaySettings.get(name);
-        return data.gameplaySettings.exists(name) ? data.gameplaySettings.get(name) : defaultValue;
+    public static function getLibraryPath(file:String, library:String = "shared"):String
+    {
+        return if(library == "shared") getSharedPath(file) else getLibraryPathForce(file, library);
     }
+
+    inline static function getLibraryPathForce(file:String, library:String, ?level:String = null):String
+    {
+        if(level == null) level = library;
+        return '$library:assets/$level/$file';
+    }
+
+    inline static public function getSharedPath(file:String = ''):String
+    {
+        return 'assets/shared/$file';
+    }
+
+    // TEXT FILES
+    inline static public function txt(key:String, ?library:String) return getPath('data/$key.txt', TEXT, library);
+    inline static public function xml(key:String, ?library:String) return getPath('data/$key.xml', TEXT, library);
+    inline static public function json(key:String, ?library:String) return getPath('data/$key.json', TEXT, library);
+    inline static public function lua(key:String, ?library:String) return getPath('$key.lua', TEXT, library);
+
+    // GRAPHICS
+    public static function image(key:String, ?library:String = null):FlxGraphic
+    {
+        var file:String = getPath('images/$key.png', IMAGE, library);
+        if(currentTrackedAssets.exists(file))
+        {
+            localTrackedAssets.push(file);
+            return currentTrackedAssets.get(file);
+        }
+
+        var bitmap:BitmapData = null;
+        #if MODS_ALLOWED
+        var modFile:String = modsImages(key);
+        if(sys.FileSystem.exists(modFile)) bitmap = BitmapData.fromFile(modFile);
+        #end
+
+        if(bitmap == null)
+        {
+            if(sys.FileSystem.exists(file)) bitmap = BitmapData.fromFile(file);
+            else if(OpenFlAssets.exists(file, IMAGE)) bitmap = OpenFlAssets.getBitmapData(file);
+        }
+
+        if(bitmap != null)
+        {
+            localTrackedAssets.push(file);
+            var graphic:FlxGraphic = FlxGraphic.fromBitmapData(bitmap, false, file);
+            graphic.persist = true;
+            currentTrackedAssets.set(file, graphic);
+            return graphic;
+        }
+
+        trace('Paths.image: returning null ($file)');
+        return null;
+    }
+
+    // SOUND
+    public static function sound(key:String, ?library:String):Sound
+    {
+        return returnSound('sounds', key, library);
+    }
+
+    public static function music(key:String, ?library:String):Sound
+    {
+        return returnSound('music', key, library);
+    }
+
+    public static function voices(song:String):Sound
+    {
+        return returnSound('songs', '${formatToSongPath(song)}/Voices', 'songs');
+    }
+
+    public static function inst(song:String):Sound
+    {
+        return returnSound('songs', '${formatToSongPath(song)}/Inst', 'songs');
+    }
+
+    public static function returnSound(path:String, key:String, ?library:String):Sound
+    {
+        var gottenPath:String = getPath('$path/$key.$SOUND_EXT', SOUND, library);
+        if(!currentTrackedSounds.exists(gottenPath) && OpenFlAssets.exists(gottenPath, SOUND))
+        {
+            currentTrackedSounds.set(gottenPath, OpenFlAssets.getSound(gottenPath));
+        }
+        localTrackedAssets.push(gottenPath);
+        return currentTrackedSounds.get(gottenPath);
+    }
+
+    // VIDEO
+    public static function video(key:String):String
+    {
+        #if MODS_ALLOWED
+        var file:String = modsVideo(key);
+        if(sys.FileSystem.exists(file)) return file;
+        #end
+        return 'assets/videos/$key.$VIDEO_EXT';
+    }
+
+    // HELPERS
+    inline static public function formatToSongPath(path:String):String
+    {
+        var invalidChars = ~/[~&\\;:<>#]/;
+        var hideChars = ~/[.,'"%?!]/;
+        var path2 = invalidChars.split(path.replace(' ', '-')).join("-");
+        return hideChars.split(path2).join("").toLowerCase();
+    }
+
+    #if MODS_ALLOWED
+    inline static public function mods(key:String = '') return 'mods/' + key;
+    inline static public function modsImages(key:String) return modFolders('images/' + key + '.png');
+    inline static public function modsVideo(key:String) return modFolders('videos/' + key + '.' + VIDEO_EXT);
+    inline static public function modFolders(key:String):String
+    {
+        if(Mods.currentModDirectory != null && Mods.currentModDirectory.length > 0)
+        {
+            var file:String = mods(Mods.currentModDirectory + '/' + key);
+            if(sys.FileSystem.exists(file)) return file;
+        }
+
+        for(mod in Mods.getGlobalMods())
+        {
+            var file:String = mods(mod + '/' + key);
+            if(sys.FileSystem.exists(file)) return file;
+        }
+
+        return 'mods/' + key;
+    }
+    #end
 }
