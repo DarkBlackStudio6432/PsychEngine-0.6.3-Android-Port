@@ -1,24 +1,19 @@
 package;
 
-import states.TitleState;
-
-import mobile.backend.CrashHandler;
-import openfl.events.UncaughtErrorEvent;
-import debug.FPSCounter;
-import backend.Highscore;
-import flixel.FlxGame;
-import haxe.io.Path;
 import openfl.Lib;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.display.StageScaleMode;
-import lime.app.Application;
-//import TitleState;
-import mobile.backend.MobileScaleMode;
-import openfl.events.KeyboardEvent;
-import lime.system.System as LimeSystem;
+import flixel.FlxGame;
+
+import backend.ClientPrefs;
+import backend.Paths;
+import backend.Highscore;   // se você usa Highscore no Main
+import states.TitleState;
+
 #if mobile
-import mobile.states.CopyState;
+import mobile.backend.CrashHandler;
+import mobile.backend.StorageUtil;
 #end
 #if linux
 import lime.graphics.Image;
