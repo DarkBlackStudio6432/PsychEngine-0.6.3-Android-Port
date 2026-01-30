@@ -3,7 +3,6 @@ package options;
 import objects.AttachedSprite;
 import backend.MadnessTransition;
 import flixel.FlxSubState;
-import AttachedSprite;
 import states.MadnessMenu;
 import backend.StageData;
 import flixel.FlxG;
