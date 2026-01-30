@@ -1,6 +1,5 @@
 #if !macro
-import Paths;
-
+import backend.Paths;
 #if sys
 import sys.*;
 import sys.io.*;
