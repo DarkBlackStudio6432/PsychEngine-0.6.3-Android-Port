@@ -145,8 +145,9 @@ class MadnessCredits extends MusicBeatState
             MusicBeatState.switchState(new MadnessMenu());  
 
         // Clicar no link do crédito
-        if (controls.ACCEPT || FlxG.mouse.justPressed)  
-            CoolUtil.browserLoad(credits[curSel].link);  
+        // Só dispara quando o botão A/ACCEPT é pressionado
+if (controls.ACCEPT)  
+    CoolUtil.browserLoad(credits[curSel].link);  
 
         FlxG.camera.scroll.y = FlxMath.lerp(  
             FlxG.camera.scroll.y,  
