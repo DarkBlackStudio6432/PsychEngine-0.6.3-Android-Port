@@ -3,7 +3,6 @@ package backend;
 import flixel.FlxG;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
-import flixel.graphics.frames.FlxFrame.FlxFrameAngle;
 import flixel.math.FlxRect;
 
 import openfl.display.BitmapData;
@@ -15,8 +14,6 @@ import openfl.geom.Rectangle;
 
 import lime.utils.Assets;
 import flash.media.Sound;
-
-import haxe.Json;
 
 #if MODS_ALLOWED
 import backend.Mods;
@@ -135,7 +132,7 @@ class Paths
         var gottenPath:String = '$key.$SOUND_EXT';
         if(path != null) gottenPath = '$path/$gottenPath';
         gottenPath = getPath(gottenPath, SOUND, library);
-        gottenPath = gottenPath.substring(gottenPath.indexOf(':') + 1, gottenPath.length);
+        gottenPath = gottenPath.substring(Math.max(gottenPath.indexOf(':') + 1,0), gottenPath.length);
 
         if(!currentTrackedSounds.exists(gottenPath))
         {
@@ -188,7 +185,7 @@ class Paths
 
         localTrackedAssets.push(file);
 
-        if(allowGPU && ClientPrefs.data.cacheOnGPU)
+        if(allowGPU && ClientPrefs.data != null && ClientPrefs.data.cacheOnGPU)
         {
             var texture:RectangleTexture = FlxG.stage.context3D.createRectangleTexture(bitmap.width, bitmap.height, BGRA, true);
             texture.uploadFromBitmapData(bitmap);
@@ -210,6 +207,8 @@ class Paths
     // --------------------------
     static public function getAtlas(key:String, ?library:String = null, ?allowGPU:Bool = true):FlxAtlasFrames {
         var img:FlxGraphic = image(key, library, allowGPU);
+        if(img == null) return null;
+
         var xml:String = getPath('images/$key.xml', TEXT, library, true);
         if(OpenFlAssets.exists(xml)) return FlxAtlasFrames.fromSparrow(img, xml);
 
@@ -262,58 +261,20 @@ class Paths
         for(key in currentTrackedAssets.keys()) {
             if(!localTrackedAssets.contains(key) && !dumpExclusions.contains(key)) {
                 var obj = currentTrackedAssets.get(key);
-                if(obj != null) { FlxG.bitmap._cache.remove(key); openfl.Assets.cache.removeBitmapData(key); obj.destroy(); currentTrackedAssets.remove(key); }
+                if(obj != null) { obj.destroy(); currentTrackedAssets.remove(key); }
             }
         }
         System.gc();
     }
 
     public static function clearStoredMemory() {
-        for(key in FlxG.bitmap._cache.keys()) {
-            var obj = FlxG.bitmap._cache.get(key);
-            if(obj != null && !currentTrackedAssets.exists(key)) { openfl.Assets.cache.removeBitmapData(key); FlxG.bitmap._cache.remove(key); obj.destroy(); }
-        }
-        for(key => asset in currentTrackedSounds) {
+        for(key in currentTrackedSounds.keys()) {
+            var asset = currentTrackedSounds.get(key);
             if(!localTrackedAssets.contains(key) && !dumpExclusions.contains(key) && asset != null) {
                 Assets.cache.clear(key);
                 currentTrackedSounds.remove(key);
             }
         }
         localTrackedAssets = [];
-        #if !html5 openfl.Assets.cache.clear("songs"); #end
     }
-
-    // --------------------------
-    // EXTRA: AnimateAtlas (mod feature)
-    // --------------------------
-    #if flxanimate
-    public static function loadAnimateAtlas(spr:FlxAnimate, folderOrImg:Dynamic, spriteJson:Dynamic = null, animationJson:Dynamic = null)
-    {
-        var changedAnimJson = false;
-        var changedAtlasJson = false;
-        var changedImage = false;
-
-        if(spriteJson != null) { changedAtlasJson = true; spriteJson = File.getContent(spriteJson); }
-        if(animationJson != null) { changedAnimJson = true; animationJson = File.getContent(animationJson); }
-
-        if(Std.isOfType(folderOrImg, String))
-        {
-            var originalPath:String = folderOrImg;
-            for(i in 0...10)
-            {
-                var st = if(i == 0) '' else '$i';
-                if(!changedAtlasJson)
-                {
-                    spriteJson = getTextFromFile('images/$originalPath/spritemap$st.json');
-                    if(spriteJson != null) { changedImage = true; changedAtlasJson = true; folderOrImg = Paths.image('$originalPath/spritemap$st'); break; }
-                }
-                else if(Paths.fileExists('images/$originalPath/spritemap$st.png', IMAGE)) { changedImage = true; folderOrImg = Paths.image('$originalPath/spritemap$st'); break; }
-            }
-            if(!changedImage) folderOrImg = Paths.image(originalPath);
-            if(!changedAnimJson) animationJson = getTextFromFile('images/$originalPath/Animation.json');
-        }
-
-        spr.loadAtlasEx(folderOrImg, spriteJson, animationJson);
-    }
-    #end
 }
