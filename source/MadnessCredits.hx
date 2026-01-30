@@ -65,6 +65,11 @@ class MadnessCredits extends MusicBeatState
 
     override function create()
     {
+
+#if mobile
+var virtualPad:flixel.ui.FlxVirtualPad;
+#end
+
         persistentUpdate = true;
         super.create();
 
