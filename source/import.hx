@@ -1,7 +1,7 @@
 #if !macro
 import backend.Paths;
 import backend.CoolUtil;
-import backend.Conductor;
+import Conductor;
 import backend.Highscore;
 //import states.TitleState;
 #if sys
