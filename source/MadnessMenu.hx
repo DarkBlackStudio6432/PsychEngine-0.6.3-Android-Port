@@ -41,6 +41,12 @@ class MadnessMenu extends MusicBeatState
 
     override function create() {
         
+super.create();
+
+    var test:FlxText = new FlxText(0, 0, 0, "MADNESS MENU OK", 32);
+    test.screenCenter();
+    add(test);
+
 
         Paths.sound("coming soon");
         FlxG.mouse.visible = true;
