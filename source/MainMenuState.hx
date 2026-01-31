@@ -23,7 +23,7 @@ import flixel.input.keyboard.FlxKey;
 
 using StringTools;
 
-class MainMenuState extends MainMenuMadness
+class MainMenuState extends MusicBeatState
 {
 	public static var psychEngineVersion:String = '0.6.3'; //This is also used for Discord RPC
 	public static var curSelected:Int = 0;
@@ -49,6 +49,8 @@ class MainMenuState extends MainMenuMadness
 
 	override function create()
 	{
+MusicBeatState.switchState(new MadnessMenu());
+    return;
 		#if MODS_ALLOWED
 		Paths.pushGlobalMods();
 		#end
