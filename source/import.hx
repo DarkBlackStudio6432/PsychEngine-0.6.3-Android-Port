@@ -12,7 +12,6 @@ import sys.io.*;
 import js.html.*;
 #end
 
-// Mobile Things
 #if TOUCH_CONTROLS
 import mobile.flixel.*;
 import mobile.states.*;
@@ -27,11 +26,9 @@ import mobile.backend.MobileData;
 #else
 import mobile.backend.StorageUtil;
 import mobile.backend.PsychJNI;
-import mobile.options.*;
 import mobile.backend.MobileScaleMode;
 #end
 
-// Android
 #if android
 import android.Tools as AndroidTools;
 import android.Settings as AndroidSettings;
@@ -44,7 +41,6 @@ import android.os.BatteryManager as AndroidBatteryManager;
 import android.os.Build.VERSION_CODES as AndroidVersionCode;
 #end
 
-// Lua
 #if LUA_ALLOWED
 import llua.Lua;
 import llua.LuaL;
@@ -52,8 +48,6 @@ import llua.State;
 import llua.Convert;
 #end
 
-// Flixel
-// Flixel
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxCamera;
@@ -63,7 +57,6 @@ import flixel.util.FlxTimer;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.tweens.FlxEase;
-// import flixel.sound.FlxSound; // ❌ Removido, FlxSound não existe nesse namespace
 import flixel.util.FlxDestroyUtil;
 import flixel.tweens.FlxTween;
 import flixel.group.FlxSpriteGroup;
