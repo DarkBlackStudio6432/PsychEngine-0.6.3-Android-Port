@@ -31,7 +31,6 @@ env:
 
 jobs:
   build:
-    name: Build
     runs-on: ${{ inputs.os }}
     steps:
       - name: Checkout
@@ -50,13 +49,38 @@ jobs:
           ndk-version: r27c
           add-to-path: false
 
-      - name: Install Libraries and Setup Haxelib
-        run: ${{ inputs.setupCommand }}
-
-      - name: Limpar builds antigos
+      - name: Limpar cache e builds antigos
         run: |
-          echo "Removendo builds antigos..."
-          rm -rf export/release/android/bin
+          echo "Removendo Haxelib antigo e builds..."
+          rm -rf ~/.haxelib
+          # evita erro se lime não estiver instalado ainda
+          command -v lime && lime clean android || true
+
+      - name: Setup Haxelib + Dependências
+        run: |
+          echo "💾 Configurando Haxelib..."
+          haxelib setup ~/.haxelib
+
+          echo "📦 Instalando dependências essenciais..."
+          haxelib git linc_luajit https://github.com/PsychExtendedThings/linc_luajit --quiet
+          haxelib install tjson --quiet
+          haxelib install flixel 5.2.2 --quiet
+          haxelib install flixel-addons 2.11.0 --quiet
+          haxelib install flixel-ui 2.4.0 --quiet
+          haxelib install hscript 2.4.0 --quiet
+          haxelib git hxCodec https://github.com/PsychExtendedThings/hxCodec-0.6.3 --quiet
+          haxelib git hxcpp https://github.com/PsychExtendedThings/hxcpp --quiet
+          haxelib install flxanimate --quiet
+          haxelib git lime https://github.com/PsychExtendedThings/lime-new --quiet
+          haxelib install openfl 9.2.2 --quiet
+
+          # Configuração Android apenas se necessário
+          if [ "${{ inputs.system }}" = "Android" ]; then
+            yes | haxelib run lime setup android
+          fi
+
+      - name: Run custom setup command
+        run: ${{ inputs.setupCommand }}
 
       - name: Configure Android
         if: inputs.system == 'Android'
