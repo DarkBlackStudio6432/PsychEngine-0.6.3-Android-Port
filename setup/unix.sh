@@ -3,31 +3,39 @@ set -e
 
 cd ..
 
-echo Making the main haxelib and setuping folder..
+echo "💾 Configurando haxelib..."
 haxelib setup ~/haxelib
 
-echo Installing dependencies...
-echo This might take a few moments depending on your internet speed.
+echo "📦 Instalando dependências..."
+echo "Isso pode levar alguns minutos dependendo da velocidade da internet..."
 
+# LuaJIT
 haxelib git linc_luajit https://github.com/PsychExtendedThings/linc_luajit --quiet
+
+# JSON
 haxelib install tjson --quiet
 
+# Flixel
 haxelib install flixel 5.2.2 --quiet
 haxelib install flixel-addons 2.11.0 --quiet
 haxelib install flixel-ui 2.4.0 --quiet
 haxelib install hscript 2.4.0 --quiet
 
+# HXCodec e HXCPP
 haxelib git hxCodec https://github.com/PsychExtendedThings/hxCodec-0.6.3 --quiet
 haxelib git hxcpp https://github.com/PsychExtendedThings/hxcpp --quiet
 
+# FlxAnimate
 haxelib install flxanimate --quiet
 
-haxelib install lime 7.9.0 --quiet
+# ⚠️ Lime + OpenFL compatíveis com Psych 0.6.3
+haxelib git lime https://github.com/PsychExtendedThings/lime-new --quiet
 haxelib install openfl 9.2.2 --quiet
 
-# 🔥 ESSENCIAL PARA ANDROID
+# 🔥 Essencial para Android
 haxelib git extension-androidtools https://github.com/MAJigsaw77/extension-androidtools --quiet
 
+# Configurações do Android
 yes | haxelib run lime setup android
 
-echo Finished!
+echo "✅ Tudo pronto! Dependências instaladas e ambiente configurado."
