@@ -6,9 +6,9 @@ import flixel.addons.display.FlxTiledSprite;
 import options.OptionsState;
 import flixel.math.FlxRect;
 import openfl.display.BitmapData;
-import flixel.input.mouse.FlxMouseEvent;
+//import flixel.input.mouse.FlxMouseEvent;
 import flixel.addons.display.FlxBackdrop;
-using MadnessMenu.SpriteHelper;
+//using MadnessMenu.SpriteHelper;
 
 
 //really jank way of handling this
