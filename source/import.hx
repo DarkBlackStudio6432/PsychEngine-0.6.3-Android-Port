@@ -53,6 +53,7 @@ import llua.Convert;
 #end
 
 // Flixel
+// Flixel
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxCamera;
@@ -62,7 +63,7 @@ import flixel.util.FlxTimer;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.tweens.FlxEase;
-import flixel.sound.FlxSound;
+// import flixel.sound.FlxSound; // ❌ Removido, FlxSound não existe nesse namespace
 import flixel.util.FlxDestroyUtil;
 import flixel.tweens.FlxTween;
 import flixel.group.FlxSpriteGroup;
