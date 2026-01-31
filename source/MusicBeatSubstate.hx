@@ -1,20 +1,11 @@
 package;
 
-import flixel.FlxSubState;
+import Conductor.BPMChangeEvent;
 import flixel.FlxG;
+import flixel.FlxSubState;
+import flixel.FlxBasic;
 import flixel.FlxSprite;
-import flixel.text.FlxText;
-
-import backend.Paths;
-import backend.ClientPrefs;
-import backend.Conductor;
-import backend.Highscore;
-
-#if mobile
-import mobile.objects.MobilePad;
-import mobile.backend.StorageUtil;
-import mobile.backend.PsychJNI;
-#end
+import flixel.input.actions.FlxActionInput;
 
 class MusicBeatSubstate extends FlxSubState
 {
