@@ -32,9 +32,6 @@ haxelib install flxanimate --quiet
 haxelib git lime https://github.com/PsychExtendedThings/lime-new --quiet
 haxelib install openfl 9.2.2 --quiet
 
-# 🔥 Essencial para Android
-haxelib git extension-androidtools https://github.com/MAJigsaw77/extension-androidtools --quiet
-
 # Configurações do Android
 yes | haxelib run lime setup android
 
