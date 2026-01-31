@@ -13,7 +13,7 @@ import openfl.system.System;
 import openfl.geom.Rectangle;
 
 import lime.utils.Assets;
-import flash.media.Sound;
+import openfl.media.Sound; // substitui flash.media.Sound
 
 #if MODS_ALLOWED
 import backend.Mods;
