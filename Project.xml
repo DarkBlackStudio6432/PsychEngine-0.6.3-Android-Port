@@ -79,6 +79,7 @@
 	<haxelib name="tjson"/>
 	<haxelib name="linc_luajit"/>
 	<haxelib name="flxanimate"/>
+ <haxelib name="extension-androidtools"/>
 
 	<!-- ================= FLAGS ================= -->
 	<haxedef name="FLX_NO_FOCUS_LOST_SCREEN"/>
