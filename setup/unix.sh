@@ -29,8 +29,7 @@ haxelib git hxcpp https://github.com/PsychExtendedThings/hxcpp --quiet
 haxelib install flxanimate --quiet
 
 # ⚠️ Lime + OpenFL compatíveis com Psych 0.6.3
-haxelib git lime https://github.com/PsychExtendedThings/lime-new --quiet
-haxelib install openfl 9.2.2 --quiet
+haxelib install lime 7.9.0 --quiet
 
 # Configurações do Android
 yes | haxelib run lime setup android
