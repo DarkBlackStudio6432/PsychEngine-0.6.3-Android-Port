@@ -27,7 +27,7 @@ haxelib install flxanimate --quiet
 haxelib install lime 7.9.0 --quiet
 haxelib install openfl 9.2.2 --quiet
 
-haxelib run lime setup
+yes | haxelib run lime setup android
 haxelib run openfl setup
 
 echo Finished!
