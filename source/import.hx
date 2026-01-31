@@ -1,8 +1,10 @@
 #if !macro
 import backend.Paths;
-import backend.CoolUtil;
+import backend.ClientPrefs;
 import backend.Conductor;
 import backend.Highscore;
+import states.TitleState;
+
 #if sys
 import sys.*;
 import sys.io.*;
@@ -10,6 +12,7 @@ import sys.io.*;
 import js.html.*;
 #end
 
+// Mobile Things
 #if TOUCH_CONTROLS
 import mobile.flixel.*;
 import mobile.states.*;
@@ -28,6 +31,7 @@ import mobile.options.*;
 import mobile.backend.MobileScaleMode;
 #end
 
+// Android
 #if android
 import android.Tools as AndroidTools;
 import android.Settings as AndroidSettings;
@@ -40,6 +44,7 @@ import android.os.BatteryManager as AndroidBatteryManager;
 import android.os.Build.VERSION_CODES as AndroidVersionCode;
 #end
 
+// Lua
 #if LUA_ALLOWED
 import llua.Lua;
 import llua.LuaL;
@@ -47,6 +52,7 @@ import llua.State;
 import llua.Convert;
 #end
 
+// Flixel
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxCamera;
@@ -56,11 +62,7 @@ import flixel.util.FlxTimer;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.tweens.FlxEase;
-#if !NEW_PSYCH063
-import flixel.system.FlxSound;
-#else
 import flixel.sound.FlxSound;
-#end
 import flixel.util.FlxDestroyUtil;
 import flixel.tweens.FlxTween;
 import flixel.group.FlxSpriteGroup;
