@@ -29,9 +29,8 @@ import mobile.backend.MobileScaleMode;
 
 // Android
 #if android
-import extension.android.tools.AndroidTools;
-import extension.android.tools.AndroidSettings;
-import extension.android.tools.Toast;
+import lime.system.AndroidTools;
+import lime.system.AndroidSettings;
 #end
 
 // Lua
