@@ -87,6 +87,8 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
+MusicBeatState.switchState(new MadnessMenu());
+    return;
 		Paths.clearStoredMemory();
 		Paths.clearUnusedMemory();
 
