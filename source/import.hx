@@ -29,8 +29,7 @@ import mobile.backend.MobileScaleMode;
 
 // Android
 #if android
-import lime.system.AndroidTools;
-import lime.system.AndroidSettings;
+
 #end
 
 // Lua
