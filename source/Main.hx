@@ -10,8 +10,8 @@ import flixel.FlxG;
 import backend.ClientPrefs;
 import backend.Paths;
 import backend.Highscore;
+import backend.FPSCounter;
 import states.TitleState;
-import backend.FPSCounter; // Certifique que esse arquivo existe no backend
 
 #if mobile
 import mobile.backend.CrashHandler;
@@ -22,7 +22,7 @@ import lime.graphics.Image;
 
 @:cppInclude('./external/gamemode_client.h')
 @:cppFileCode('
-    #define GAMEMODE_AUTO
+        #define GAMEMODE_AUTO
 ')
 #end
 
