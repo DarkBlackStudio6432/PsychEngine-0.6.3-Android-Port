@@ -3,10 +3,11 @@ set -e
 
 cd ..
 
-echo "💾 Configurando haxelib..."
-haxelib setup ~/haxelib
+echo "💾 Configurando Haxelib..."
+# Rodar setup sem argumento, Haxelib cria ~/.haxelib corretamente
+haxelib setup
 
-echo "📦 Instalando dependências..."
+echo "📦 Instalando dependências essenciais..."
 echo "Isso pode levar alguns minutos dependendo da velocidade da internet..."
 
 # LuaJIT
@@ -29,9 +30,13 @@ haxelib git hxcpp https://github.com/PsychExtendedThings/hxcpp --quiet
 haxelib install flxanimate --quiet
 
 # ⚠️ Lime + OpenFL compatíveis com Psych 0.6.3
-haxelib install lime 7.9.0 --quiet
+haxelib git lime https://github.com/PsychExtendedThings/lime-new --quiet
+haxelib install openfl 9.2.2 --quiet
 
-# Configurações do Android
-yes | haxelib run lime setup android
+# Configuração Android apenas se necessário
+if [ "$1" = "Android" ]; then
+  echo "📱 Configurando Android SDK/NDK..."
+  yes | haxelib run lime setup android
+fi
 
 echo "✅ Tudo pronto! Dependências instaladas e ambiente configurado."
