@@ -5,7 +5,6 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.math.FlxMath;
 
-import backend.Paths;
 import backend.ClientPrefs;
 import backend.Conductor;
 import backend.Highscore;
