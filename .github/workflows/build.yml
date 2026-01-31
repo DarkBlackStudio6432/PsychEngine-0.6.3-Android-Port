@@ -50,6 +50,12 @@ jobs:
           ndk-version: r27c
           add-to-path: false
 
+      - name: Limpar cache e builds antigos
+        run: |
+          echo "Removendo Haxelib antigo e builds..."
+          rm -rf ~/.haxelib
+          lime clean android
+
       - name: Install Libraries
         run: ${{ inputs.setupCommand }}
 
