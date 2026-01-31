@@ -18,7 +18,7 @@ import mobile.backend.StorageUtil;
 import mobile.backend.PsychJNI;
 #end
 
-class MusicBeatState extends FlxUIState
+class MusicBeatState extends flixel.FlxState
 {
 	private var curSection:Int = 0;
 	private var stepsToDo:Int = 0;
