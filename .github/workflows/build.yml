@@ -54,7 +54,7 @@ jobs:
         run: |
           echo "Removendo Haxelib antigo e builds..."
           rm -rf ~/.haxelib
-          lime clean android
+          haxelib run lime clean android
 
       - name: Install Libraries
         run: ${{ inputs.setupCommand }}
