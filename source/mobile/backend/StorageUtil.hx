@@ -9,7 +9,6 @@ import cpp.Lib;
 
 /**
  * A storage class for mobile.
- * @author Mihai Alexandru (M.A. Jigsaw)
  */
 class StorageUtil
 {
@@ -69,7 +68,9 @@ class StorageUtil
                         FileSystem.createDirectory(total);
                 }
                 catch (e:Exception)
-                    trace('Error while creating directory. (${e.message}');
+                {
+                    trace('Error while creating directory. (${e.message})');
+                }
             }
         }
     }
@@ -87,33 +88,35 @@ class StorageUtil
                 CoolUtil.showPopUp('$fileName has been saved.', "Success!");
         }
         catch (e:Exception)
+        {
             if (alert)
-                CoolUtil.showPopUp('$fileName couldn\'t be saved.\n(${e.message})', "Error!")
+                CoolUtil.showPopUp('$fileName couldn\'t be saved.\n(${e.message})', "Error!");
             else
                 trace('$fileName couldn\'t be saved. (${e.message})');
+        }
     }
     #end
 
     #if android
     public static function requestPermissions():Void
     {
-        var sdk = Lib.load("android", "getSDKInt")();
+        var sdk = Lib.load("android", "getSDKInt", 0)();
 
         if (sdk >= 33) // TIRAMISU
-            Lib.load("android", "requestPermissions")([
+            Lib.load("android", "requestPermissions", 1)([
                 "READ_MEDIA_IMAGES", "READ_MEDIA_VIDEO", "READ_MEDIA_AUDIO", "READ_MEDIA_VISUAL_USER_SELECTED"
             ]);
         else
-            Lib.load("android", "requestPermissions")([
+            Lib.load("android", "requestPermissions", 1)([
                 "READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE"
             ]);
 
-        var isManager:Bool = Lib.load("android", "isExternalStorageManager")();
+        var isManager:Bool = Lib.load("android", "isExternalStorageManager", 0)();
         if (!isManager)
         {
             if (sdk >= 31) // S
-                Lib.load("android", "requestSetting")("REQUEST_MANAGE_MEDIA");
-            Lib.load("android", "requestSetting")("MANAGE_APP_ALL_FILES_ACCESS_PERMISSION");
+                Lib.load("android", "requestSetting", 1)("REQUEST_MANAGE_MEDIA");
+            Lib.load("android", "requestSetting", 1)("MANAGE_APP_ALL_FILES_ACCESS_PERMISSION");
         }
 
         try
@@ -160,7 +163,7 @@ enum abstract StorageType(String) from String to String
     final fileLocalONLINE = 'PsychOnline';
     final fileLocal = 'PsychEngine';
     final fileLocalNF = 'NF Engine';
-    final fileLocalEX = 'Psych Extended'; //idk why
+    final fileLocalEX = 'Psych Extended'; 
 
     var EXTERNAL_DATA = "EXTERNAL_DATA";
     var EXTERNAL_OBB = "EXTERNAL_OBB";
@@ -173,13 +176,13 @@ enum abstract StorageType(String) from String to String
 
     public static function fromStr(str:String):StorageType
     {
-        final EXTERNAL_DATA = Lib.load("android", "getExternalFilesDir")();
-        final EXTERNAL_OBB = Lib.load("android", "getObbDir")();
-        final EXTERNAL_MEDIA = Lib.load("android", "getExternalStorageDirectory")() + '/Android/media/' + lime.app.Application.current.meta.get('packageName');
-        final EXTERNAL = Lib.load("android", "getExternalStorageDirectory")() + '/.' + fileLocal;
-        final EXTERNAL_NF = Lib.load("android", "getExternalStorageDirectory")() + '/.' + fileLocalNF;
-        final EXTERNAL_EX = Lib.load("android", "getExternalStorageDirectory")() + '/.' + lime.app.Application.current.meta.get('file');
-        final EXTERNAL_ONLINE = Lib.load("android", "getExternalStorageDirectory")() + '/.' + fileLocalONLINE;
+        final EXTERNAL_DATA = Lib.load("android", "getExternalFilesDir", 0)();
+        final EXTERNAL_OBB = Lib.load("android", "getObbDir", 0)();
+        final EXTERNAL_MEDIA = Lib.load("android", "getExternalStorageDirectory", 0)() + '/Android/media/' + lime.app.Application.current.meta.get('packageName');
+        final EXTERNAL = Lib.load("android", "getExternalStorageDirectory", 0)() + '/.' + fileLocal;
+        final EXTERNAL_NF = Lib.load("android", "getExternalStorageDirectory", 0)() + '/.' + fileLocalNF;
+        final EXTERNAL_EX = Lib.load("android", "getExternalStorageDirectory", 0)() + '/.' + lime.app.Application.current.meta.get('file');
+        final EXTERNAL_ONLINE = Lib.load("android", "getExternalStorageDirectory", 0)() + '/.' + fileLocalONLINE;
 
         return switch (str)
         {
