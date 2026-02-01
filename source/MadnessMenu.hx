@@ -5,9 +5,8 @@ import flixel.addons.display.FlxTiledSprite;
 import options.OptionsState;
 import flixel.math.FlxRect;
 import openfl.display.BitmapData;
-//import flixel.input.mouse.FlxMouseEvent;
 import flixel.addons.display.FlxBackdrop;
-//using MadnessMenu.SpriteHelper;
+//import flixel.input.mouse.FlxMouseEvent;
 
 //really jank way of handling this
 //couldve done way better but whatever
@@ -41,7 +40,7 @@ class MadnessMenu extends MusicBeatState
 
         Paths.sound("coming soon");
         FlxG.mouse.visible = true;
-        FlxG.mouse.load(mouseGraphic,0.5);
+        FlxG.mouse.load(mouseGraphic, 0.5);
 
         FlxG.camera.antialiasing = ClientPrefs.data.antialiasing;
         persistentUpdate = true;
@@ -151,15 +150,23 @@ class MadnessMenu extends MusicBeatState
 
         var graveBox = new FlxSprite(byDevsR.x, byDevsR.y + (23 * uniScale));
         SpriteHelper.makeScaledGraphic(graveBox, 96 * uniScale, 36 * uniScale);
-        FlxMouseEvent.add(graveBox, (o)->{
-            CoolUtil.browserLoad('https://x.com/konn_artist');
-        }, null, (o)->byDevsR.animation.play('grave'), (o)->byDevsR.animation.play('i'), false, true, false);
+        FlxMouseEvent.add(graveBox, 
+            (o)->{ CoolUtil.browserLoad('https://x.com/konn_artist'); }, 
+            null, 
+            (o)->byDevsR.animation.play('grave'), 
+            (o)->byDevsR.animation.play('i'), 
+            false, true, false
+        );
 
         var vamBox = new FlxSprite(byDevsR.x + (121 * uniScale), byDevsR.y + (23 * uniScale));
         SpriteHelper.makeScaledGraphic(vamBox, 164 * uniScale, 36 * uniScale);
-        FlxMouseEvent.add(vamBox, (o)->{
-            CoolUtil.browserLoad('https://x.com/vamazotz');
-        }, null, (o)->byDevsR.animation.play('vam'), (o)->byDevsR.animation.play('i'), false, true, false);
+        FlxMouseEvent.add(vamBox, 
+            (o)->{ CoolUtil.browserLoad('https://x.com/vamazotz'); }, 
+            null, 
+            (o)->byDevsR.animation.play('vam'), 
+            (o)->byDevsR.animation.play('i'), 
+            false, true, false
+        );
 
         Difficulty.resetList();
         var trophyKey = Highscore.getRating('expurgation',1) == 1.0 ? 'Trophy2' : 'trophy';
@@ -192,15 +199,13 @@ class MadnessMenu extends MusicBeatState
             circle.alpha = 0.08;
             circles.add(circle);
             var scaleTime = FlxG.random.float(7,12);
-            FlxTween.tween(circle.scale, {x:2, y:2}, scaleTime, {onComplete: function(_) {
-                circle.kill();
-            }});
+            FlxTween.tween(circle.scale, {x:2, y:2}, scaleTime, {onComplete: function(_) { circle.kill(); }});
             FlxTween.tween(circle, {alpha:0}, scaleTime * 0.3, {ease:FlxEase.cubeIn, startDelay: scaleTime * 0.7});
             FlxTween.tween(circle, {alpha:0.15}, 1.4, {ease:FlxEase.cubeOut});
             timer.reset(FlxG.random.float(6,13));
         });
     }
 
-    ...
-    // resto do arquivo permanece igual, sem alterar nenhuma estrutura
+    // restante dos métodos do MadnessMenu permanecem iguais...
+    // makeButton(), moveSquare(), changeSel(), update(), etc.
 }
