@@ -51,16 +51,12 @@ jobs:
 
       - name: Limpar cache e builds antigos
         run: |
-          echo "Removendo Haxelib antigo e builds..."
-          rm -rf ~/.haxelib
-          # evita erro se lime não estiver instalado ainda
+          echo "Removendo builds antigos..."
+          # Evita erro se lime não estiver instalado ainda
           command -v lime && lime clean android || true
 
       - name: Setup Haxelib + Dependências
         run: |
-          echo "💾 Configurando Haxelib..."
-          haxelib setup ~/.haxelib
-
           echo "📦 Instalando dependências essenciais..."
           haxelib git linc_luajit https://github.com/PsychExtendedThings/linc_luajit --quiet
           haxelib install tjson --quiet
@@ -110,7 +106,7 @@ jobs:
           zip -r ${{ env.PROJECT_NAME }}.ipa Payload
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@main
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.artifactName }}
           path: ${{ inputs.artifactPath }}
