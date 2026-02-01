@@ -1,54 +1,40 @@
-name: Build Psych Engine
+name: Build
 
 on:
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      name:
+        required: true
+        type: string
+      os:
+        required: true
+        type: string
+      setupCommand:
+        required: true
+        type: string
+      buildArgs:
+        required: true
+        type: string
+      artifactName:
+        required: true
+        type: string
+      artifactPath:
+        required: true
+        type: string
+      system:
+        required: true
+        type: string
+
+env:
+  HAXE_VERSION: 4.2.5
+  PROJECT_NAME: PsychEngine
 
 jobs:
   build:
-    name: Build ${{ matrix.name }}
-    strategy:
-      matrix:
-        include:
-          - name: Android-Arm64
-            os: ubuntu-24.04
-            buildArgs: "android -D officialBuild -ONLY_ARM64 -final"
-            artifactName: androidBuild-Arm64
-            artifactPath: "export/release/android/bin/app/build/outputs/apk/release/*.apk"
-            system: Android
-          - name: Android-Armv7
-            os: ubuntu-24.04
-            buildArgs: "android -D officialBuild -ONLY_ARMV7 -final"
-            artifactName: androidBuild-Armv7
-            artifactPath: "export/release/android/bin/app/build/outputs/apk/release/*.apk"
-            system: Android
-          - name: Android-Both
-            os: ubuntu-24.04
-            buildArgs: "android -D officialBuild -final"
-            artifactName: androidBuild-Both
-            artifactPath: "export/release/android/bin/app/build/outputs/apk/release/*.apk"
-            system: Android
-          - name: iOS
-            os: macos-14
-            buildArgs: "ios -D finalBuild"
-            artifactName: iOSBuild
-            artifactPath: "export/release/ios/build/Release-iphoneos/*.ipa"
-            system: iOS
-          - name: iOS-Simulator
-            os: macos-14
-            buildArgs: "ios -D simulatorBuild"
-            artifactName: iOSSimBuild
-            artifactPath: "export/release/ios/build/Release-iphonesimulator/*.ipa"
-            system: iOS
-
-    runs-on: ${{ matrix.os }}
-
-    env:
-      HAXE_VERSION: 4.2.5
-      PROJECT_NAME: PsychEngine
-
+    runs-on: ${{ inputs.os }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@main
 
       - name: Setup Haxe
         uses: krdlab/setup-haxe@v1.2.0
@@ -56,24 +42,48 @@ jobs:
           haxe-version: ${{ env.HAXE_VERSION }}
 
       - name: Setup Android NDK
-        if: matrix.system == 'Android'
+        if: inputs.system == 'Android'
         id: setup-ndk
         uses: nttld/setup-ndk@main
         with:
           ndk-version: r27c
           add-to-path: false
 
-      - name: Clean Haxelib & old builds
+      - name: Limpar cache e builds antigos
         run: |
-          echo "🧹 Limpando Haxelib e builds antigos..."
-          rm -rf ~/haxelib_cache
-          rm -rf export/release
+          echo "Removendo Haxelib antigo e builds..."
+          rm -rf ~/.haxelib
+          # evita erro se lime não estiver instalado ainda
+          command -v lime && lime clean android || true
 
-      - name: Install Libraries & Setup
-        run: sh ./setup/unix.sh ${{ matrix.system }}
+      - name: Setup Haxelib + Dependências
+        run: |
+          echo "💾 Configurando Haxelib..."
+          haxelib setup ~/.haxelib
+
+          echo "📦 Instalando dependências essenciais..."
+          haxelib git linc_luajit https://github.com/PsychExtendedThings/linc_luajit --quiet
+          haxelib install tjson --quiet
+          haxelib install flixel 5.2.2 --quiet
+          haxelib install flixel-addons 2.11.0 --quiet
+          haxelib install flixel-ui 2.4.0 --quiet
+          haxelib install hscript 2.4.0 --quiet
+          haxelib git hxCodec https://github.com/PsychExtendedThings/hxCodec-0.6.3 --quiet
+          haxelib git hxcpp https://github.com/PsychExtendedThings/hxcpp --quiet
+          haxelib install flxanimate --quiet
+          haxelib git lime https://github.com/PsychExtendedThings/lime-new --quiet
+          haxelib install openfl 9.2.2 --quiet
+
+          # Configuração Android apenas se necessário
+          if [ "${{ inputs.system }}" = "Android" ]; then
+            yes | haxelib run lime setup android
+          fi
+
+      - name: Run custom setup command
+        run: ${{ inputs.setupCommand }}
 
       - name: Configure Android
-        if: matrix.system == 'Android'
+        if: inputs.system == 'Android'
         run: |
           haxelib run lime config ANDROID_SDK $ANDROID_HOME
           haxelib run lime config ANDROID_NDK_ROOT ${{ steps.setup-ndk.outputs.ndk-path }}
@@ -81,10 +91,10 @@ jobs:
           haxelib run lime config ANDROID_SETUP true
 
       - name: Compile
-        run: haxelib run lime build ${{ matrix.buildArgs }}
+        run: haxelib run lime build ${{ inputs.buildArgs }}
 
       - name: Make IPA For iOS Simulator
-        if: matrix.system == 'iOS-Sim'
+        if: inputs.system == 'iOS-Sim'
         run: |
           cd export/release/ios/build/Release-iphonesimulator
           mkdir Payload
@@ -92,7 +102,7 @@ jobs:
           zip -r ${{ env.PROJECT_NAME }}.ipa Payload
 
       - name: Make IPA For iOS
-        if: matrix.system == 'iOS'
+        if: inputs.system == 'iOS'
         run: |
           cd export/release/ios/build/Release-iphoneos
           mkdir Payload
@@ -100,8 +110,8 @@ jobs:
           zip -r ${{ env.PROJECT_NAME }}.ipa Payload
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@main
         with:
-          name: ${{ matrix.artifactName }}
-          path: ${{ matrix.artifactPath }}
+          name: ${{ inputs.artifactName }}
+          path: ${{ inputs.artifactPath }}
           if-no-files-found: error
