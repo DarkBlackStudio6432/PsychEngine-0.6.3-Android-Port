@@ -3,28 +3,35 @@ set -e
 
 cd ..
 
-echo "💾 Configurando Haxelib..."
-# Cria pasta de cache separada para evitar conflitos
-mkdir -p ~/haxelib_cache
-haxelib setup ~/haxelib_cache
-
 echo "📦 Instalando dependências essenciais..."
+
+# LuaJIT
 haxelib git linc_luajit https://github.com/PsychExtendedThings/linc_luajit --quiet
+
+# JSON
 haxelib install tjson --quiet
+
+# Flixel
 haxelib install flixel 5.2.2 --quiet
 haxelib install flixel-addons 2.11.0 --quiet
 haxelib install flixel-ui 2.4.0 --quiet
 haxelib install hscript 2.4.0 --quiet
+
+# HXCodec e HXCPP
 haxelib git hxCodec https://github.com/PsychExtendedThings/hxCodec-0.6.3 --quiet
 haxelib git hxcpp https://github.com/PsychExtendedThings/hxcpp --quiet
+
+# FlxAnimate
 haxelib install flxanimate --quiet
+
+# Lime + OpenFL compatíveis com Psych 0.6.3
 haxelib git lime https://github.com/PsychExtendedThings/lime-new --quiet
 haxelib install openfl 9.2.2 --quiet
 
-# Configura Android somente se for build Android
+# Configuração Android apenas se necessário
 if [ "$1" = "Android" ]; then
-  echo "📱 Configurando Android SDK/NDK..."
+  echo "📱 Configurando ambiente Android..."
   yes | haxelib run lime setup android
 fi
 
-echo "✅ Dependências instaladas e ambiente pronto!"
+echo "✅ Tudo pronto! Dependências instaladas e ambiente configurado."
