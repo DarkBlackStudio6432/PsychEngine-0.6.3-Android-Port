@@ -1,11 +1,11 @@
 package states;
 
-import backend.Highscore;
-import backend.StageData;
-import backend.WeekData;
-import backend.Song;
-import backend.Section;
-import backend.Rating;
+import Highscore;
+import StageData;
+import WeekData;
+import Song;
+import Section;
+import Rating;
 
 import flixel.FlxBasic;
 import flixel.FlxObject;
