@@ -6,7 +6,7 @@ import flixel.text.FlxText;
 import flixel.FlxG;
 
 import objects.AttachedSprite;
-import states.MadnessMenu;
+import MadnessMenu;
 import backend.Paths;
 import backend.ClientPrefs;
 import backend.MadnessTransition;
